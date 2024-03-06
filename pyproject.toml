@@ -1,0 +1,41 @@
+[build-system]
+requires = ['setuptools>=69.1.1']
+build-backend = 'setuptools.build_meta'
+
+[project]
+name = 'itz_menu_extractor'
+dynamic = ['version']
+readme = 'README.md'
+license = {text = 'Apache License 2.0'}
+authors = [
+    {name = 'Louke', email = 'git@jannsen.org'}
+]
+classifiers = [
+    'Programming Language :: Python :: 3',
+    'License :: OSI Approved :: Apache License 2.0',
+    'Operating System :: OS Independent',
+    'Programming Language :: Python :: Implementation :: CPython',
+]
+dependencies = [
+    'bunnet>=1.2.0',
+    'pymongo>=4.6.2',
+    'typing_extensions>=4.9.0',
+    'pydantic_settings>=2.2.1',
+    'requests>=2.31.0',
+    'pillow>=10.2.0',
+    'img2table>=1.2.11'
+]
+
+[project.optional-dependencies]
+test = [
+    'mongomock>=4.1.2',
+    'pytest>=8.1.0',
+    'pytest_httpserver>=1.0.10'
+]
+
+
+[tool.setuptools.package-data]
+'*' = ['*.json', '*.jpg']
+
+[tool.setuptools.dynamic]
+version = {attr = 'itz_menu.__version__'}
