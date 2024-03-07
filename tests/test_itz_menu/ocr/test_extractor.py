@@ -1,11 +1,12 @@
 import numpy as np
-
-from itz_menu.ocr.extractor import TableExtractor
 import pandas as pd
 import pytest
 
+from itz_menu.ocr.extractor import TableExtractor
+from itz_menu.persistence.enums import WeekDay
 
-@pytest.fixture()
+
+@pytest.fixture(scope='class')
 def table_extractor() -> TableExtractor:
     return TableExtractor()
 
@@ -19,7 +20,8 @@ class TestTableExtractor:
 
     @staticmethod
     def test_as_data_frame_columns_correct(df: pd.DataFrame):
-        assert ['Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag'] == df.columns.tolist()
+        assert ([WeekDay.MONDAY, WeekDay.TUESDAY, WeekDay.WEDNESDAY, WeekDay.THURSDAY, WeekDay.FRIDAY]
+                == df.columns.tolist())
 
     @staticmethod
     def test_as_data_frame_index_correct(df: pd.DataFrame):
@@ -31,7 +33,7 @@ class TestTableExtractor:
         # Select every second row
         df_second_rows = df.iloc[1::2]
         # Check if each cell contains a float
-        is_float = df_second_rows.applymap(np.isreal)
+        is_float = df_second_rows.map(np.isreal)
         # Check if all values in each row are True
         all_floats = is_float.all(axis=1)
         # Assert that all values are True
@@ -39,11 +41,10 @@ class TestTableExtractor:
 
     @staticmethod
     def test_every_second_row_contains_description(df: pd.DataFrame):
-        print(df.to_string())
         # Select every second row
         df_second_rows = df.iloc[::2]
         # Check if each cell contains a string
-        is_string = df_second_rows.applymap(lambda x: isinstance(x, str))
+        is_string = df_second_rows.map(lambda x: isinstance(x, str))
         # Check if all values in each row are True
         all_strings = is_string.all(axis=1)
         # Assert that all values are True
@@ -51,4 +52,4 @@ class TestTableExtractor:
 
     @staticmethod
     def test(week_menu: bytes, table_extractor: TableExtractor):
-        table_extractor.menu_timestamp(week_menu)
+        print(table_extractor.timestamps(week_menu))
