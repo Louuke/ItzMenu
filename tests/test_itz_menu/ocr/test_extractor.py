@@ -2,18 +2,13 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from itz_menu.ocr.extractor import TableExtractor
+import itz_menu.ocr.extractor as extractor
 from itz_menu.persistence.enums import WeekDay
 
 
 @pytest.fixture(scope='class')
-def table_extractor() -> TableExtractor:
-    return TableExtractor()
-
-
-@pytest.fixture(scope='class')
-def df(week_menu: bytes, table_extractor: TableExtractor) -> pd.DataFrame:
-    return table_extractor.as_data_frame(week_menu)
+def df(week_menu: bytes) -> pd.DataFrame:
+    return extractor.img_to_dataframe(week_menu)
 
 
 class TestTableExtractor:
@@ -51,5 +46,8 @@ class TestTableExtractor:
         assert all_strings.all(), "Not all values in every second row are strings."
 
     @staticmethod
-    def test(week_menu: bytes, table_extractor: TableExtractor):
-        print(table_extractor.timestamps(week_menu))
+    def test_period_of_validity_timestamp(week_menu: bytes):
+        period = extractor.period_of_validity(week_menu)
+        assert period is not None
+        assert period[0] == 1708297200
+        assert period[1] == 1708729199
