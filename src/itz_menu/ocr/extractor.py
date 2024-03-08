@@ -10,11 +10,11 @@ from img2table.document import Image
 from img2table.ocr import TesseractOCR
 from img2table.tables.objects.extraction import ExtractedTable
 
-import itz_menu.ocr.preprocess as preprocessing
+import itz_menu.ocr.preprocess as preprocess
 from itz_menu.persistence.enums import WeekDay
 
 
-@preprocessing.apply_threshold
+@preprocess.apply_threshold
 def img_to_dataframe(image: bytes, threads: int = 1, lang: str = 'deu') -> pd.DataFrame | None:
     ocr = TesseractOCR(n_threads=threads, lang=lang)
     img = Image(src=image)
@@ -22,7 +22,7 @@ def img_to_dataframe(image: bytes, threads: int = 1, lang: str = 'deu') -> pd.Da
         return __post_process(tables)
 
 
-@preprocessing.apply_threshold
+@preprocess.apply_threshold
 def period_of_validity(image: bytes, lang: str = 'deu') -> tuple[int, int] | None:
     buffer = io.BytesIO(image)
     if type(result := pytesseract.image_to_string(PImage.open(buffer), lang=lang)) is str:
