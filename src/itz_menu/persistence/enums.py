@@ -1,4 +1,5 @@
 from enum import StrEnum
+from typing import LiteralString
 
 
 class DietType(StrEnum):
@@ -15,6 +16,10 @@ class WeekDay(StrEnum):
     WEDNESDAY = 'wednesday',
     THURSDAY = 'thursday',
     FRIDAY = 'friday'
+
+    @staticmethod
+    def values() -> list[LiteralString]:
+        return [day for day in WeekDay]
 
     @staticmethod
     def find_by_value(value: str):
