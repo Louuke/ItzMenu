@@ -23,7 +23,8 @@ dependencies = [
     'pydantic_settings>=2.2.1',
     'requests>=2.31.0',
     'pillow>=10.2.0',
-    'img2table>=1.2.11'
+    'img2table>=1.2.11',
+    'pytesseract>=0.3.10'
 ]
 
 [project.optional-dependencies]
