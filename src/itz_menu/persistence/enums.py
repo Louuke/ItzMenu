@@ -18,8 +18,8 @@ class WeekDay(StrEnum):
     FRIDAY = 'friday'
 
     @staticmethod
-    def values() -> list[LiteralString]:
-        return [day for day in WeekDay]
+    def values() -> tuple[LiteralString, ...]:
+        return tuple([day for day in WeekDay])
 
     @staticmethod
     def find_by_value(value: str):

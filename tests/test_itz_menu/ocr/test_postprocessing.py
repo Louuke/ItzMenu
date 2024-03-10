@@ -41,7 +41,7 @@ class TestPostprocessing:
     def test_dataframe_to_week_menu_day_menu(self, week_menu: pd.DataFrame, init_database):
         menu = postprocessing.dataframe_to_week_menu(week_menu, (0, 1), 'checksum.jpg')
         assert all(day.name in WeekDay for day in menu.menus)
-        assert [day.name for day in menu.menus] == WeekDay.values()
+        assert tuple([day.name for day in menu.menus]) == WeekDay.values()
         assert all(len(day.categories) == 5 for day in menu.menus)
         assert all(isinstance(category, MealCategory) for day in menu.menus for category in day.categories)
 
