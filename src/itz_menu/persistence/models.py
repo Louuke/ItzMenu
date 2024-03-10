@@ -21,8 +21,8 @@ class DayMenu(BaseModel):
 
 
 class WeekMenu(Document):
-    start_date: Indexed(int) = Field(ge=0)
-    end_date: Indexed(int) = Field(ge=1)
+    start_timestamp: Indexed(int) = Field(ge=0)
+    end_timestamp: Indexed(int) = Field(ge=1)
     filename: Indexed(str, unique=True) = Field(pattern=r'^[a-zA-Z0-9]+\.jpg$')
     menus: list[DayMenu] = Field(default=[])
 

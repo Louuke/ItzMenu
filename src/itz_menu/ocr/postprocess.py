@@ -6,7 +6,7 @@ import pandas as pd
 def dataframe_to_week_menu(df: pd.DataFrame, validity_period: tuple[int, int], filename: str) -> WeekMenu:
     start_timestamp, end_timestamp = validity_period
     menus = __dataframe_to_menus(df)
-    return WeekMenu(start_date=start_timestamp, end_date=end_timestamp, filename=filename, menus=menus)
+    return WeekMenu(start_timestamp=start_timestamp, end_timestamp=end_timestamp, filename=filename, menus=menus)
 
 
 def __dataframe_to_menus(df: pd.DataFrame) -> list[DayMenu]:

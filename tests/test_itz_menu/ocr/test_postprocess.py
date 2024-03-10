@@ -25,8 +25,8 @@ class TestPostprocessing:
     def test_dataframe_to_week_menu_validity_period(self, week_menu: pd.DataFrame, init_database):
         validity_period = (1708297200, 1708729199)
         menu = postprocess.dataframe_to_week_menu(week_menu, validity_period, 'checksum.jpg')
-        assert menu.start_date == validity_period[0]
-        assert menu.end_date == validity_period[1]
+        assert menu.start_timestamp == validity_period[0]
+        assert menu.end_timestamp == validity_period[1]
 
     def test_dataframe_to_week_menu_filename(self, week_menu: pd.DataFrame, init_database):
         filename = 'checksum.jpg'
