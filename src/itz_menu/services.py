@@ -47,7 +47,7 @@ class UpdateMenuService(threading.Thread):
             log.warning(f'Failed to extract menu from image')
             return
         log.info(f'Extracted dataframe with {df.shape[0]} rows and {df.shape[1]} columns')
-        log.info(f'Extracted validity: {utils.timestamp_to_date(p[0])} - {utils.timestamp_to_date(p[1])}')
+        log.info(f'Extracted time period: {utils.timestamp_to_date(p[0])} - {utils.timestamp_to_date(p[1])}')
         postprocess.dataframe_to_week_menu(df, p, filename).insert()
         if self.__settings.ocr_save_images:
             database.fs.put(image, filename=filename)
