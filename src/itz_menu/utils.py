@@ -1,4 +1,5 @@
 import hashlib
+import sys
 from datetime import datetime
 
 
@@ -13,3 +14,7 @@ def timestamp_to_date(timestamp: int) -> str:
 def load_image(path: str) -> bytes:
     with open(path, 'rb') as file:
         return file.read()
+
+
+def is_test_running():
+    return 'pytest' in sys.modules or 'unittest' in sys.modules
