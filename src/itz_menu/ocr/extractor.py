@@ -7,19 +7,28 @@ import PIL.Image as PImage
 import pandas as pd
 import pytesseract
 from img2table.document import Image
-from img2table.ocr import TesseractOCR
+from img2table.ocr.base import OCRInstance
+from img2table.ocr import TesseractOCR, VisionOCR
 from img2table.tables.objects.extraction import ExtractedTable
 
+import itz_menu.utils as utils
 import itz_menu.ocr.preprocess as preprocess
+from itz_menu.config.settings import Settings
 from itz_menu.persistence.enums import WeekDay
 
 
 @preprocess.apply_threshold
-def img_to_dataframe(image: bytes, threads: int = 1, lang: str = 'deu') -> pd.DataFrame | None:
-    ocr = TesseractOCR(n_threads=threads, lang=lang)
+def img_to_dataframe(image: bytes) -> pd.DataFrame | None:
+    ocr = __create_ocr_instance()
     img = Image(src=image)
     if len(tables := img.extract_tables(ocr=ocr, borderless_tables=True, min_confidence=30)) > 0:
         return __post_process(tables)
+
+
+def __create_ocr_instance() -> OCRInstance:
+    if (settings := Settings()).google_cloud_vision_enabled and not utils.is_test_running():
+        return VisionOCR(api_key=settings.google_cloud_vision_api_key)
+    return TesseractOCR(n_threads=1, lang='deu')
 
 
 @preprocess.apply_threshold
