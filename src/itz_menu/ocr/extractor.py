@@ -56,7 +56,10 @@ def __set_column_names(df: pd.DataFrame):
 def __transform_rows(df: pd.DataFrame) -> pd.DataFrame:
     """ Replace newlines with spaces and reformat price format """
     df.replace('\n', ' ', regex=True, inplace=True)
-    return df.map(__update_prices, na_action='ignore')
+    df = df.map(__update_prices, na_action='ignore')
+    # Replace ( x ) with (x)
+    df.replace(r'\(\s(.*?)\s\)', r'(\1)', regex=True, inplace=True)
+    return df
 
 
 def __update_prices(cell: str) -> float | str:
