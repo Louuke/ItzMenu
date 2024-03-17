@@ -1,6 +1,6 @@
 import sys
-import gridfs
 
+import gridfs
 from bunnet import init_bunnet
 from pymongo import MongoClient
 
@@ -10,7 +10,7 @@ from itz_menu.persistence.models import *
 fs: gridfs.GridFS | None = None
 
 
-def init(settings: Settings):
+def init(settings: Settings = Settings()):
     client = MongoClient(settings.mongo_db_url)
     global fs
     fs = gridfs.GridFS(client[settings.mongo_db_name])
