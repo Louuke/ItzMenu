@@ -8,3 +8,8 @@ def bytes_to_sha256(data: bytes) -> str:
 
 def timestamp_to_date(timestamp: int) -> str:
     return datetime.fromtimestamp(timestamp).strftime('%d.%m.%Y')
+
+
+def load_image(path: str) -> bytes:
+    with open(path, 'rb') as file:
+        return file.read()
