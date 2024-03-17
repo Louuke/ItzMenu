@@ -29,11 +29,43 @@ class TestSettings:
             Settings(mongo_db_url='mongodb://localhost:27017', mongo_db_name='a')
 
     @staticmethod
-    def test_settings_with_valid_menu_check_interval():
-        settings = Settings(menu_check_interval=3600)
-        assert settings.menu_check_interval == 3600
+    def test_settings_with_valid_ocr_check_interval():
+        settings = Settings(ocr_check_interval=3600)
+        assert settings.ocr_check_interval == 3600
 
     @staticmethod
-    def test_settings_with_invalid_menu_check_interval():
+    def test_settings_with_invalid_ocr_check_interval():
         with pytest.raises(ValidationError):
-            Settings(menu_check_interval=0)
+            Settings(ocr_check_interval=0)
+
+    @staticmethod
+    def test_settings_with_valid_ocr_save_images():
+        settings = Settings(ocr_save_images=True)
+        assert settings.ocr_save_images is True
+        settings = Settings(ocr_save_images='True')
+        assert settings.ocr_save_images is True
+        settings = Settings(ocr_save_images='true')
+        assert settings.ocr_save_images is True
+        settings = Settings(ocr_save_images='false')
+        assert settings.ocr_save_images is False
+
+    @staticmethod
+    def test_settings_with_invalid_ocr_save_images():
+        with pytest.raises(ValidationError):
+            Settings(ocr_save_images='not a bool')
+
+    @staticmethod
+    def test_settings_with_valid_google_cloud_vision_api_key():
+        settings = Settings(google_cloud_vision_api_key='api_key')
+        assert settings.google_cloud_vision_api_key == 'api_key'
+
+    @staticmethod
+    def test_settings_with_valid_google_cloud_vision_enabled():
+        settings = Settings(google_cloud_vision_enabled=True)
+        assert settings.google_cloud_vision_enabled is True
+        settings = Settings(google_cloud_vision_enabled='True')
+        assert settings.google_cloud_vision_enabled is True
+        settings = Settings(google_cloud_vision_enabled='true')
+        assert settings.google_cloud_vision_enabled is True
+        settings = Settings(google_cloud_vision_enabled='false')
+        assert settings.google_cloud_vision_enabled is False
