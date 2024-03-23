@@ -35,8 +35,8 @@ def __create_ocr_instance() -> OCRInstance:
 def period_of_validity(image: bytes, lang: str = 'deu') -> tuple[int, int] | None:
     buffer = io.BytesIO(image)
     if type(result := pytesseract.image_to_string(PImage.open(buffer), lang=lang)) is str:
-        if (match := re.search(r'\d\d.\d\d.\d\d\d\d', result)) is not None:
-            end_date = datetime.strptime(match.group(), '%d.%m.%Y')
+        if (match := re.search(r'- \d\d.\d\d.\d\d\d\d', result)) is not None:
+            end_date = datetime.strptime(match.group().replace('- ', ''), '%d.%m.%Y')
             end_timestamp = int(time.mktime(end_date.timetuple())) + 86399
             start_timestamp = end_timestamp - 431999
             return start_timestamp, end_timestamp
@@ -45,6 +45,8 @@ def period_of_validity(image: bytes, lang: str = 'deu') -> tuple[int, int] | Non
 def __post_process(tables: list[ExtractedTable]) -> pd.DataFrame:
     # Concatenate all tables
     df = pd.concat([table.df for table in tables], ignore_index=True)
+    # Drop empty rows
+    df.dropna(subset=df.columns[1:], how='all', inplace=True)
     # Transform rows
     df = __transform_rows(df)
     # Set column names
