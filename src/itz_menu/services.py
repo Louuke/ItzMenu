@@ -43,7 +43,7 @@ class UpdateMenuService(threading.Thread):
         if WeekMenu.find(WeekMenu.filename == filename).first_or_none() is not None:
             log.info(f'Menu with checksum {filename} already exists')
             return
-        if ((df := extractor.img_to_dataframe(image)) is None) or (p := extractor.period_of_validity(image)) is None:
+        if (p := extractor.period_of_validity(image)) is None or (df := extractor.img_to_dataframe(image)) is None:
             log.warning(f'Failed to extract menu from image')
             return
         log.info(f'Extracted dataframe with {df.shape[0]} rows and {df.shape[1]} columns')
