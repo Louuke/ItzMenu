@@ -19,7 +19,7 @@ class MenuClient:
     def __request(self, request: BaseRequest) -> bytes | None:
         try:
             url = f'{self.__host}/{request.endpoint}'
-            response = self.__session.get(url)
+            response = self.__session.get(url, allow_redirects=False)
             response.raise_for_status()
             return response.content
         except requests.ConnectionError as exc:
