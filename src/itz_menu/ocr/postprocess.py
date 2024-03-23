@@ -20,4 +20,9 @@ def __dataframe_to_categories(s: pd.Series):
 
 
 def __dataframe_to_meals(s: pd.Series) -> list[Meal]:
-    return [Meal(name=s.iloc[i], diet_type=[DietType.UNKNOWN], price=s.iloc[i + 1]) for i in range(0, len(s), 2)]
+    return [Meal(name=s.iloc[i], diet_type=[DietType.UNKNOWN], price=s.iloc[i + 1])
+            for i in range(0, len(s), 2) if __validate_meal(s.iloc[i], s.iloc[i + 1])]
+
+
+def __validate_meal(name: str, price: float) -> bool:
+    return not (pd.isna(name) or pd.isna(price)) and name.lower() != 'geschlossen'
