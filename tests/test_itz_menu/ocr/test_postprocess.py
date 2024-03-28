@@ -3,7 +3,6 @@ import pytest
 
 import itz_menu.persistence.database as database
 import itz_menu.ocr.postprocess as postprocess
-from itz_menu import Settings
 
 from itz_menu.persistence.models import *
 
@@ -18,7 +17,7 @@ def week_menu() -> pd.DataFrame:
 
 @pytest.fixture(scope='session')
 def init_database():
-    database.init(Settings())
+    database.init()
 
 
 class TestPostprocessing:
