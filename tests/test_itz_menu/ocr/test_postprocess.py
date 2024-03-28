@@ -1,3 +1,5 @@
+import asyncio
+
 import pandas as pd
 import pytest
 
@@ -17,7 +19,7 @@ def week_menu() -> pd.DataFrame:
 
 @pytest.fixture(scope='session')
 def init_database():
-    database.init()
+    asyncio.run(database.init())
 
 
 class TestPostprocessing:
