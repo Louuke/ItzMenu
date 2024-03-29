@@ -24,7 +24,8 @@ dependencies = [
     'requests>=2.31.0',
     'pillow>=10.2.0',
     'img2table[gcp]>=1.2.11',
-    'pytesseract>=0.3.10'
+    'pytesseract>=0.3.10',
+    'apscheduler>=3.10.4'
 ]
 
 [project.optional-dependencies]
