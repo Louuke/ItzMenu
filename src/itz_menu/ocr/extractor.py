@@ -17,6 +17,7 @@ from itz_menu.config.settings import Settings
 from itz_menu.persistence.enums import WeekDay
 
 
+@preprocess.crop_image
 @preprocess.apply_threshold
 def img_to_dataframe(image: bytes) -> pd.DataFrame | None:
     ocr = __create_ocr_instance()
