@@ -68,19 +68,19 @@ class Parser:
         self.__tokenizer = Tokenizer(args)
         self.__scheduler = AsyncIOScheduler()
 
-    def execute(self):
-        self.__preload()
-        self.__start()
+    async def execute(self):
+        await self.__preload()
+        await self.__start()
 
-    def __preload(self):
+    async def __preload(self):
         parser = iter(self.__tokenizer)
         while (token := next(parser)).type is not Type.EOL:
             if token.type is Type.PRELOAD:
                 while (value := next(parser)).type is Type.VALUE:
-                    if re.match(r'^(A-Z:)?[a-zA-Z0-9\\/_-]+\.jpg$', value.value) is not None:
-                        process_image(load_image(value.value))
+                    if re.match(r'^([A-Z]:)?[a-zA-Z0-9\\/_-]+\.jpg$', value.value) is not None:
+                        await process_image(load_image(value.value))
 
-    def __start(self):
+    async def __start(self):
         parser = iter(self.__tokenizer)
         while (token := next(parser)).type is not Type.EOL:
             if token.type is Type.START:
