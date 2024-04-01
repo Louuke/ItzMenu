@@ -1,4 +1,5 @@
 import logging as log
+from io import BytesIO
 
 import itz_menu.ocr.extractor as extractor
 import itz_menu.ocr.postprocess as postprocess
@@ -31,5 +32,5 @@ async def process_image(image: bytes):
     log.info(f'Extracted time period: {utils.timestamp_to_date(p[0])} - {utils.timestamp_to_date(p[1])}')
     await postprocess.dataframe_to_week_menu(df, p, filename).insert()
     if Settings().ocr_save_images:
-        await database.fs().put(image, filename=filename)
+        await database.fs().upload_from_stream(filename, BytesIO(image))
     log.info(f'Inserted menu with filename {filename}')
