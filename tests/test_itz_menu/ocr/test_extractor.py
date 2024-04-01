@@ -8,7 +8,8 @@ from itz_menu.persistence.enums import WeekDay
 
 @pytest.fixture(scope='class')
 def df(week_menu: bytes) -> pd.DataFrame:
-    return extractor.img_to_dataframe(week_menu)
+    validity = extractor.period_of_validity(week_menu)
+    return extractor.img_to_dataframe(week_menu, validity)
 
 
 class TestTableExtractor:

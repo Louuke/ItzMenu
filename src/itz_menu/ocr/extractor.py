@@ -17,9 +17,14 @@ from itz_menu.config.settings import Settings
 from itz_menu.persistence.enums import WeekDay
 
 
-@preprocess.crop_image
+@preprocess.crop_main_image_content
+def img_to_dataframe(image: bytes, validity_period: tuple[int, int]) -> pd.DataFrame | None:
+    image = preprocess.hide_holidays(image, validity_period)
+    return __img_to_dataframe(image)
+
+
 @preprocess.apply_threshold
-def img_to_dataframe(image: bytes) -> pd.DataFrame | None:
+def __img_to_dataframe(image: bytes) -> pd.DataFrame | None:
     ocr = __create_ocr_instance()
     img = Image(src=image)
     if len(tables := img.extract_tables(ocr=ocr, borderless_tables=True, min_confidence=30)) > 0:
@@ -76,8 +81,8 @@ def __transform_rows(df: pd.DataFrame) -> pd.DataFrame:
 
 def __update_prices(cell: str) -> float | str:
     """ Replace comma with dot and remove euro sign """
-    if re.match(r'^\d+(,|.)\d+\s?€$', cell):
-        return float(cell.replace(',', '.').replace('€', '').strip())
+    if re.match(r'^\d+(,|.)\d+\s?.$', cell):
+        return float(cell.replace(',', '.')[:-1].strip())
     return cell
 
 
