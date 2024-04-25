@@ -23,7 +23,7 @@ def img_to_dataframe(image: bytes, validity_period: tuple[int, int]) -> pd.DataF
     return __img_to_dataframe(image)
 
 
-@preprocess.apply_threshold
+# @preprocess.apply_threshold
 def __img_to_dataframe(image: bytes) -> pd.DataFrame | None:
     ocr = __create_ocr_instance()
     img = Image(src=image)
