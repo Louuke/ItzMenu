@@ -1,4 +1,3 @@
-from datetime import datetime
 import re
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
@@ -11,7 +10,7 @@ from enum import StrEnum
 
 class Type(StrEnum):
 
-    START = '--start'
+    INTERVAL = '--interval'
     PRELOAD = '--preload'
     VALUE = ''
     EOL = 'EOL'
@@ -70,7 +69,8 @@ class Parser:
 
     async def execute(self):
         await self.__preload()
-        await self.__start()
+        await fetch_menu()
+        await self.__interval()
 
     async def __preload(self):
         parser = iter(self.__tokenizer)
@@ -80,10 +80,12 @@ class Parser:
                     if re.match(r'^([A-Z]:)?[a-zA-Z0-9\\/_-]+\.jpg$', value.value) is not None:
                         await process_image(load_image(value.value))
 
-    async def __start(self):
+    async def __interval(self):
         parser = iter(self.__tokenizer)
         while (token := next(parser)).type is not Type.EOL:
-            if token.type is Type.START:
-                self.__scheduler.add_job(fetch_menu, 'interval', seconds=3600, next_run_time=datetime.now())
-                self.__scheduler.start()
-                break
+            if token.type is Type.INTERVAL:
+                if (value := next(parser)).type is Type.VALUE:
+                    self.__scheduler.add_job(fetch_menu, 'interval', seconds=int(value.value))
+                    self.__scheduler.start()
+                else:
+                    raise ValueError(f'Expected value but got {value.type}')
