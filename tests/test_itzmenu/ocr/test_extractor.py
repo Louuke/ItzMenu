@@ -1,4 +1,5 @@
-import numpy as np
+import re
+
 import pandas as pd
 import pytest
 
@@ -21,19 +22,17 @@ class TestTableExtractor:
 
     @staticmethod
     def test_as_data_frame_index_correct(df: pd.DataFrame):
-        assert ['Suppe', 'Suppe', 'Heimatküche', 'Heimatküche', 'From the Bowl', 'From the Bowl', 'Front Cooking',
-                'Front Cooking', 'Naschglück', 'Naschglück', 'Naschglück', 'Naschglück'] == df.index.tolist()
+        assert df.index.tolist() == ['Suppe', 'Heimatküche', 'From the Bowl', 'Front Cooking', 'Naschglück',
+                                     'Naschglück']
 
     @staticmethod
-    def test_every_second_row_contains_float(df: pd.DataFrame):
-        # Select every second row
-        df_second_rows = df.iloc[1::2]
-        # Check if each cell contains a float
-        is_float = df_second_rows.map(np.isreal)
+    def test_every_row_contains_price_at_end(df: pd.DataFrame):
+        # Check if each cell end with a price
+        has_price = df.map(lambda x: re.search(r'\d+.\d+$', x) is not None)
         # Check if all values in each row are True
-        all_floats = is_float.all(axis=1)
+        all_have_prices = has_price.all(axis=1)
         # Assert that all values are True
-        assert all_floats.all(), "Not all values in every second row are floats."
+        assert all_have_prices.all(), "Not all rows contain a price at the end."
 
     @staticmethod
     def test_every_second_row_contains_description(df: pd.DataFrame):
