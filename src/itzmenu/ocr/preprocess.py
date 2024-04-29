@@ -46,7 +46,10 @@ def __concat_images_horizontally(images: list[Image]) -> Image:
     x_offset = 0
     for img in images:
         new_image.paste(img, (x_offset, 0))
-        x_offset += img.size[0]
+        # Add horizontal black line to separate the images
+        new_image.paste(Image.new('RGB', (2, max_height), (0, 0, 0)), (x_offset, 0))
+        # Increase the x offset
+        x_offset += img.size[0] + 2
     return new_image
 
 
@@ -90,7 +93,7 @@ def hide_holidays(image: bytes, validity_period: tuple[int, int]) -> bytes:
     # Crop the image into vertical parts
     parts = []
     for i, height in enumerate(rows):
-        if i != 1:
+        if i not in (1, 5):
             area = (0, sum(rows[:i]), horizontal_image.width, sum(rows[:i + 1]))
             parts.append(horizontal_image.crop(area))
     return __image_to_bytes(__concat_images_vertically(parts))
