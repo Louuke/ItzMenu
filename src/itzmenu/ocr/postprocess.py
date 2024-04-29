@@ -23,9 +23,13 @@ def __dataframe_to_categories(s: pd.Series):
 
 
 def __dataframe_to_meals(s: pd.Series) -> list[Meal]:
-    return [Meal(name=s.iloc[i], diet_type=[DietType.UNKNOWN], price=s.iloc[i + 1])
-            for i in range(0, len(s), 2) if __validate_meal(s.iloc[i], s.iloc[i + 1])]
-
-
-def __validate_meal(name: str, price: float) -> bool:
-    return not (pd.isna(name) or pd.isna(price)) and name.lower() != 'geschlossen'
+    result = []
+    for i in range(len(s)):
+        name = s.iloc[i]
+        if not pd.isna(name) and (price := re.search(r'\d+.\d+$', name)) is not None:
+            name = name[:price.start()].strip()
+            price = float(price.group())
+            result.append(Meal(name=name, diet_type=[DietType.UNKNOWN], price=price))
+        else:
+            log.warning(f'Failed to parse meal: {name}')
+    return result

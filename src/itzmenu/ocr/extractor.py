@@ -57,9 +57,8 @@ def __post_process(tables: list[ExtractedTable]) -> pd.DataFrame:
     df = __transform_rows(df)
     # Set column names
     __set_column_names(df)
-    # Fill row names
-    __fill_row_names(df)
-    df = df.bfill(axis=1)
+    # Fill row index
+    df.bfill(axis=0, limit=1, inplace=True)
     df = df.iloc[:, :6]
     return df.set_index(df.columns[0])
 
@@ -71,25 +70,10 @@ def __set_column_names(df: pd.DataFrame):
 
 
 def __transform_rows(df: pd.DataFrame) -> pd.DataFrame:
-    """ Replace newlines with spaces and reformat price format """
+    # Replace newlines with spaces
     df.replace('\n', ' ', regex=True, inplace=True)
-    df = df.map(__update_prices, na_action='ignore')
+    # Replace comma with dot and remove euro sign
+    df.replace(r'(\d+)(,|.)(\d+)\s?€$', r'\1.\3', regex=True, inplace=True)
     # Replace ( x ) with (x)
     df.replace(r'\(\s(.*?)\s\)', r'(\1)', regex=True, inplace=True)
     return df
-
-
-def __update_prices(cell: str) -> float | str:
-    """ Replace comma with dot and remove euro sign """
-    if re.match(r'^\d+(,|.)\d+\s?.$', cell):
-        return float(cell.replace(',', '.')[:-1].strip())
-    return cell
-
-
-def __fill_row_names(df: pd.DataFrame):
-    for i in range(0, len(df), 2):
-        first = df.iloc[i, 0]
-        second = df.iloc[i + 1, 0]
-        value = first if first else second
-        df.iloc[i, 0] = value
-        df.iloc[i + 1, 0] = value
