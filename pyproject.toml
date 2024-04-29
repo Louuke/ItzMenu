@@ -3,7 +3,7 @@ requires = [ 'setuptools>=69.1.1' ]
 build-backend = 'setuptools.build_meta'
 
 [project]
-name = 'itz_menu_extractor'
+name = 'itzmenu_extractor'
 dynamic = ['version']
 readme = 'README.md'
 license = { text = 'Apache License 2.0' }
@@ -40,4 +40,4 @@ test = [
 '*' = [ '*.json', '*.jpg' ]
 
 [tool.setuptools.dynamic]
-version = { attr = 'itz_menu.__version__' }
+version = { attr = 'itzmenu.__version__' }

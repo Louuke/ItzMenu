@@ -3,9 +3,9 @@ from functools import lru_cache
 from beanie import init_beanie
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorGridFSBucket
 
-from itz_menu import utils
-from itz_menu.config.settings import Settings
-from itz_menu.persistence.models import WeekMenu
+from itzmenu import utils
+from itzmenu.config.settings import Settings
+from itzmenu.persistence.models import WeekMenu
 
 settings = Settings()
 

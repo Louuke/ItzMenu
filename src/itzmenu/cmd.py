@@ -2,8 +2,8 @@ import re
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
-from itz_menu.utils import load_image
-from itz_menu.jobs import process_image, fetch_menu
+from itzmenu.utils import load_image
+from itzmenu.jobs import process_image, fetch_menu
 from dataclasses import dataclass
 from enum import StrEnum
 

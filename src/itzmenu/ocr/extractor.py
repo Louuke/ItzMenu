@@ -11,10 +11,10 @@ from img2table.ocr.base import OCRInstance
 from img2table.ocr import TesseractOCR, VisionOCR
 from img2table.tables.objects.extraction import ExtractedTable
 
-import itz_menu.utils as utils
-import itz_menu.ocr.preprocess as preprocess
-from itz_menu.config.settings import Settings
-from itz_menu.persistence.enums import WeekDay
+import itzmenu.utils as utils
+import itzmenu.ocr.preprocess as preprocess
+from itzmenu.config.settings import Settings
+from itzmenu.persistence.enums import WeekDay
 
 
 @preprocess.crop_main_image_content

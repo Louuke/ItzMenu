@@ -1,6 +1,6 @@
 import cv2
 
-import itz_menu.ocr.preprocess as preprocess
+import itzmenu.ocr.preprocess as preprocess
 import numpy as np
 
 

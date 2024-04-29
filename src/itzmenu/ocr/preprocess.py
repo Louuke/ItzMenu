@@ -5,7 +5,7 @@ from PIL import Image
 import numpy as np
 import cv2
 
-from itz_menu.time import is_holiday
+from itzmenu.time import is_holiday
 
 
 def apply_threshold(func):

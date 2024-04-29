@@ -3,10 +3,10 @@ import asyncio
 import pandas as pd
 import pytest
 
-import itz_menu.persistence.database as database
-import itz_menu.ocr.postprocess as postprocess
+import itzmenu.persistence.database as database
+import itzmenu.ocr.postprocess as postprocess
 
-from itz_menu.persistence.models import *
+from itzmenu.persistence.models import *
 
 
 @pytest.fixture()

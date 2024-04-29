@@ -1,4 +1,4 @@
-from itz_menu.rest.client import MenuClient
+from itzmenu.rest.client import MenuClient
 
 
 class TestClient:

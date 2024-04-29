@@ -3,7 +3,7 @@ import time
 from beanie import Document, Indexed
 from pydantic import BaseModel, Field
 
-from itz_menu.persistence.enums import DietType, WeekDay
+from itzmenu.persistence.enums import DietType, WeekDay
 
 
 class Meal(BaseModel):

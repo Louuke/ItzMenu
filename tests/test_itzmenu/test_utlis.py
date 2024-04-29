@@ -1,4 +1,4 @@
-import itz_menu.utils as utils
+import itzmenu.utils as utils
 
 
 class TestUtils:

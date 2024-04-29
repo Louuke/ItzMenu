@@ -2,8 +2,8 @@ import numpy as np
 import pandas as pd
 import pytest
 
-import itz_menu.ocr.extractor as extractor
-from itz_menu.persistence.enums import WeekDay
+import itzmenu.ocr.extractor as extractor
+from itzmenu.persistence.enums import WeekDay
 
 
 @pytest.fixture(scope='class')

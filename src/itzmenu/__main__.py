@@ -3,8 +3,8 @@ import os
 import logging as log
 import sys
 
-from itz_menu.persistence import database
-from itz_menu.cmd import Parser
+from itzmenu.persistence import database
+from itzmenu.cmd import Parser
 
 
 async def main():

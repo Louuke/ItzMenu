@@ -1,7 +1,7 @@
 import pytest
 from pydantic import ValidationError
 
-from itz_menu.config.settings import Settings
+from itzmenu.config.settings import Settings
 
 
 class TestSettings:

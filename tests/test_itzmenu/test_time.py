@@ -5,7 +5,7 @@ from datetime import date
 
 import pytest
 
-from itz_menu.time import is_holiday
+from itzmenu.time import is_holiday
 
 
 @pytest.fixture
