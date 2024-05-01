@@ -1,7 +1,9 @@
-import cv2
+import io
+
+import numpy as np
+from PIL import Image
 
 import itzmenu.ocr.preprocess as preprocess
-import numpy as np
 
 
 class TestPreprocess:
@@ -14,11 +16,17 @@ class TestPreprocess:
         # Apply the apply_threshold decorator through the dummy function
         image = dummy_func(week_menu)
 
-        # Check if the image is grayscale and binary
-        image_np = self.__bytes_to_image(image)
-        assert np.max(image_np) == 255
-        assert np.min(image_np) == 0
+        # Load the image and convert it to a numpy array
+        pimage = Image.open(io.BytesIO(image)).convert('L')
+        image_np = np.array(pimage)
 
-    @staticmethod
-    def __bytes_to_image(image: bytes):
-        return cv2.imdecode(np.frombuffer(image, np.uint8), cv2.IMREAD_COLOR)
+        # Check if it is a grayscale image
+        assert len(image_np.shape) == 2
+
+        tolerance = 20
+        # Check if the image is thresholded correctly
+        unique_colors = np.unique(image_np)
+        black_range = range(0, tolerance + 1)
+        white_range = range(255 - tolerance, 256)
+        assert all(color in black_range or color in white_range for color in unique_colors)
+
