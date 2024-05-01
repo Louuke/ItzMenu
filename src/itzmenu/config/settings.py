@@ -4,7 +4,7 @@ import re
 
 
 class Settings(BaseSettings):
-    log_level: str = Field(default='INFO')
+    log_level: str = Field(default='INFO', pattern=r'^(NOTSET|DEBUG|INFO|WARNING|ERROR|CRITICAL)$')
     mongo_db_url: str = Field(default='mongodb://localhost:27017', pattern=r'^mongodb(.+srv)?://.*')
     mongo_db_name: str = Field(default='development', min_length=3)
     mongo_db_test_name: str = Field(default='test', min_length=3)

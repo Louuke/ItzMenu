@@ -69,3 +69,16 @@ class TestSettings:
         assert settings.google_cloud_vision_enabled is True
         settings = Settings(google_cloud_vision_enabled='false')
         assert settings.google_cloud_vision_enabled is False
+
+    @staticmethod
+    def test_settings_with_invalid_log_level():
+        with pytest.raises(ValidationError):
+            Settings(log_level='INVALID')
+
+    @staticmethod
+    def test_settings_with_valid_log_level():
+        level = ('NOTSET', 'DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL')
+        for lev in level:
+            settings = Settings(log_level=lev)
+            assert settings.log_level == lev
+
