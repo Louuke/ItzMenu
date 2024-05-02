@@ -52,3 +52,56 @@ class TestPreprocess:
         jpg_image = io.BytesIO()
         pimage_cropped.save(jpg_image, 'JPEG')
         assert extractor.period_of_validity(jpg_image.getvalue()) is None
+
+    def test_parse_validity_parameter(self, week_menu: bytes):
+        @preprocess.parse_validity_parameter
+        def dummy_func(img: bytes, *args, **kwargs):
+            validity_period = kwargs.get('validity_period')
+            assert img == week_menu
+            assert len(args) == 0
+            assert validity_period is not None
+            assert validity_period == (1708297200, 1708729199)
+        dummy_func(week_menu)
+
+    def test_remove_no_holidays(self, week_menu: bytes):
+        @preprocess.crop_table
+        def dummy_func_1(img: bytes) -> bytes:
+            return img
+        cropped_image = dummy_func_1(week_menu)
+        pimage_cropped = Image.open(io.BytesIO(cropped_image))
+
+        @preprocess.parse_validity_parameter
+        @preprocess.crop_table
+        @preprocess.remove_holidays
+        def dummy_func2(img: bytes):
+            return img
+        no_holidays_image = dummy_func2(week_menu)
+        pimage_no_holidays = Image.open(io.BytesIO(no_holidays_image))
+
+        # Check if the width of the images is the same
+        assert pimage_cropped.size[0] == pimage_no_holidays.size[0]
+        # Check if the height of the image is reduced, because rows are removed
+        assert pimage_cropped.size[1] > pimage_no_holidays.size[1]
+
+    def test_remove_holidays(self, week_menu_holiday: bytes):
+        @preprocess.crop_table
+        def dummy_func_1(img: bytes) -> bytes:
+            return img
+
+        cropped_image = dummy_func_1(week_menu_holiday)
+        pimage_cropped = Image.open(io.BytesIO(cropped_image))
+
+        @preprocess.parse_validity_parameter
+        @preprocess.crop_table
+        @preprocess.remove_holidays
+        def dummy_func2(img: bytes):
+            return img
+        no_holidays_image = dummy_func2(week_menu_holiday)
+        pimage_no_holidays = Image.open(io.BytesIO(no_holidays_image))
+
+        # Check if the width of the images less than the original image
+        assert pimage_cropped.size[0] > pimage_no_holidays.size[0]
+        # Check if the height of the image is reduced, because rows are removed
+        assert pimage_cropped.size[1] > pimage_no_holidays.size[1]
+
+
