@@ -34,6 +34,7 @@ def period_of_validity(image: bytes, lang: str = 'deu') -> tuple[int, int] | Non
 @preprocess.crop_table
 @preprocess.convert_to_grayscale
 @preprocess.remove_holidays
+@lru_cache
 def img_to_dataframe(image: bytes) -> pd.DataFrame | None:
     ocr = __create_ocr_instance()
     img = Image(src=image)
