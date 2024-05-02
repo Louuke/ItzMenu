@@ -4,12 +4,13 @@ import numpy as np
 from PIL import Image
 
 import itzmenu.ocr.preprocess as preprocess
+import itzmenu.ocr.extractor as extractor
 
 
 class TestPreprocess:
 
-    def test_apply_threshold(self, week_menu: bytes):
-        @preprocess.apply_threshold
+    def test_convert_to_grayscale(self, week_menu: bytes):
+        @preprocess.convert_to_grayscale
         def dummy_func(img: bytes) -> bytes:
             return img
 
@@ -30,8 +31,8 @@ class TestPreprocess:
         white_range = range(255 - tolerance, 256)
         assert all(color in black_range or color in white_range for color in unique_colors)
 
-    def test_crop_main_image_content(self, week_menu: bytes):
-        @preprocess.crop_main_image_content
+    def test_crop_table(self, week_menu: bytes):
+        @preprocess.crop_table
         def dummy_func(img: bytes) -> bytes:
             return img
 
@@ -47,3 +48,7 @@ class TestPreprocess:
         # Check if the image is cropped correctly
         assert with_org > with_cropped
         assert height_org > height_cropped
+
+        jpg_image = io.BytesIO()
+        pimage_cropped.save(jpg_image, 'JPEG')
+        assert extractor.period_of_validity(jpg_image.getvalue()) is None
