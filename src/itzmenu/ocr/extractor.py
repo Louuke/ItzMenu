@@ -51,7 +51,7 @@ def __post_process(tables: list[ExtractedTable]) -> pd.DataFrame:
     # Drop empty rows
     df.dropna(subset=df.columns[1:], how='all', inplace=True)
     # Transform rows
-    df = __transform_rows(df)
+    __transform_rows(df)
     # Set column names
     __set_column_names(df)
     # Fill row index
@@ -66,11 +66,10 @@ def __set_column_names(df: pd.DataFrame):
     df.drop(index=0, inplace=True, errors='ignore')
 
 
-def __transform_rows(df: pd.DataFrame) -> pd.DataFrame:
+def __transform_rows(df: pd.DataFrame):
     # Replace newlines with spaces
     df.replace('\n', ' ', regex=True, inplace=True)
     # Replace comma with dot and remove euro sign
     df.replace(r'(\d+)(,|.)(\d+)\s?€$', r'\1.\3', regex=True, inplace=True)
     # Replace ( x ) with (x)
     df.replace(r'\(\s(.*?)\s\)', r'(\1)', regex=True, inplace=True)
-    return df
