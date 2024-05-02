@@ -6,12 +6,14 @@ import sys
 from itzmenu.persistence import database
 from itzmenu.cmd import Parser
 
+__running = True
+
 
 async def main():
     await database.init()
     await Parser(sys.argv).execute()
-    log.info('Press Ctrl+{0} to exit'.format('Break' if os.name == 'nt' else 'C'))
-    while True:
+    log.info(f'Press Ctrl+{"Break" if os.name == "nt" else "C"} to exit')
+    while __running:
         await asyncio.sleep(1000)
 
 if __name__ == '__main__':
@@ -19,4 +21,4 @@ if __name__ == '__main__':
     try:
         asyncio.run(main())
     except (KeyboardInterrupt, SystemExit):
-        pass
+        __running = False
