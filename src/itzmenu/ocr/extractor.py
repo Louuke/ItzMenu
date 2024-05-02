@@ -2,6 +2,7 @@ import io
 import re
 import time
 from datetime import datetime
+from functools import lru_cache
 
 import PIL.Image as PImage
 import pandas as pd
@@ -18,6 +19,7 @@ from itzmenu.persistence.enums import WeekDay
 
 
 @preprocess.convert_to_grayscale
+@lru_cache
 def period_of_validity(image: bytes, lang: str = 'deu') -> tuple[int, int] | None:
     buffer = io.BytesIO(image)
     if type(result := pytesseract.image_to_string(PImage.open(buffer), lang=lang)) is str:
