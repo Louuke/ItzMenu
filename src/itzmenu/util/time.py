@@ -26,3 +26,12 @@ def is_holiday(d: date | datetime | int) -> bool:
     if isinstance(d, int):
         d = date.fromtimestamp(d)
     return d in __hdays
+
+
+def timestamp_to_date(timestamp: int) -> str:
+    """
+    Converts a unix timestamp to a formatted date string in the format 'dd.mm.yyyy' "
+    :param timestamp: The timestamp to convert
+    :return: The formatted date string
+    """
+    return datetime.fromtimestamp(timestamp).strftime('%d.%m.%Y')
