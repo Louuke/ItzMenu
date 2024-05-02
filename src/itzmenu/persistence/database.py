@@ -3,9 +3,9 @@ from functools import lru_cache
 from beanie import init_beanie
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorGridFSBucket
 
-from itzmenu import utils
 from itzmenu.config.settings import Settings
 from itzmenu.persistence.models import WeekMenu
+import itzmenu.util.env as env
 
 settings = Settings()
 
@@ -21,5 +21,5 @@ def fs() -> AsyncIOMotorGridFSBucket:
 
 
 async def init():
-    database_name = settings.mongo_db_test_name if utils.is_test_running() else settings.mongo_db_name
+    database_name = settings.mongo_db_test_name if env.is_running_tests() else settings.mongo_db_name
     await init_beanie(database=client()[database_name], document_models=[WeekMenu])

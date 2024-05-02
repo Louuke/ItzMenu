@@ -2,7 +2,7 @@ import re
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
-from itzmenu.utils import load_image
+import itzmenu.util.image as image
 from itzmenu.jobs import process_image, fetch_menu
 from dataclasses import dataclass
 from enum import StrEnum
@@ -78,7 +78,7 @@ class Parser:
             if token.type is Type.PRELOAD:
                 while (value := next(parser)).type is Type.VALUE:
                     if re.match(r'^([A-Z]:)?[a-zA-Z0-9\\/_-]+\.jpg$', value.value) is not None:
-                        await process_image(load_image(value.value))
+                        await process_image(image.load_image(value.value))
 
     async def __interval(self):
         parser = iter(self.__tokenizer)

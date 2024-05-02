@@ -12,8 +12,8 @@ from img2table.ocr.base import OCRInstance
 from img2table.ocr import TesseractOCR, VisionOCR
 from img2table.tables.objects.extraction import ExtractedTable
 
-import itzmenu.utils as utils
 import itzmenu.ocr.preprocess as preprocess
+import itzmenu.util.env as env
 from itzmenu.config.settings import Settings
 from itzmenu.persistence.enums import WeekDay
 
@@ -43,7 +43,7 @@ def img_to_dataframe(image: bytes) -> pd.DataFrame | None:
 
 
 def __create_ocr_instance() -> OCRInstance:
-    if (settings := Settings()).google_cloud_vision_enabled and not utils.is_test_running():
+    if (settings := Settings()).google_cloud_vision_enabled and not env.is_running_tests():
         return VisionOCR(api_key=settings.google_cloud_vision_api_key)
     return TesseractOCR(n_threads=1, lang='deu')
 
