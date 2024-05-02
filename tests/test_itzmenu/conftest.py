@@ -18,3 +18,8 @@ def httpserver(make_httpserver, week_menu: bytes):
 @pytest.fixture(scope='session')
 def week_menu() -> bytes:
     return pkg_resources.files('resources').joinpath('speiseplanWeek.jpg').read_bytes()
+
+
+@pytest.fixture(scope='session')
+def week_menu_holiday() -> bytes:
+    return pkg_resources.files('resources').joinpath('speiseplanWeekHoliday.jpg').read_bytes()
