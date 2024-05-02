@@ -17,10 +17,15 @@ from itzmenu.config.settings import Settings
 from itzmenu.persistence.enums import WeekDay
 
 
-@preprocess.crop_main_image_content
-def img_to_dataframe(image: bytes, validity_period: tuple[int, int]) -> pd.DataFrame | None:
-    image = preprocess.hide_holidays(image, validity_period)
-    return __img_to_dataframe(image)
+@preprocess.convert_to_grayscale
+def period_of_validity(image: bytes, lang: str = 'deu') -> tuple[int, int] | None:
+    buffer = io.BytesIO(image)
+    if type(result := pytesseract.image_to_string(PImage.open(buffer), lang=lang)) is str:
+        if (match := re.search(r'- \d\d.\d\d.\d\d\d\d', result)) is not None:
+            end_date = datetime.strptime(match.group().replace('- ', ''), '%d.%m.%Y')
+            end_timestamp = int(time.mktime(end_date.timetuple())) + 86399
+            start_timestamp = end_timestamp - 431999
+            return start_timestamp, end_timestamp
 
 
 @preprocess.apply_threshold
@@ -35,17 +40,6 @@ def __create_ocr_instance() -> OCRInstance:
     if (settings := Settings()).google_cloud_vision_enabled and not utils.is_test_running():
         return VisionOCR(api_key=settings.google_cloud_vision_api_key)
     return TesseractOCR(n_threads=1, lang='deu')
-
-
-@preprocess.apply_threshold
-def period_of_validity(image: bytes, lang: str = 'deu') -> tuple[int, int] | None:
-    buffer = io.BytesIO(image)
-    if type(result := pytesseract.image_to_string(PImage.open(buffer), lang=lang)) is str:
-        if (match := re.search(r'- \d\d.\d\d.\d\d\d\d', result)) is not None:
-            end_date = datetime.strptime(match.group().replace('- ', ''), '%d.%m.%Y')
-            end_timestamp = int(time.mktime(end_date.timetuple())) + 86399
-            start_timestamp = end_timestamp - 431999
-            return start_timestamp, end_timestamp
 
 
 def __post_process(tables: list[ExtractedTable]) -> pd.DataFrame:
