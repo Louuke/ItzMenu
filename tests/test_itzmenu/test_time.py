@@ -8,24 +8,24 @@ import pytest
 from itzmenu.time import is_holiday
 
 
-@pytest.fixture
+@pytest.fixture(scope='class')
 def year() -> int:
     return rand.randint(1970, 2100)
 
 
-@pytest.fixture
+@pytest.fixture(scope='class')
 def christmas_timestamp(year: int) -> int:
     d = date(year, 12, 24)
     return int(time.mktime(d.timetuple()))
 
 
-@pytest.fixture
+@pytest.fixture(scope='class')
 def new_year_timestamp(year: int) -> int:
     d = date(year, 12, 31)
     return int(time.mktime(d.timetuple()))
 
 
-@pytest.fixture
+@pytest.fixture(scope='class')
 def day_of_work_timestamp(year: int) -> int:
     d = date(year, 5, 1)
     return int(time.mktime(d.timetuple()))
