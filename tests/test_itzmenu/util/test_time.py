@@ -5,7 +5,7 @@ from datetime import date
 
 import pytest
 
-from itzmenu.time import is_holiday
+from itzmenu.util.time import is_holiday, timestamp_to_date
 
 
 @pytest.fixture(scope='class')
@@ -56,3 +56,10 @@ class TestCompanyHolidays:
     @staticmethod
     def test_day_of_work_is_holiday_timestamp(day_of_work_timestamp: int):
         assert is_holiday(day_of_work_timestamp)
+
+
+class TestTimestampToDate:
+
+    def test_timestamp_to_date(self):
+        d = timestamp_to_date(1710691628)
+        assert d == '17.03.2024'
