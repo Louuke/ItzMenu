@@ -28,8 +28,11 @@ def period_of_validity(image: bytes, lang: str = 'deu') -> tuple[int, int] | Non
             return start_timestamp, end_timestamp
 
 
-@preprocess.apply_threshold
-def __img_to_dataframe(image: bytes) -> pd.DataFrame | None:
+@preprocess.parse_validity_parameter
+@preprocess.crop_table
+@preprocess.convert_to_grayscale
+@preprocess.remove_holidays
+def img_to_dataframe(image: bytes) -> pd.DataFrame | None:
     ocr = __create_ocr_instance()
     img = Image(src=image)
     if len(tables := img.extract_tables(ocr=ocr, min_confidence=30)) > 0:
