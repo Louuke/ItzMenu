@@ -1,5 +1,8 @@
+import asyncio
 import importlib.resources as pkg_resources
 import pytest
+
+import itzmenu.persistence.database as database
 
 
 @pytest.fixture(scope='session')
@@ -23,3 +26,14 @@ def week_menu() -> bytes:
 @pytest.fixture(scope='session')
 def week_menu_holiday() -> bytes:
     return pkg_resources.files('resources').joinpath('speiseplanWeekHoliday.jpg').read_bytes()
+
+
+@pytest.fixture(scope='session')
+def event_loop():
+    return asyncio.get_event_loop()
+
+
+@pytest.fixture(scope='session')
+def init_database(event_loop):
+    event_loop.run_until_complete(database.init())
+

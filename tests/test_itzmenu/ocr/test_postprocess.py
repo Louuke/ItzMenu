@@ -1,9 +1,6 @@
-import asyncio
-
 import pandas as pd
 import pytest
 
-import itzmenu.persistence.database as database
 import itzmenu.ocr.postprocess as postprocess
 
 from itzmenu.persistence.models import *
@@ -15,11 +12,6 @@ def week_menu() -> pd.DataFrame:
     df.columns = df.columns.map(lambda x: WeekDay.find_by_value(x), na_action='ignore')
     df.set_index(df.columns[0], inplace=True)
     return df
-
-
-@pytest.fixture(scope='session')
-def init_database():
-    asyncio.run(database.init())
 
 
 class TestPostprocessing:
