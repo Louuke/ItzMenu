@@ -5,7 +5,7 @@ from PIL import Image
 import numpy as np
 import cv2
 
-import itzmenu.util.time as time
+import itzmenu_extractor.util.time as time
 
 
 def convert_to_grayscale(func):
@@ -40,7 +40,7 @@ def crop_table(func):
 def parse_validity_parameter(func):
     """ Extract the period of validity of the menu """
     def wrapper(image: bytes, *args, **kwargs) -> bytes:
-        from itzmenu.ocr.extractor import period_of_validity
+        from itzmenu_extractor.ocr.extractor import period_of_validity
         validity_period = period_of_validity(image)
         return func(image, validity_period=validity_period, *args, **kwargs)
     return wrapper

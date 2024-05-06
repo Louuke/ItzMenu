@@ -1,7 +1,7 @@
 import logging as log
 
-import itzmenu.persistence.database as database
-from itzmenu.config.settings import Settings
+import itzmenu_extractor.persistence.database as database
+from itzmenu_extractor.config.settings import Settings
 
 __version__ = '0.0.1'
 settings = Settings()

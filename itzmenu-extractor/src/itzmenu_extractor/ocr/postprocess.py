@@ -1,8 +1,8 @@
 import re
 import logging as log
 
-from itzmenu.persistence.models import WeekMenu, DayMenu, MealCategory, Meal
-from itzmenu.persistence.enums import DietType
+from itzmenu_extractor.persistence.models import WeekMenu, DayMenu, MealCategory, Meal
+from itzmenu_extractor.persistence.enums import DietType
 import pandas as pd
 
 

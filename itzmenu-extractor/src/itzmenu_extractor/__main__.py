@@ -3,8 +3,8 @@ import os
 import logging as log
 import sys
 
-from itzmenu.persistence import database
-from itzmenu.cmd import Parser
+from itzmenu_extractor.persistence import database
+from itzmenu_extractor.cmd import Parser
 
 __running = True
 

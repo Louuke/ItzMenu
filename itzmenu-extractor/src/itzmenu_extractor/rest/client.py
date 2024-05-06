@@ -1,8 +1,8 @@
 import requests
 import logging as log
 
-import itzmenu.util.env as env
-from itzmenu.rest.requests import BaseRequest, WeekMenuRequest
+import itzmenu_extractor.util.env as env
+from itzmenu_extractor.rest.requests import BaseRequest, WeekMenuRequest
 
 
 class MenuClient:

@@ -12,10 +12,10 @@ from img2table.ocr.base import OCRInstance
 from img2table.ocr import TesseractOCR, VisionOCR
 from img2table.tables.objects.extraction import ExtractedTable
 
-import itzmenu.ocr.preprocess as preprocess
-import itzmenu.util.env as env
-from itzmenu.config.settings import Settings
-from itzmenu.persistence.enums import WeekDay
+import itzmenu_extractor.ocr.preprocess as preprocess
+import itzmenu_extractor.util.env as env
+from itzmenu_extractor.config.settings import Settings
+from itzmenu_extractor.persistence.enums import WeekDay
 
 
 @preprocess.convert_to_grayscale

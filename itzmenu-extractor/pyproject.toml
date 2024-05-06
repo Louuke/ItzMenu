@@ -40,4 +40,4 @@ test = [
 '*' = [ '*.json', '*.jpg' ]
 
 [tool.setuptools.dynamic]
-version = { attr = 'itzmenu.__version__' }
+version = { attr = 'itzmenu_extractor.__version__' }

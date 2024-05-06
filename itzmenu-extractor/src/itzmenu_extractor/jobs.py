@@ -1,14 +1,14 @@
 import logging as log
 from io import BytesIO
 
-import itzmenu.ocr.extractor as extractor
-import itzmenu.ocr.postprocess as postprocess
-import itzmenu.persistence.database as database
-import itzmenu.util.image as image
-import itzmenu.util.time as time
-from itzmenu.persistence.models import WeekMenu
-from itzmenu.rest.client import MenuClient
-from itzmenu.config.settings import Settings
+import itzmenu_extractor.ocr.extractor as extractor
+import itzmenu_extractor.ocr.postprocess as postprocess
+import itzmenu_extractor.persistence.database as database
+import itzmenu_extractor.util.image as image
+import itzmenu_extractor.util.time as time
+from itzmenu_extractor.persistence.models import WeekMenu
+from itzmenu_extractor.rest.client import MenuClient
+from itzmenu_extractor.config.settings import Settings
 
 
 __client = MenuClient()
