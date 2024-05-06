@@ -1,9 +1,9 @@
 import pandas as pd
 import pytest
 
-import itzmenu.ocr.postprocess as postprocess
+import itzmenu_extractor.ocr.postprocess as postprocess
 
-from itzmenu.persistence.models import *
+from itzmenu_extractor.persistence.models import *
 
 
 @pytest.fixture()

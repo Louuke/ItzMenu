@@ -1,4 +1,4 @@
-from itzmenu.util import env
+from itzmenu_extractor.util import env
 
 
 class TestEnv:

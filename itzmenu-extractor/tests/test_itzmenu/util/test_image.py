@@ -1,4 +1,4 @@
-import itzmenu.util.image as image
+import itzmenu_extractor.util.image as image
 
 
 class TestImage:

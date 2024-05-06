@@ -4,10 +4,10 @@ import time
 from PIL import Image
 import pytest
 
-import itzmenu.util.image as image
-import itzmenu.jobs as jobs
-from itzmenu.persistence.models import WeekMenu
-from itzmenu.rest.client import MenuClient
+import itzmenu_extractor.util.image as image
+import itzmenu_extractor.jobs as jobs
+from itzmenu_extractor.persistence.models import WeekMenu
+from itzmenu_extractor.rest.client import MenuClient
 
 
 @pytest.fixture

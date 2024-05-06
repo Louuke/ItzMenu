@@ -1,8 +1,8 @@
 import re
 import time
 
-import itzmenu.ocr.extractor as extractor
-from itzmenu.persistence.enums import WeekDay
+import itzmenu_extractor.ocr.extractor as extractor
+from itzmenu_extractor.persistence.enums import WeekDay
 
 
 class TestExtractor:

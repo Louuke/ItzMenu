@@ -5,7 +5,7 @@ from datetime import date
 
 import pytest
 
-from itzmenu.util.time import is_holiday, timestamp_to_date
+from itzmenu_extractor.util.time import is_holiday, timestamp_to_date
 
 
 @pytest.fixture(scope='class')

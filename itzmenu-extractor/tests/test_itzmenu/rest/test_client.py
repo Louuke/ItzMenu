@@ -1,5 +1,5 @@
-from itzmenu.rest.client import MenuClient
-import itzmenu.util.image as image
+from itzmenu_extractor.rest.client import MenuClient
+import itzmenu_extractor.util.image as image
 
 
 class TestClient:

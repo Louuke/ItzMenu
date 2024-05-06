@@ -1,6 +1,6 @@
-import itzmenu.persistence.database as database
-from itzmenu.persistence.models import Meal, WeekMenu, DayMenu, MealCategory
-from itzmenu.persistence.enums import DietType, WeekDay
+import itzmenu_extractor.persistence.database as database
+from itzmenu_extractor.persistence.models import Meal, WeekMenu, DayMenu, MealCategory
+from itzmenu_extractor.persistence.enums import DietType, WeekDay
 
 
 def _init():

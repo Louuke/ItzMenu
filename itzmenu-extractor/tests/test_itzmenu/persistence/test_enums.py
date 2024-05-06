@@ -1,4 +1,4 @@
-from itzmenu.persistence.enums import WeekDay
+from itzmenu_extractor.persistence.enums import WeekDay
 
 
 class TestWeekDay:

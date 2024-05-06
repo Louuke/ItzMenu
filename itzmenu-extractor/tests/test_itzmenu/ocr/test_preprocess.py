@@ -3,8 +3,8 @@ import io
 import numpy as np
 from PIL import Image
 
-import itzmenu.ocr.preprocess as preprocess
-import itzmenu.ocr.extractor as extractor
+import itzmenu_extractor.ocr.preprocess as preprocess
+import itzmenu_extractor.ocr.extractor as extractor
 
 
 class TestPreprocess:
