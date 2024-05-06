@@ -17,7 +17,9 @@ classifiers = [
     'Programming Language :: Python :: Implementation :: CPython',
 ]
 dependencies = [
-    'fastapi-users>=13.0.0'
+    'fastapi-users>=13.0.0',
+    'pydantic_settings>=2.2.1',
+    'typing_extensions>=4.11.0
 ]
 
 [project.optional-dependencies]

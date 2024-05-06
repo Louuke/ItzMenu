@@ -1,0 +1,24 @@
+### GET request to example server
+POST http://localhost:8000/auth/jwt/login
+Content-Type: application/x-www-form-urlencoded
+
+username = king.arthur@camelot.bt &
+password = guinevere
+
+
+### users/me
+GET http://localhost:8000/users/me
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NjM5NDEyZjMxMzVhMGYwYjdkZTk1NDEiLCJhdWQiOlsiZmFzdGFwaS11c2VyczphdXRoIl0sImV4cCI6MTcxNTAzMzUzMn0.6tmNaagE_VA3jP2kZ_qw7FXo4br3tEb_Fyt5x7bFGDc
+Content-Type: application/json
+
+
+### users/<id>
+GET http://localhost:8000/users/6639412f3135a0f0b7de9541
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NjM5NDEyZjMxMzVhMGYwYjdkZTk1NDEiLCJhdWQiOlsiZmFzdGFwaS11c2VyczphdXRoIl0sImV4cCI6MTcxNTAzMzUzMn0.6tmNaagE_VA3jP2kZ_qw7FXo4br3tEb_Fyt5x7bFGDc
+Content-Type: application/json
+
+
+### authenticated-route
+GET http://localhost:8000/authenticated-route
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NjM5NDEyZjMxMzVhMGYwYjdkZTk1NDEiLCJhdWQiOlsiZmFzdGFwaS11c2VyczphdXRoIl0sImV4cCI6MTcxNTAzMzUzMn0.6tmNaagE_VA3jP2kZ_qw7FXo4br3tEb_Fyt5x7bFGDc
+Content-Type: application/json
