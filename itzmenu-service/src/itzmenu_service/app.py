@@ -10,9 +10,9 @@ from itzmenu_service.routes.permissions import PermissionChecker
 
 
 @asynccontextmanager
-async def lifespan(app: FastAPI):
+async def lifespan(fast_api: FastAPI = None):
     await init_beanie(
-        database=db,  # (1)!
+        database=db(),
         document_models=[
             User
         ],
