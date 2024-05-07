@@ -11,7 +11,7 @@ Content-Type: application/json
 POST http://localhost:8000/auth/login
 Content-Type: application/x-www-form-urlencoded
 
-username = test@test.com &
+username = fastapi@jannsen.org &
 password = password
 
 
