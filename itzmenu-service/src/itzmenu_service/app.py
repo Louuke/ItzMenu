@@ -6,6 +6,7 @@ from fastapi import FastAPI, Depends
 from itzmenu_service.persistence.database import User, db
 from itzmenu_service.persistence.schemas import UserCreate, UserRead, UserUpdate
 from itzmenu_service.manager.users import auth_backend, current_active_user, fastapi_users
+from itzmenu_service.routes.permissions import PermissionChecker
 
 
 @asynccontextmanager
@@ -49,5 +50,6 @@ app.include_router(
 
 
 @app.get("/authenticated-route")
-async def authenticated_route(user: User = Depends(current_active_user)):
+async def authenticated_route(user: User = Depends(current_active_user),
+                              _=Depends(PermissionChecker(['fastapi-users:auth']))):
     return {"message": f"Hello {user.email}!"}

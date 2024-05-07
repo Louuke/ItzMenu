@@ -1,9 +1,19 @@
+### Register
+POST http://localhost:8000/auth/register
+Content-Type: application/json
+
+{
+    "email": "test@test.com",
+    "password": "password",
+    "permissions": ["fastapi-users:auth", "fastapi-users:auth"]
+}
+
 ### GET request to example server
-POST http://localhost:8000/auth/jwt/login
+POST http://localhost:8000/auth/login
 Content-Type: application/x-www-form-urlencoded
 
-username = king.arthur@camelot.bt &
-password = guinevere
+username = test@test.com &
+password = password
 
 
 ### users/me
@@ -20,5 +30,5 @@ Content-Type: application/json
 
 ### authenticated-route
 GET http://localhost:8000/authenticated-route
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NjM5NDEyZjMxMzVhMGYwYjdkZTk1NDEiLCJhdWQiOlsiZmFzdGFwaS11c2VyczphdXRoIl0sImV4cCI6MTcxNTAzMzUzMn0.6tmNaagE_VA3jP2kZ_qw7FXo4br3tEb_Fyt5x7bFGDc
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NjM5NmY1NjcxY2EyYzUzOTZmNzdkYmYiLCJhdWQiOlsiZmFzdGFwaS11c2VyczphdXRoIl0sImV4cCI6MTcxNTA0NDI1MX0.xvUZAmKpRssFEe5-pa8Ew0ZsO8iKEOQKEZMRD1Syn0A
 Content-Type: application/json
