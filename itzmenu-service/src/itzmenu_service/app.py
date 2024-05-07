@@ -18,10 +18,13 @@ async def lifespan(app: FastAPI):
     )
     yield
 
+
 app = FastAPI(lifespan=lifespan)
 
 app.include_router(
-    fastapi_users.get_auth_router(auth_backend), prefix="/auth/jwt", tags=["auth"]
+    fastapi_users.get_auth_router(auth_backend),
+    prefix="/auth",
+    tags=["auth"]
 )
 app.include_router(
     fastapi_users.get_register_router(UserRead, UserCreate),
