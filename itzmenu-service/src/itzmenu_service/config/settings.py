@@ -8,6 +8,10 @@ class Settings(BaseSettings):
     mongo_db_url: str = Field(default='mongodb://localhost:27017', pattern=r'^mongodb(.+srv)?://.*')
     mongo_db_name: str = Field(default='development', min_length=3)
     mongo_db_test_name: str = Field(default='test', min_length=3)
+    mail_smtp_host: str = Field(default='localhost')
+    mail_smtp_port: int = Field(default=587, ge=1, le=65535)
+    mail_smtp_user: str = Field(default='user')
+    mail_smtp_password: str = Field(default='password')
     service_secret: str = Field(default='SECRET', min_length=6)
 
     model_config = SettingsConfigDict(env_file='settings.env', env_file_encoding='utf-8')

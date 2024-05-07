@@ -1,3 +1,4 @@
+import logging as log
 from typing import Optional
 
 from beanie import PydanticObjectId
@@ -7,6 +8,7 @@ from fastapi_users.authentication import AuthenticationBackend, BearerTransport,
 from fastapi_users.db import BeanieUserDatabase, ObjectIDIDMixin
 
 from itzmenu_service.persistence.database import User, get_user_db
+from itzmenu_service.mail import client
 from itzmenu_service.config.settings import settings
 
 
@@ -15,13 +17,16 @@ class UserManager(ObjectIDIDMixin, BaseUserManager[User, PydanticObjectId]):
     verification_token_secret = settings.service_secret
 
     async def on_after_register(self, user: User, request: Optional[Request] = None):
-        print(f"User {user.id} has registered.")
+        log.debug(f'User {user.id} has registered.')
+        await self.request_verify(user)
 
     async def on_after_forgot_password(self, user: User, token: str, request: Optional[Request] = None):
-        print(f"User {user.id} has forgot their password. Reset token: {token}")
+        log.debug(f'User {user.id} has forgot their password. Reset token: {token}')
+        client.send_reset_password_email(user.email, token)
 
     async def on_after_request_verify(self, user: User, token: str, request: Optional[Request] = None):
-        print(f"Verification requested for user {user.id}. Verification token: {token}")
+        log.debug(f'Verification requested for user {user.id}. Verification token: {token}')
+        client.send_verification_email(user.email, token)
 
 
 async def get_user_manager(user_db: BeanieUserDatabase = Depends(get_user_db)):
