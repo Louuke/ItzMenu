@@ -32,3 +32,13 @@ Content-Type: application/json
 GET http://localhost:8000/authenticated-route
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NjM5NmY1NjcxY2EyYzUzOTZmNzdkYmYiLCJhdWQiOlsiZmFzdGFwaS11c2VyczphdXRoIl0sImV4cCI6MTcxNTA0NDI1MX0.xvUZAmKpRssFEe5-pa8Ew0ZsO8iKEOQKEZMRD1Syn0A
 Content-Type: application/json
+
+
+### request-verify-token
+POST http://localhost:8000/auth/request-verify-token
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NjM5NmY1NjcxY2EyYzUzOTZmNzdkYmYiLCJhdWQiOlsiZmFzdGFwaS11c2VyczphdXRoIl0sImV4cCI6MTcxNTA0NDI1MX0.xvUZAmKpRssFEe5-pa8Ew0ZsO8iKEOQKEZMRD1Syn0A
+Content-Type: application/json
+
+{
+  "email": "test@test.com"
+}

@@ -10,6 +10,6 @@ class PermissionChecker:
         self.required_permissions = required_permissions
 
     def __call__(self, user: User = Depends(current_active_user)):
-        if not set(self.required_permissions).issubset(user.permissions):
-            raise HTTPException(status_code=403, detail='User has insufficient permissions')
-        return user
+        if set(self.required_permissions).issubset(user.permissions) or user.is_superuser:
+            return True
+        raise HTTPException(status_code=403, detail='User has insufficient permissions')
