@@ -8,6 +8,7 @@ class Settings(BaseSettings):
     mongo_db_url: str = Field(default='mongodb://localhost:27017', pattern=r'^mongodb(.+srv)?://.*')
     mongo_db_name: str = Field(default='development', min_length=3)
     mongo_db_test_name: str = Field(default='test', min_length=3)
+    service_secret: str = Field(default='SECRET', min_length=6)
 
     model_config = SettingsConfigDict(env_file='settings.env', env_file_encoding='utf-8')
 
@@ -15,3 +16,6 @@ class Settings(BaseSettings):
         truncated_url = re.sub(r'(?<=://).+@', 'XXX:XXX@', self.mongo_db_url)
         return f'mongo_db_url={truncated_url}, mongo_db_name={self.mongo_db_name}, ' \
                f'mongo_db_test_name={self.mongo_db_test_name}'
+
+
+settings = Settings()
