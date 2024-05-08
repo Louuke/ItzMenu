@@ -12,7 +12,8 @@ class Settings(BaseSettings):
     mail_smtp_port: int = Field(default=587, ge=1, le=65535)
     mail_smtp_user: str = Field(default='user')
     mail_smtp_password: str = Field(default='password')
-    mail_smtp_secure: bool = Field(default=True)
+    mail_smtp_tls: bool = Field(default=True)
+    mail_smtp_starttls: bool = Field(default=False)
     mail_smtp_skip_login: bool = Field(default=False)
     service_secret: str = Field(default='SECRET', min_length=6)
 
