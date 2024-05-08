@@ -30,6 +30,8 @@ test = [
     'smtp-test-server>=0.1.0'
 ]
 
+[project.scripts]
+itzmenu_service = 'itzmenu_service.__main__:main'
 
 [tool.setuptools.package-data]
 '*' = [ '*.json', '*.jpg' ]
