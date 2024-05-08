@@ -26,7 +26,8 @@ dependencies = [
 [project.optional-dependencies]
 test = [
     'pytest>=8.0.2',
-    'pytest-asyncio>=0.23.6'
+    'pytest-asyncio>=0.23.6',
+    'smtp-test-server>=0.1.0'
 ]
 
 
