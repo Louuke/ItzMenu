@@ -16,6 +16,7 @@ class TestAppAuth:
             user = response.json()
             assert user['email'] == self.TEST_USER_EMAIL
             assert user['is_active']
+            assert len(srv.messages) == 1
 
     @pytest.mark.dependency(depends=["test_auth_register"])
     async def test_auth_login(self, http_client):
