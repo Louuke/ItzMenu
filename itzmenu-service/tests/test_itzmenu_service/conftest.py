@@ -11,18 +11,15 @@ from itzmenu_service.persistence.database import get_user_db
 
 @pytest.fixture(scope='session')
 def event_loop(request):
-    """ Create an instance of the default event loop for each test case. """
     loop = asyncio.get_event_loop_policy().new_event_loop()
     yield loop
     loop.close()
 
 
-@pytest.fixture(scope='session', autouse=True)
-def prepare_database(event_loop):
-    async def init():
-        async with app.lifespan():
-            pass
-    event_loop.run_until_complete(init())
+@pytest_asyncio.fixture(scope='session', autouse=True)
+async def prepare_database():
+    async with app.lifespan():
+        await User.find().delete()
 
 
 @pytest.fixture
