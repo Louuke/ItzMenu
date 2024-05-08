@@ -20,5 +20,5 @@ def fs() -> AsyncIOMotorGridFSBucket:
     return AsyncIOMotorGridFSBucket(db())
 
 
-async def get_user_db():
+async def get_user_db() -> BeanieUserDatabase[User]:
     yield BeanieUserDatabase(User)
