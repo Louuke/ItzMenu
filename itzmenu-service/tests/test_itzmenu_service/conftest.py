@@ -16,7 +16,7 @@ def override_settings():
     os.environ['mongo_db_name'] = 'test'
     os.environ['mail_smtp_host'] = '127.0.0.1'
     os.environ['mail_smtp_port'] = '42000'
-    os.environ['mail_smtp_secure'] = 'false'
+    os.environ['mail_smtp_tls'] = 'false'
     os.environ['mail_smtp_skip_login'] = 'true'
 
 
