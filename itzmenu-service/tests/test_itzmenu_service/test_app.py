@@ -18,9 +18,34 @@ class TestAppAuth:
             assert user['is_active']
             assert len(srv.messages) == 1
 
-    @pytest.mark.dependency(depends=["test_auth_register"])
+    @pytest.mark.dependency(depends=['TestAppAuth.test_auth_register'])
     async def test_auth_login(self, http_client):
-        print('test_auth_login')
+        data = {'username': self.TEST_USER_EMAIL, 'password': self.TEST_USER_PASSWORD}
+        response = await http_client.post('/auth/login', data=data)
+        assert response.status_code == 200
+        json = response.json()
+        assert len(json['access_token']) > 0
+        assert json['token_type'] == 'bearer'
+
+    @pytest.mark.dependency(depends=['TestAppAuth.test_auth_register'])
+    async def test_auth_request_verify(self, http_client):
+        with SmtpMockServer('127.0.0.1', 42000) as srv:
+            data = {'username': self.TEST_USER_EMAIL, 'password': self.TEST_USER_PASSWORD}
+            response = await http_client.post('/auth/login', data=data)
+            auth = response.json()['access_token']
+            headers = {'Authorization': f'Bearer {auth}'}
+            data = {'email': self.TEST_USER_EMAIL}
+            response = await http_client.post('/auth/request-verify-token', json=data, headers=headers)
+            assert response.status_code == 202
+            assert len(srv.messages) == 1
+
+    @pytest.mark.dependency(depends=['TestAppAuth.test_auth_register'])
+    async def test_auth_forgot_password(self, http_client):
+        with SmtpMockServer('127.0.0.1', 42000) as srv:
+            data = {'email': self.TEST_USER_EMAIL}
+            response = await http_client.post('/auth/forgot-password', json=data)
+            assert response.status_code == 202
+            assert len(srv.messages) == 1
 
 
 @pytest.mark.asyncio
