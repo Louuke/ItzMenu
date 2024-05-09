@@ -20,13 +20,6 @@ def override_settings():
     os.environ['mail_smtp_skip_login'] = 'true'
 
 
-# @pytest.fixture(scope='session', autouse=True)
-# def event_loop(request):
-#     loop = asyncio.get_event_loop_policy().new_event_loop()
-#     yield loop
-#     loop.close()
-
-
 @pytest_asyncio.fixture(scope='module', autouse=True)
 async def prepare_database():
     async with app.lifespan():
