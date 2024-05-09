@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Any
 
 from beanie import PydanticObjectId
 from fastapi_users import schemas
@@ -7,7 +7,7 @@ from pydantic import BaseModel
 
 
 class OverrideUpdateDictModel(BaseModel):
-    def create_update_dict(self):
+    def create_update_dict(self) -> dict[str, Any]:
         return model_dump(
             self,
             exclude_unset=True,
