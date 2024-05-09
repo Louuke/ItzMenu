@@ -3,21 +3,22 @@ POST http://localhost:8000/auth/register
 Content-Type: application/json
 
 {
-    "email": "fastapi@jannsen.org",
-    "password": "password"
+    "email": "fastapi2@jannsen.org",
+    "password": "paSSw0rd",
+    "permissions": ["fastapi:users:read", "fastapi:users:write"]
 }
 
 ### GET request to example server
 POST http://localhost:8000/auth/login
 Content-Type: application/x-www-form-urlencoded
 
-username = fastapi@jannsen.org &
+username = fastapi2@jannsen.org &
 password = password
 
 
 ### users/me
 GET http://localhost:8000/users/me
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NjM5NDEyZjMxMzVhMGYwYjdkZTk1NDEiLCJhdWQiOlsiZmFzdGFwaS11c2VyczphdXRoIl0sImV4cCI6MTcxNTAzMzUzMn0.6tmNaagE_VA3jP2kZ_qw7FXo4br3tEb_Fyt5x7bFGDc
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NjNkMDBlZWY0NWQ0Yjg3MmMxYTZhYTAiLCJhdWQiOlsiZmFzdGFwaS11c2VyczphdXRoIl0sImV4cCI6MTcxNTI3NzY1N30.1DZtIwjm0QRk8_4-wCILL1zPqjA2ZwSeemOmSKyhb-Q
 Content-Type: application/json
 
 
