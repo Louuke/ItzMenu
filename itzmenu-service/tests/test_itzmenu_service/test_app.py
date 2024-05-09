@@ -2,7 +2,7 @@ import pytest
 from smtp_test_server.context import SmtpMockServer
 
 
-@pytest.mark.asyncio(scope='module')
+@pytest.mark.asyncio(scope='session')
 class TestAppAuth:
 
     TEST_USER_EMAIL = 'test_auth@example.org'
