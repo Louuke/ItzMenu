@@ -11,7 +11,7 @@ from itzmenu_service.persistence.database import get_user_db
 from itzmenu_service.persistence.models import User
 
 
-@pytest.fixture(scope='session', autouse=True)
+@pytest.fixture(scope='module', autouse=True)
 def override_settings():
     os.environ['mongo_db_name'] = 'test'
     os.environ['mail_smtp_host'] = '127.0.0.1'
@@ -20,14 +20,14 @@ def override_settings():
     os.environ['mail_smtp_skip_login'] = 'true'
 
 
-@pytest.fixture(scope='session', autouse=True)
-def event_loop(request):
-    loop = asyncio.get_event_loop_policy().new_event_loop()
-    yield loop
-    loop.close()
+# @pytest.fixture(scope='session', autouse=True)
+# def event_loop(request):
+#     loop = asyncio.get_event_loop_policy().new_event_loop()
+#     yield loop
+#     loop.close()
 
 
-@pytest_asyncio.fixture(scope='session', autouse=True)
+@pytest_asyncio.fixture(scope='module', autouse=True)
 async def prepare_database():
     async with app.lifespan():
         await User.find().delete()
