@@ -39,14 +39,15 @@ class TestRegisterRouter:
 
     async def test_auth_register_excluded_fields(self, http_client: AsyncClient):
         with SmtpMockServer('127.0.0.1', 42000):
-            data = {'email': self.TEST_USER_2_EMAIL, 'password': self.TEST_USER_PASSWORD, 'id': 'id', 'is_active': True,
-                    'is_superuser': True, 'is_verified': True, 'permissions': ['read']}
+            data = {'email': self.TEST_USER_2_EMAIL, 'password': self.TEST_USER_PASSWORD, 'id': 'id',
+                    'is_active': False, 'is_superuser': True, 'is_verified': True, 'permissions': ['read']}
             response = await http_client.post('/auth/register', json=data)
             assert response.status_code == 201
             user = response.json()
             assert user['id'] != 'id'
             assert not user['is_superuser']
             assert not user['is_verified']
+            assert user['is_active']
             assert user['permissions'] == []
 
     @pytest.mark.dependency(depends=['TestAppAuth::test_auth_register'])
