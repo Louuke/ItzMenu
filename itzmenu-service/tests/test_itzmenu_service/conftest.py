@@ -3,7 +3,10 @@ import os
 import httpx
 import pytest
 import pytest_asyncio
-from httpx import ASGITransport
+from beanie import PydanticObjectId
+from fastapi_users import BaseUserManager
+from fastapi_users_db_beanie import BeanieUserDatabase
+from httpx import AsyncClient, ASGITransport
 
 from itzmenu_service import app
 from itzmenu_service.manager.users import get_user_manager
@@ -31,11 +34,11 @@ def http_client() -> httpx.AsyncClient:
     return httpx.AsyncClient(transport=ASGITransport(app=app.app), base_url="http://127.0.0.1:8000")
 
 
-@pytest_asyncio.fixture
-async def user_db():
+@pytest_asyncio.fixture(scope='session')
+async def user_db() -> BeanieUserDatabase[User]:
     return await get_user_db().__anext__()
 
 
-@pytest_asyncio.fixture
-async def user_manager(user_db):
+@pytest_asyncio.fixture(scope='session')
+async def user_manager(user_db) -> BaseUserManager[User, PydanticObjectId]:
     return await get_user_manager(user_db).__anext__()
