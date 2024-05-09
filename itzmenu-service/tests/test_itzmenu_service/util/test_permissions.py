@@ -1,6 +1,6 @@
 import pytest
 from fastapi import HTTPException
-from itzmenu_service.routes.permissions import PermissionChecker
+from itzmenu_service.util.permissions import PermissionChecker
 from itzmenu_service.persistence.models import User
 
 

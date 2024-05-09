@@ -6,7 +6,7 @@ from fastapi import FastAPI, Depends
 from itzmenu_service.persistence.database import User, db
 from itzmenu_service.persistence.schemas import UserCreate, UserRead, UserUpdate
 from itzmenu_service.manager.users import auth_backend, current_active_user, fastapi_users
-from itzmenu_service.routes.permissions import PermissionChecker
+from itzmenu_service.util.permissions import PermissionChecker
 
 
 @asynccontextmanager
