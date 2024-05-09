@@ -1,6 +1,5 @@
 import os
 
-import httpx
 import pytest
 import pytest_asyncio
 from beanie import PydanticObjectId
@@ -30,8 +29,8 @@ async def prepare_database():
 
 
 @pytest.fixture
-def http_client() -> httpx.AsyncClient:
-    return httpx.AsyncClient(transport=ASGITransport(app=app.app), base_url="http://127.0.0.1:8000")
+def http_client() -> AsyncClient:
+    return AsyncClient(transport=ASGITransport(app=app.app), base_url="http://127.0.0.1:8000")
 
 
 @pytest_asyncio.fixture(scope='session')
