@@ -1,14 +1,34 @@
+from typing import Optional
+
 from beanie import PydanticObjectId
 from fastapi_users import schemas
+from fastapi_users.schemas import model_dump
+from pydantic import BaseModel
 
 
-class UserRead(schemas.BaseUser[PydanticObjectId]):
+class OverrideUpdateDictModel(BaseModel):
+    def create_update_dict(self):
+        return model_dump(
+            self,
+            exclude_unset=True,
+            exclude={
+                'id',
+                'is_superuser',
+                'is_active',
+                'is_verified',
+                'oauth_accounts',
+                'permissions'
+            },
+        )
+
+
+class UserRead(OverrideUpdateDictModel, schemas.BaseUser[PydanticObjectId]):
     permissions: set[str] = []
 
 
-class UserCreate(schemas.BaseUserCreate):
-    pass
+class UserCreate(OverrideUpdateDictModel, schemas.BaseUserCreate):
+    permissions: Optional[set[str]] = []
 
 
-class UserUpdate(schemas.BaseUserUpdate):
-    permissions: set[str] = []
+class UserUpdate(OverrideUpdateDictModel, schemas.BaseUserUpdate):
+    permissions: Optional[set[str]] = []
