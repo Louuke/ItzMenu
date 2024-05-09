@@ -1,9 +1,9 @@
-import asyncio
 import os
 
 import httpx
 import pytest
 import pytest_asyncio
+from httpx import ASGITransport
 
 from itzmenu_service import app
 from itzmenu_service.manager.users import get_user_manager
@@ -35,7 +35,7 @@ async def prepare_database():
 
 @pytest.fixture
 def http_client() -> httpx.AsyncClient:
-    return httpx.AsyncClient(app=app.app, base_url="http://127.0.0.1:8000")
+    return httpx.AsyncClient(transport=ASGITransport(app=app.app), base_url="http://127.0.0.1:8000")
 
 
 @pytest_asyncio.fixture
