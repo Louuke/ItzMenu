@@ -1,0 +1,33 @@
+[build-system]
+requires = [ 'setuptools>=69.1.1' ]
+build-backend = 'setuptools.build_meta'
+
+[project]
+name = 'itzmenu_api'
+dynamic = ['version']
+readme = 'README.md'
+license = { text = 'Apache License 2.0' }
+authors = [
+    { name = 'Louke', email = 'git@jannsen.org' }
+]
+classifiers = [
+    'Programming Language :: Python :: 3',
+    'License :: OSI Approved :: Apache License 2.0',
+    'Operating System :: OS Independent',
+    'Programming Language :: Python :: Implementation :: CPython',
+]
+dependencies = [
+    'pydantic>=2.7.1'
+]
+
+[project.optional-dependencies]
+test = [
+    'pytest>=8.2.0'
+]
+
+
+[tool.setuptools.package-data]
+'*' = [ '*.json', '*.jpg' ]
+
+[tool.setuptools.dynamic]
+version = { attr = 'itzmenu_api.__version__' }
