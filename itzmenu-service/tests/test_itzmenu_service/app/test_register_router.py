@@ -49,12 +49,3 @@ class TestRegisterRouter:
             assert not user['is_verified']
             assert user['is_active']
             assert user['permissions'] == []
-
-    @pytest.mark.dependency(depends=['TestAppAuth::test_auth_register'])
-    @pytest.mark.skip
-    async def test_auth_forgot_password(self, http_client: AsyncClient):
-        with SmtpMockServer('127.0.0.1', 42000) as srv:
-            data = {'email': self.TEST_USER_EMAIL}
-            response = await http_client.post('/auth/forgot-password', json=data)
-            assert response.status_code == 202
-            assert len(srv.messages) == 1
