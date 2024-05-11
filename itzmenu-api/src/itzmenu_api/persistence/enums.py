@@ -9,6 +9,9 @@ class DietType(StrEnum):
     PESCETARIANISM = 'pescetarianism',
     UNKNOWN = 'unknown'
 
+    @classmethod
+    def values(cls) -> list:
+        return list(cls.__members__.values())
 
 class WeekDay(StrEnum):
     MONDAY = 'monday',
@@ -17,9 +20,9 @@ class WeekDay(StrEnum):
     THURSDAY = 'thursday',
     FRIDAY = 'friday'
 
-    @staticmethod
-    def values() -> tuple[LiteralString, ...]:
-        return tuple([day for day in WeekDay])
+    @classmethod
+    def values(cls) -> list:
+        return list(cls.__members__.values())
 
     @staticmethod
     def find_by_value(value: str):
