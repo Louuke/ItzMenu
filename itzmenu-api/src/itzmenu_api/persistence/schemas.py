@@ -1,7 +1,10 @@
+import time
 import uuid
 from typing import Optional, Any
 
-from pydantic import BaseModel, ConfigDict, EmailStr
+from pydantic import BaseModel, ConfigDict, EmailStr, Field
+
+from itzmenu_api.persistence.enums import DietType, WeekDay
 
 
 def model_dump(model: BaseModel, *args, **kwargs) -> dict[str, Any]:
@@ -20,7 +23,6 @@ class UpdateDictModel(BaseModel):
         return model_dump(self, exclude_unset=self.__exclude_unset, exclude=self.__exclude)
 
     def create_update_dict_superuser(self):
-        return model_dump(self, exclude_unset=True, exclude={'id'})
         return model_dump(self, exclude_unset=True, exclude=self.__exclude_superuser)
 
 
@@ -35,7 +37,7 @@ class UserRead(UserUpdateDictModel):
     is_active: bool = True
     is_superuser: bool = False
     is_verified: bool = False
-    permissions: set[str] = []
+    permissions: set[str] = Field(default={})
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -46,7 +48,7 @@ class UserCreate(UserUpdateDictModel):
     is_active: Optional[bool] = True
     is_superuser: Optional[bool] = False
     is_verified: Optional[bool] = False
-    permissions: Optional[set[str]] = []
+    permissions: Optional[set[str]] = Field(default={})
 
 
 class UserUpdate(UserUpdateDictModel):
@@ -56,3 +58,4 @@ class UserUpdate(UserUpdateDictModel):
     is_superuser: Optional[bool] = None
     is_verified: Optional[bool] = None
     permissions: Optional[set[str]] = []
+    permissions: Optional[set[str]] = None
