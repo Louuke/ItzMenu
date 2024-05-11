@@ -57,5 +57,52 @@ class UserUpdate(UserUpdateDictModel):
     is_active: Optional[bool] = None
     is_superuser: Optional[bool] = None
     is_verified: Optional[bool] = None
-    permissions: Optional[set[str]] = []
     permissions: Optional[set[str]] = None
+
+
+class MealPrediction(BaseModel):
+    model: str
+    prediction_timestamp: int
+    predicted_diet_type: list[DietType] = Field(default=[DietType.UNKNOWN])
+
+
+class Meal(BaseModel):
+    name: str
+    price: float = Field(default=float('nan'))
+    curated_diet_type: list[DietType] = Field(default=[])
+    prediction: Optional[MealPrediction] = None
+
+
+class MealCategory(BaseModel):
+    name: str
+    meals: list[Meal] = Field(default=[])
+
+
+class DayMenu(BaseModel):
+    name: WeekDay
+    categories: list[MealCategory] = Field(default=[])
+
+
+class ReadWeekMenu(UpdateDictModel):
+    id: uuid.UUID
+    start_timestamp: int
+    end_timestamp: int
+    created_at: int
+    filename: str
+    menus: list[DayMenu] = Field(default=[])
+
+
+class CreateWeekMenu(UpdateDictModel):
+    start_timestamp: int = Field(ge=0)
+    end_timestamp: int = Field(ge=1)
+    created_at: int = Field(default_factory=lambda: int(time.time()), ge=0)
+    filename: str = Field(pattern=r'^[a-zA-Z0-9]+\.jpg$')
+    menus: Optional[list[DayMenu]] = Field(default=[])
+
+
+class UpdateWeekMenu(UpdateDictModel):
+    start_timestamp: Optional[int] = None
+    end_timestamp: Optional[int] = None
+    created_at: Optional[int] = None
+    filename: Optional[str] = None
+    menus: Optional[list[DayMenu]] = None
