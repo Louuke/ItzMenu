@@ -3,8 +3,9 @@ from contextlib import asynccontextmanager
 from beanie import init_beanie
 from fastapi import FastAPI, Depends
 
-from itzmenu_service.persistence.database import User, db
-from itzmenu_service.persistence.schemas import UserCreate, UserRead, UserUpdate
+from itzmenu_service.persistence.database import db
+from itzmenu_service.persistence.models import User
+from itzmenu_api.persistence.schemas import UserCreate, UserRead, UserUpdate
 from itzmenu_service.manager.users import auth_backend, current_active_user, fastapi_users
 from itzmenu_service.util.permissions import PermissionChecker
 

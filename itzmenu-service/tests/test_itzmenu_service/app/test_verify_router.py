@@ -5,7 +5,7 @@ from httpx import AsyncClient
 from smtp_test_server.context import SmtpMockServer
 
 from itzmenu_service.manager.users import auth_backend
-from itzmenu_service.persistence.schemas import UserCreate
+from itzmenu_api.persistence.schemas import UserCreate
 
 
 @pytest.mark.asyncio(scope='session')
