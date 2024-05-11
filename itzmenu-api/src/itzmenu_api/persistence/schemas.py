@@ -12,9 +12,8 @@ def model_dump(model: BaseModel, *args, **kwargs) -> dict[str, Any]:
 
 
 class UpdateDictModel(BaseModel):
-
-    def __init__(self, exclude: set[str] = None, exclude_unset: bool = True):
-        super().__init__()
+    def __init__(self, exclude: set[str] = None, exclude_unset: bool = True, **data):
+        super().__init__(**data)
         self.__exclude_superuser = {'id'}
         self.__exclude = self.__exclude_superuser.union(exclude) if exclude is not None else self.__exclude_superuser
         self.__exclude_unset = exclude_unset
@@ -27,8 +26,8 @@ class UpdateDictModel(BaseModel):
 
 
 class UserUpdateDictModel(UpdateDictModel):
-    def __init__(self):
-        super().__init__(exclude={'is_superuser', 'is_active', 'is_verified', 'oauth_accounts', 'permissions'})
+    def __init__(self, **data):
+        super().__init__(exclude={'is_superuser', 'is_active', 'is_verified', 'oauth_accounts', 'permissions'}, **data)
 
 
 class UserRead(UserUpdateDictModel):
