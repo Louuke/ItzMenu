@@ -1,8 +1,8 @@
 import os
+from uuid import UUID
 
 import pytest
 import pytest_asyncio
-from beanie import PydanticObjectId
 from fastapi_users import BaseUserManager
 from fastapi_users_db_beanie import BeanieUserDatabase
 from httpx import AsyncClient, ASGITransport
@@ -39,5 +39,5 @@ async def user_db() -> BeanieUserDatabase[User]:
 
 
 @pytest_asyncio.fixture(scope='session')
-async def user_manager(user_db) -> BaseUserManager[User, PydanticObjectId]:
+async def user_manager(user_db) -> BaseUserManager[User, UUID]:
     return await get_user_manager(user_db).__anext__()

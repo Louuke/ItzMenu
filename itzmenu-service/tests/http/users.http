@@ -3,7 +3,7 @@ POST http://localhost:8000/auth/register
 Content-Type: application/json
 
 {
-    "email": "fastapi2@jannsen.org",
+    "email": "test_register_1@example.org",
     "password": "paSSw0rd",
     "permissions": ["fastapi:users:read", "fastapi:users:write"]
 }
@@ -12,25 +12,25 @@ Content-Type: application/json
 POST http://localhost:8000/auth/login
 Content-Type: application/x-www-form-urlencoded
 
-username = fastapi2@jannsen.org &
-password = password
+username = test_register_1@example.org &
+password = paSSw0rd
 
 
 ### users/me
 GET http://localhost:8000/users/me
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NjNkMDBlZWY0NWQ0Yjg3MmMxYTZhYTAiLCJhdWQiOlsiZmFzdGFwaS11c2VyczphdXRoIl0sImV4cCI6MTcxNTI3NzY1N30.1DZtIwjm0QRk8_4-wCILL1zPqjA2ZwSeemOmSKyhb-Q
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1M2M0MWIzNi1hZGE3LTRlMTctYmY0Yy03MDg2MGQ2MDdmYmEiLCJhdWQiOlsiZmFzdGFwaS11c2VyczphdXRoIl0sImV4cCI6MTcxNjEzNDg4NH0.xaT6DxrQwtjKShMVsPK7DbaUBYqXnl3YgFYFq97mdgk
 Content-Type: application/json
 
 
 ### users/<id>
-GET http://localhost:8000/users/6639412f3135a0f0b7de9541
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NjM5NDEyZjMxMzVhMGYwYjdkZTk1NDEiLCJhdWQiOlsiZmFzdGFwaS11c2VyczphdXRoIl0sImV4cCI6MTcxNTAzMzUzMn0.6tmNaagE_VA3jP2kZ_qw7FXo4br3tEb_Fyt5x7bFGDc
+GET http://localhost:8000/users/9b05ac09-123e-45a8-8394-2d277a398dd5
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI5YjA1YWMwOS0xMjNlLTQ1YTgtODM5NC0yZDI3N2EzOThkZDUiLCJhdWQiOlsiZmFzdGFwaS11c2VyczphdXRoIl0sImV4cCI6MTcxNjEzMzY4OH0.G-s3FE57QUpJPs2lhyB7Ws4zeCunAU7_OEqDp2cKfe0
 Content-Type: application/json
 
 
 ### authenticated-route
 GET http://localhost:8000/authenticated-route
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NjM5NmY1NjcxY2EyYzUzOTZmNzdkYmYiLCJhdWQiOlsiZmFzdGFwaS11c2VyczphdXRoIl0sImV4cCI6MTcxNTA0NDI1MX0.xvUZAmKpRssFEe5-pa8Ew0ZsO8iKEOQKEZMRD1Syn0A
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI5YjA1YWMwOS0xMjNlLTQ1YTgtODM5NC0yZDI3N2EzOThkZDUiLCJhdWQiOlsiZmFzdGFwaS11c2VyczphdXRoIl0sImV4cCI6MTcxNjEzNDA0NX0.wtuLpKzun0GrnbXqKA-PnD8DHfCeiWBM4SURCVaxZdA
 Content-Type: application/json
 
 

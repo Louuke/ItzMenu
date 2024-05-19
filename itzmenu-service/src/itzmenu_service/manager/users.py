@@ -1,19 +1,19 @@
 import logging as log
 import re
 from typing import Optional, Union
+from uuid import UUID
 
-from beanie import PydanticObjectId
 from fastapi import Depends, Request
-from fastapi_users import BaseUserManager, FastAPIUsers, schemas, models, InvalidPasswordException
+from fastapi_users import BaseUserManager, FastAPIUsers, schemas, models, InvalidPasswordException, UUIDIDMixin
 from fastapi_users.authentication import AuthenticationBackend, BearerTransport, JWTStrategy
-from fastapi_users.db import BeanieUserDatabase, ObjectIDIDMixin
+from fastapi_users.db import BeanieUserDatabase
 
 from itzmenu_service.persistence.database import User, get_user_db
 from itzmenu_service.mail import client
 from itzmenu_service.config.settings import settings
 
 
-class UserManager(ObjectIDIDMixin, BaseUserManager[User, PydanticObjectId]):
+class UserManager(UUIDIDMixin, BaseUserManager[User, UUID]):
     reset_password_token_secret = settings.service_secret
     verification_token_secret = settings.service_secret
 
@@ -58,6 +58,6 @@ auth_backend = AuthenticationBackend(
     get_strategy=get_jwt_strategy,
 )
 
-fastapi_users = FastAPIUsers[User, PydanticObjectId](get_user_manager, [auth_backend])
+fastapi_users = FastAPIUsers[User, UUID](get_user_manager, [auth_backend])
 
 current_active_user = fastapi_users.current_user(active=True)
