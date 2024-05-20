@@ -23,7 +23,7 @@ class BeanieWeekMenuDatabase(BaseWeekMenuDatabase[UUID]):
 
     async def get_by_filename(self, filename: str) -> WeekMenu:
         """Get a single week menu by filename."""
-        return await self.menu_model.get_one({'filename': filename})
+        return await self.menu_model.find_one({'filename': filename})
 
     async def create(self, create_dict: dict[str, Any]) -> WeekMenu:
         """Create a week menu."""
