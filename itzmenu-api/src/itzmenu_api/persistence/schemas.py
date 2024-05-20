@@ -90,6 +90,8 @@ class ReadWeekMenu(UpdateDictModel):
     filename: str
     menus: list[DayMenu] = Field(default=[])
 
+    model_config = ConfigDict(from_attributes=True)
+
 
 class CreateWeekMenu(UpdateDictModel):
     start_timestamp: int = Field(ge=0)
