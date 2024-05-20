@@ -1,7 +1,8 @@
 from functools import lru_cache
 
 from itzmenu_service.config.settings import Settings
-from itzmenu_service.persistence.models import User
+from itzmenu_service.persistence.adapter.adapter import BeanieWeekMenuDatabase
+from itzmenu_service.persistence.models import User, WeekMenu
 from fastapi_users_db_beanie import BeanieUserDatabase
 from motor.motor_asyncio import AsyncIOMotorDatabase, AsyncIOMotorClient, AsyncIOMotorGridFSBucket
 
@@ -19,3 +20,7 @@ def fs() -> AsyncIOMotorGridFSBucket:
 
 async def get_user_db() -> BeanieUserDatabase[User]:
     yield BeanieUserDatabase(User)
+
+
+async def get_menu_db() -> BeanieWeekMenuDatabase:
+    yield BeanieWeekMenuDatabase(WeekMenu)
