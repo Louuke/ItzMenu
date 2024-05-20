@@ -1,0 +1,9 @@
+### Create
+POST http://localhost:8000/menus
+Content-Type: application/json
+
+{
+    "start_timestamp": 100,
+    "end_timestamp": 200,
+    "filename": "menu123.jpg"
+}
