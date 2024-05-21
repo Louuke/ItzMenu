@@ -1,4 +1,5 @@
-from typing import Type
+import time
+from typing import Type, Optional
 from uuid import UUID
 
 from fastapi import Depends, Request, APIRouter, HTTPException, Path
@@ -19,7 +20,8 @@ def get_menus_router(get_week_menu_manager: WeekMenuManagerDependency[ID],
     """Generate a router with the week menu route."""
     router = APIRouter()
 
-    @router.post('/', response_model=menu_read_schema, status_code=status.HTTP_201_CREATED, name='menus:create',
+    @router.post('/', response_model=menu_read_schema, status_code=status.HTTP_201_CREATED,
+                 name='menus:create_menu',
                  responses={
                      status.HTTP_400_BAD_REQUEST: {
                          'mode': ErrorModel,
@@ -46,11 +48,21 @@ def get_menus_router(get_week_menu_manager: WeekMenuManagerDependency[ID],
                                 detail=ErrorCode.CREATE_MENU_ALREADY_EXISTS) from e
         return schemas.model_validate(menu_read_schema, created_user)
 
-    @router.get('/{menu_id}', response_model=menu_read_schema, name='menus:get')
+    @router.get('/{menu_id}', response_model=menu_read_schema, name='menus:get_menu')
     async def get_menu(menu_id: UUID = Path(...),
                        user_manager: BaseWeekMenuManager[ID] = Depends(get_week_menu_manager)):
         try:
             menu = await user_manager.get(menu_id)
+            return menu
+        except exceptions.WeekMenuNotExists as e:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                                detail=ErrorCode.GET_MENU_NOT_FOUND) from e
+
+    @router.get('/', response_model=menu_read_schema, name='menus:filter_menu')
+    async def filter_menu(user_manager: BaseWeekMenuManager[ID] = Depends(get_week_menu_manager),
+                          timestamp: Optional[int] = time.time()):
+        try:
+            menu = await user_manager.get_by_timestamp(timestamp)
             return menu
         except exceptions.WeekMenuNotExists as e:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,

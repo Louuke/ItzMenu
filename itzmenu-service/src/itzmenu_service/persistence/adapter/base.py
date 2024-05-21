@@ -17,6 +17,10 @@ class BaseWeekMenuDatabase(Generic[ID]):
         """Get a single week menu by filename."""
         raise NotImplementedError()
 
+    async def get_by_timestamp(self, timestamp: int) -> Optional[WeekMenu]:
+        """Get a single week menu by timestamp."""
+        raise NotImplementedError()
+
     async def create(self, create_dict: dict[str, Any]) -> WeekMenu:
         """Create a week menu."""
         raise NotImplementedError()
