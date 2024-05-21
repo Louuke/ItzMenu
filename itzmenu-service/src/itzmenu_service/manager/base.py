@@ -17,8 +17,6 @@ class BaseWeekMenuManager(Generic[ID]):
     :param menu_db: Database adapter instance.
     """
 
-    menu_db: BaseWeekMenuDatabase[ID]
-
     def __init__(self, menu_db: BaseWeekMenuDatabase[ID]):
         self.menu_db = menu_db
 
