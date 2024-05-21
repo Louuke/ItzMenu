@@ -6,15 +6,15 @@ from fastapi_users.models import ID
 from fastapi_users.router.common import ErrorModel
 from starlette import status
 
-from itzmenu_api.persistence.schemas import ReadWeekMenu, CreateWeekMenu
+from itzmenu_api.persistence.schemas import WeekMenuRead, WeekMenuCreate
 from itzmenu_service.manager import exceptions
 from itzmenu_service.manager.base import WeekMenuManagerDependency, BaseWeekMenuManager
 from itzmenu_service.router.common import ErrorCode
 
 
 def get_menus_router(get_week_menu_manager: WeekMenuManagerDependency[ID],
-                     menu_read_schema: Type[ReadWeekMenu],
-                     menu_create_schema: Type[CreateWeekMenu]) -> APIRouter:
+                     menu_read_schema: Type[WeekMenuRead],
+                     menu_create_schema: Type[WeekMenuCreate]) -> APIRouter:
     """Generate a router with the week menu route."""
     router = APIRouter()
 

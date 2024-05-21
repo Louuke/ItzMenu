@@ -6,7 +6,7 @@ from fastapi import FastAPI, Depends
 from itzmenu_service.manager.menus import get_week_menu_manager
 from itzmenu_service.persistence.database import db
 from itzmenu_service.persistence.models import User, WeekMenu
-from itzmenu_api.persistence.schemas import UserCreate, UserRead, UserUpdate, ReadWeekMenu, CreateWeekMenu
+from itzmenu_api.persistence.schemas import UserCreate, UserRead, UserUpdate, WeekMenuRead, WeekMenuCreate
 from itzmenu_service.manager.users import auth_backend, current_active_user, fastapi_users
 from itzmenu_service.router.menus import get_menus_router
 from itzmenu_service.util.permissions import PermissionChecker
@@ -52,7 +52,7 @@ app.include_router(
     tags=["users"],
 )
 app.include_router(
-    get_menus_router(get_week_menu_manager, ReadWeekMenu, CreateWeekMenu),
+    get_menus_router(get_week_menu_manager, WeekMenuRead, WeekMenuCreate),
     prefix="/menus",
     tags=["menus"],
 )

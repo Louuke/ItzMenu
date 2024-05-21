@@ -82,7 +82,7 @@ class DayMenu(BaseModel):
     categories: list[MealCategory] = Field(default=[])
 
 
-class ReadWeekMenu(UpdateDictModel):
+class WeekMenuRead(UpdateDictModel):
     id: uuid.UUID
     start_timestamp: int
     end_timestamp: int
@@ -93,7 +93,7 @@ class ReadWeekMenu(UpdateDictModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-class CreateWeekMenu(UpdateDictModel):
+class WeekMenuCreate(UpdateDictModel):
     start_timestamp: int = Field(ge=0)
     end_timestamp: int = Field(ge=1)
     created_at: int = Field(default_factory=lambda: int(time.time()), ge=0)
@@ -101,7 +101,7 @@ class CreateWeekMenu(UpdateDictModel):
     menus: Optional[list[DayMenu]] = Field(default=[])
 
 
-class UpdateWeekMenu(UpdateDictModel):
+class WeekMenuUpdate(UpdateDictModel):
     start_timestamp: Optional[int] = None
     end_timestamp: Optional[int] = None
     created_at: Optional[int] = None
