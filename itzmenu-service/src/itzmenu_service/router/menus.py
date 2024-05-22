@@ -1,4 +1,5 @@
 import time
+import re
 from typing import Type, Optional
 from uuid import UUID
 
@@ -48,12 +49,14 @@ def get_menus_router(get_week_menu_manager: WeekMenuManagerDependency[ID],
                                 detail=ErrorCode.CREATE_MENU_ALREADY_EXISTS) from e
         return schemas.model_validate(menu_read_schema, created_user)
 
-    @router.get('/{menu_id}', response_model=menu_read_schema, name='menus:get_menu')
-    async def get_menu(menu_id: UUID = Path(...),
-                       user_manager: BaseWeekMenuManager[ID] = Depends(get_week_menu_manager)):
+    @router.get('/{id_or_filename}', response_model=menu_read_schema, name='menus:get_menu_by_id')
+    async def get_menu_by_id(id_or_filename: UUID | str = Path(...),
+                             menu_manager: BaseWeekMenuManager[ID] = Depends(get_week_menu_manager)):
         try:
-            menu = await user_manager.get(menu_id)
-            return menu
+            if re.search(r'^[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}$', id_or_filename):
+                return await menu_manager.get(id_or_filename)
+            else:
+                return await menu_manager.get_by_filename(id_or_filename)
         except exceptions.WeekMenuNotExists as e:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                                 detail=ErrorCode.GET_MENU_NOT_FOUND) from e
