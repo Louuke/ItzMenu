@@ -1,4 +1,4 @@
-from typing import Optional, Generic, Any
+from typing import Generic, Any
 
 from fastapi_users.models import ID
 from fastapi_users.types import DependencyCallable
@@ -9,15 +9,15 @@ from itzmenu_service.persistence.models import WeekMenu
 class BaseWeekMenuDatabase(Generic[ID]):
     """Base adapter for retrieving, creating and updating menus from a database."""
 
-    async def get(self, id: ID) -> Optional[WeekMenu]:
+    async def get(self, id: ID) -> WeekMenu | None:
         """Get a single week menu by id."""
         raise NotImplementedError()
 
-    async def get_by_filename(self, filename: str) -> Optional[WeekMenu]:
+    async def get_by_filename(self, filename: str) -> WeekMenu | None:
         """Get a single week menu by filename."""
         raise NotImplementedError()
 
-    async def get_by_timestamp(self, timestamp: int) -> Optional[WeekMenu]:
+    async def get_by_timestamp(self, timestamp: int) -> WeekMenu | None:
         """Get a single week menu by timestamp."""
         raise NotImplementedError()
 
