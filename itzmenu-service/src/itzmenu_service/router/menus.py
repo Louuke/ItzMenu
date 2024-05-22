@@ -1,6 +1,6 @@
 import time
 import re
-from typing import Type, Optional
+from typing import Type
 from uuid import UUID
 
 from fastapi import Depends, Request, APIRouter, HTTPException, Path
@@ -61,17 +61,18 @@ def get_menus_router(get_week_menu_manager: WeekMenuManagerDependency[ID],
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                                 detail=ErrorCode.GET_MENU_NOT_FOUND) from e
 
-    @router.get('/', response_model=menu_read_schema, name='menus:get_menu_by_timestamp')
+    @router.get('/', response_model=list[menu_read_schema], name='menus:get_menu_by_timestamp_range')
+    async def get_menu_by_timestamp_range(menu_manager: BaseWeekMenuManager[ID] = Depends(get_week_menu_manager),
+                                          start: int = 0, end: int = 9999999999):
+        return await menu_manager.get_by_timestamp_range(start, end)
+
+    @router.get('/week/', response_model=menu_read_schema, name='menus:get_menu_by_timestamp')
     async def get_menu_by_timestamp(menu_manager: BaseWeekMenuManager[ID] = Depends(get_week_menu_manager),
-                                    timestamp: Optional[int] = time.time()):
+                                    timestamp: int = int(time.time())):
         try:
             return await menu_manager.get_by_timestamp(timestamp)
         except exceptions.WeekMenuNotExists as e:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                                 detail=ErrorCode.GET_MENU_NOT_FOUND) from e
-
-    @router.get('/week', response_model=menu_read_schema, name='menus:get_menu_this_week')
-    async def get_menu_this_week(menu_manager: BaseWeekMenuManager[ID] = Depends(get_week_menu_manager)):
-        return await get_menu_by_timestamp(menu_manager, int(time.time()))
 
     return router

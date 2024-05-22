@@ -5,5 +5,11 @@ Content-Type: application/json
 {
     "start_timestamp": 100,
     "end_timestamp": 200,
-    "filename": "menu123.jpg"
+    "filename": "menu1234.jpg"
 }
+
+### Get
+GET http://localhost:8000/menus/f60c216e-f07b-48fc-a6d7-6191c85b8d55
+
+### Filter
+GET http://localhost:8000/menus/?timestamp=1708902000
