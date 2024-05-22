@@ -1,4 +1,4 @@
-from typing import Type, Any
+from typing import Type, Any, Optional
 from uuid import UUID
 
 from fastapi_users.models import ID
@@ -17,18 +17,21 @@ class BeanieWeekMenuDatabase(BaseWeekMenuDatabase[UUID]):
     def __init__(self, menu_model: Type[WeekMenu]):
         self.menu_model = menu_model
 
-    async def get(self, id: ID) -> WeekMenu:
+    async def get(self, id: ID) -> WeekMenu | None:
         """Get a single week menu by id."""
         return await self.menu_model.get(id)
 
-    async def get_by_filename(self, filename: str) -> WeekMenu:
+    async def get_by_filename(self, filename: str) -> WeekMenu | None:
         """Get a single week menu by filename."""
         return await self.menu_model.find_one({'filename': filename})
 
-    async def get_by_timestamp(self, timestamp: int) -> WeekMenu:
-        """Get a single week menu by timestamp."""
+    async def get_by_timestamp(self, timestamp: int) -> WeekMenu | None:
         return await self.menu_model.find_one(self.menu_model.start_timestamp <= timestamp,
                                               self.menu_model.end_timestamp >= timestamp)
+
+    async def get_by_timestamp_range(self, start: int, end: int) -> list[WeekMenu]:
+        return await self.menu_model.find(self.menu_model.start_timestamp >= start,
+                                          self.menu_model.end_timestamp <= end).to_list()
 
     async def create(self, create_dict: dict[str, Any]) -> WeekMenu:
         """Create a week menu."""
