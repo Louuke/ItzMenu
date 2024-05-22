@@ -70,4 +70,8 @@ def get_menus_router(get_week_menu_manager: WeekMenuManagerDependency[ID],
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                                 detail=ErrorCode.GET_MENU_NOT_FOUND) from e
 
+    @router.get('/week', response_model=menu_read_schema, name='menus:get_menu_this_week')
+    async def get_menu_this_week(menu_manager: BaseWeekMenuManager[ID] = Depends(get_week_menu_manager)):
+        return await get_menu_by_timestamp(menu_manager, int(time.time()))
+
     return router
