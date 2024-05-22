@@ -56,6 +56,16 @@ class BaseWeekMenuManager(Generic[ID]):
             raise exceptions.WeekMenuNotExists()
         return menu
 
+    async def get_by_timestamp_range(self, start: int, end: int) -> list[WeekMenu]:
+        """
+        Get a list of week menus by timestamp range.
+
+        :param start: Start of the timestamp range.
+        :param end: End of the timestamp range.
+        :return: A list of week menus.
+        """
+        return await self.menu_db.get_by_timestamp_range(start, end)
+
     async def create(self, menu_create: WeekMenuCreate, request: Optional[Request] = None) -> WeekMenu:
         """
         Create a week menu in database.
