@@ -9,8 +9,10 @@ from httpx import AsyncClient, ASGITransport
 
 from itzmenu_service import app
 from itzmenu_service.manager.users import get_user_manager
-from itzmenu_service.persistence.database import get_user_db
-from itzmenu_service.persistence.models import User
+from itzmenu_service.manager.menus import get_week_menu_manager
+from itzmenu_service.persistence.adapter.adapter import BeanieWeekMenuDatabase
+from itzmenu_service.persistence.database import get_user_db, get_menu_db
+from itzmenu_service.persistence.models import User, WeekMenu
 
 
 @pytest.fixture(scope='session', autouse=True)
@@ -26,6 +28,7 @@ def override_settings():
 async def prepare_database():
     async with app.lifespan():
         await User.find().delete()
+        await WeekMenu.find().delete()
 
 
 @pytest.fixture
@@ -39,5 +42,15 @@ async def user_db() -> BeanieUserDatabase[User]:
 
 
 @pytest_asyncio.fixture(scope='session')
+async def menu_db() -> BeanieWeekMenuDatabase:
+    return await get_menu_db().__anext__()
+
+
+@pytest_asyncio.fixture(scope='session')
 async def user_manager(user_db) -> BaseUserManager[User, UUID]:
     return await get_user_manager(user_db).__anext__()
+
+
+@pytest_asyncio.fixture(scope='session')
+async def week_menu_manager(menu_db) -> BeanieWeekMenuDatabase:
+    return await get_week_menu_manager(menu_db).__anext__()
