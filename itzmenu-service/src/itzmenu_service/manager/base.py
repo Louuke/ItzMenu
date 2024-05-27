@@ -4,7 +4,7 @@ from fastapi import Request
 from fastapi_users.models import ID
 from fastapi_users.types import DependencyCallable
 
-from itzmenu_api.persistence.schemas import WeekMenuCreate, WeekMenuRead
+from itzmenu_api.persistence.schemas import WeekMenuCreate, WeekMenuUpdate
 from itzmenu_service.manager import exceptions
 from itzmenu_service.persistence.adapter.base import BaseWeekMenuDatabase
 from itzmenu_service.persistence.models import WeekMenu
@@ -86,7 +86,7 @@ class BaseWeekMenuManager(Generic[ID]):
         await self.on_after_create(created_menu, request)
         return created_menu
 
-    async def update(self, menu_update: WeekMenuRead, menu: WeekMenu, request: Optional[Request] = None) -> WeekMenu:
+    async def update(self, menu_update: WeekMenuUpdate, menu: WeekMenu, request: Optional[Request] = None) -> WeekMenu:
         """
         Update a week menu.
 
