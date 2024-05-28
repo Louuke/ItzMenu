@@ -137,5 +137,6 @@ class TestBaseWeekMenuDatabase:
         create = menu.create_update_dict()
         result = await menu_db.create(create)
         uid = result.id
-        await menu_db.delete(result)
+        result = await menu_db.delete(result)
+        assert result
         assert await WeekMenu.find_one({'id': uid}) is None

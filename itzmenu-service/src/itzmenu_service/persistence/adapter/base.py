@@ -33,7 +33,7 @@ class BaseWeekMenuDatabase(Generic[ID]):
         """Update a week menu."""
         raise NotImplementedError()
 
-    async def delete(self, menu: WeekMenu) -> None:
+    async def delete(self, menu: WeekMenu) -> bool:
         """Delete a week menu."""
         raise NotImplementedError()
 

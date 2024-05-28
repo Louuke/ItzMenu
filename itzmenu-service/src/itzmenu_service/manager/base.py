@@ -103,7 +103,7 @@ class BaseWeekMenuManager(Generic[ID]):
         await self.on_after_update(updated_menu, updated_menu_data, request)
         return updated_menu
 
-    async def delete(self, menu: WeekMenu, request: Optional[Request] = None) -> None:
+    async def delete(self, menu: WeekMenu, request: Optional[Request] = None) -> bool:
         """
         Delete a user.
 
@@ -111,8 +111,9 @@ class BaseWeekMenuManager(Generic[ID]):
         :param request: Optional FastAPI request that triggered the operation, defaults to None.
         """
         await self.on_before_delete(menu, request)
-        await self.menu_db.delete(menu)
+        result = await self.menu_db.delete(menu)
         await self.on_after_delete(menu, request)
+        return result
 
     async def on_after_create(self, menu: WeekMenu, request: Optional[Request] = None):
         """

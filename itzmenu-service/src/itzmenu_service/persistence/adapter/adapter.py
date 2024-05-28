@@ -46,6 +46,7 @@ class BeanieWeekMenuDatabase(BaseWeekMenuDatabase[UUID]):
         await menu.save()
         return menu
 
-    async def delete(self, menu: WeekMenu) -> None:
+    async def delete(self, menu: WeekMenu) -> bool:
         """Delete a week menu."""
-        await menu.delete()
+        result = await menu.delete()
+        return result.deleted_count == 1 and result.acknowledged
