@@ -1,10 +1,11 @@
 import time
 
 import pytest
+from beanie.exceptions import RevisionIdWasChanged
 from pymongo.errors import DuplicateKeyError
 
 from itzmenu_service.persistence.adapter.adapter import BeanieWeekMenuDatabase
-from itzmenu_api.persistence.schemas import WeekMenuCreate, DayMenu, WeekDay, MealCategory, Meal
+from itzmenu_api.persistence.schemas import WeekMenuCreate, WeekMenuUpdate, DayMenu, WeekDay, MealCategory, Meal
 from itzmenu_service.persistence.models import WeekMenu
 
 
@@ -96,3 +97,37 @@ class TestBaseWeekMenuDatabase:
     async def test_get_by_timestamp_range_not_exists(self, menu_db: BeanieWeekMenuDatabase):
         result = await menu_db.get_by_timestamp_range(100, 200)
         assert len(result) == 0
+
+    async def test_update_success(self, menu_db: BeanieWeekMenuDatabase):
+        menu = WeekMenuCreate(filename='test3.jpg', start_timestamp=2, end_timestamp=10, created_at=3)
+        create = menu.create_update_dict()
+        result = await menu_db.create(create)
+        assert len(result.menus) == 0
+        day = DayMenu(name=WeekDay.MONDAY)
+        update = WeekMenuUpdate(filename='test4.jpg', start_timestamp=3, end_timestamp=11, created_at=4, menus=[day])
+        update_dict = update.create_update_dict()
+        updated = await menu_db.update(result, update_dict)
+        assert updated.id == result.id
+        assert updated.filename == 'test4.jpg'
+        assert updated.start_timestamp == 3
+        assert updated.end_timestamp == 11
+        assert updated.created_at == 4
+        assert len(updated.menus) == 1
+
+    @pytest.mark.dependency(depends=['TestBaseWeekMenuDatabase::test_create_success'])
+    async def test_update_change_id_fail(self, menu_db: BeanieWeekMenuDatabase):
+        menu = await WeekMenu.find_one()
+        update = WeekMenuUpdate(id='b0e069e4-2fa1-49cd-a81c-32b34fd3cc66')
+        update_dict = update.create_update_dict()
+        updated_menu = await menu_db.update(menu, update_dict)
+        assert updated_menu.id == menu.id
+
+    @pytest.mark.dependency(depends=['TestBaseWeekMenuDatabase::test_create_success'])
+    async def test_update_change_filename_fail(self, menu_db: BeanieWeekMenuDatabase):
+        menu = WeekMenuCreate(filename='test5.jpg', start_timestamp=2, end_timestamp=10)
+        create = menu.create_update_dict()
+        menu = await menu_db.create(create)
+        update = WeekMenuUpdate(filename='test1.jpg')
+        update_dict = update.create_update_dict()
+        with pytest.raises(RevisionIdWasChanged):
+            await menu_db.update(menu, update_dict)
