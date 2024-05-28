@@ -22,3 +22,6 @@ Content-Type: application/json
     "start_timestamp": 100,
     "end_timestamp": 200
 }
+
+### Delete
+DELETE http://localhost:8000/menus/20ff53b5-6c16-4907-9b87-43bc3a53b3cc

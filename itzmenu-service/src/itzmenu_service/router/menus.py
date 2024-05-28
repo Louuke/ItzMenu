@@ -75,6 +75,11 @@ def get_menus_router(get_week_menu_manager: WeekMenuManagerDependency[ID],
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                                 detail=ErrorCode.MENU_WITH_FILENAME_ALREADY_EXISTS) from e
 
+    @router.delete('/{id_or_filename}', status_code=status.HTTP_200_OK, name='menus:delete_menu')
+    async def delete_menu(id_or_filename: str, menu_manager: BaseWeekMenuManager[ID] = Depends(get_week_menu_manager)):
+        menu = await __get_by(menu_manager, id_or_filename=id_or_filename)
+        await menu_manager.delete(menu)
+
     async def __get_by(menu_manager: BaseWeekMenuManager[ID], id_or_filename: str | None = None,
                        timestamp: int | None = None) -> WeekMenu:
         try:
