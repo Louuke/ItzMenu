@@ -73,3 +73,26 @@ class TestBaseWeekMenuDatabase:
     async def test_get_by_filename_not_exists(self, menu_db: BeanieWeekMenuDatabase):
         result = await menu_db.get_by_filename('test3.jpg')
         assert result is None
+
+    @pytest.mark.dependency(depends=['TestBaseWeekMenuDatabase::test_create_success'])
+    async def test_get_by_timestamp_success(self, menu_db: BeanieWeekMenuDatabase):
+        menu = await WeekMenu.find_one()
+        result = await menu_db.get_by_timestamp(menu.start_timestamp)
+        assert result.id == menu.id
+        assert result.filename == menu.filename
+        assert result.start_timestamp == menu.start_timestamp
+        assert result.end_timestamp == menu.end_timestamp
+
+    async def test_get_by_timestamp_not_exists(self, menu_db: BeanieWeekMenuDatabase):
+        result = await menu_db.get_by_timestamp(100)
+        assert result is None
+
+    @pytest.mark.dependency(depends=['TestBaseWeekMenuDatabase::test_create_success'])
+    async def test_get_by_timestamp_range_success(self, menu_db: BeanieWeekMenuDatabase):
+        result = await menu_db.get_by_timestamp_range(1, 5)
+        assert len(result) == 1
+        assert result[0].filename == 'test1.jpg'
+
+    async def test_get_by_timestamp_range_not_exists(self, menu_db: BeanieWeekMenuDatabase):
+        result = await menu_db.get_by_timestamp_range(100, 200)
+        assert len(result) == 0
