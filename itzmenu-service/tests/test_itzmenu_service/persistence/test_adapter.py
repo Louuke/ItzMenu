@@ -131,3 +131,11 @@ class TestBaseWeekMenuDatabase:
         update_dict = update.create_update_dict()
         with pytest.raises(RevisionIdWasChanged):
             await menu_db.update(menu, update_dict)
+
+    async def test_delete_success(self, menu_db: BeanieWeekMenuDatabase):
+        menu = WeekMenuCreate(filename='test6.jpg', start_timestamp=2, end_timestamp=10)
+        create = menu.create_update_dict()
+        result = await menu_db.create(create)
+        uid = result.id
+        await menu_db.delete(result)
+        assert await WeekMenu.find_one({'id': uid}) is None
