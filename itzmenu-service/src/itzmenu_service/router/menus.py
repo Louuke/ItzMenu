@@ -86,7 +86,7 @@ def get_menus_router(get_week_menu_manager: WeekMenuManagerDependency[ID],
             if timestamp is not None:
                 return await menu_manager.get_by_timestamp(timestamp)
             elif re.search(r'^[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}$', id_or_filename):
-                return await menu_manager.get(id_or_filename)
+                return await menu_manager.get_by_id(id_or_filename)
             else:
                 return await menu_manager.get_by_filename(id_or_filename)
         except exceptions.WeekMenuNotExists as e:

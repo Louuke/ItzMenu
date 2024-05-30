@@ -9,7 +9,7 @@ from itzmenu_service.persistence.models import WeekMenu
 class BaseWeekMenuDatabase(Generic[ID]):
     """Base adapter for retrieving, creating and updating menus from a database."""
 
-    async def get(self, id: ID) -> WeekMenu | None:
+    async def get_by_id(self, id: ID) -> WeekMenu | None:
         """Get a single week menu by id."""
         raise NotImplementedError()
 

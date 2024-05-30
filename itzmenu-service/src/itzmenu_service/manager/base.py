@@ -20,7 +20,7 @@ class BaseWeekMenuManager(Generic[ID]):
     def __init__(self, menu_db: BaseWeekMenuDatabase[ID]):
         self.menu_db = menu_db
 
-    async def get(self, id: ID) -> WeekMenu:
+    async def get_by_id(self, id: ID) -> WeekMenu:
         """
         Get a week menu by id.
 
@@ -28,7 +28,7 @@ class BaseWeekMenuManager(Generic[ID]):
         :raises WeekMenuNotExists: The week menu does not exist.
         :return: A week menu.
         """
-        if (menu := await self.menu_db.get(id)) is None:
+        if (menu := await self.menu_db.get_by_id(id)) is None:
             raise exceptions.WeekMenuNotExists()
         return menu
 

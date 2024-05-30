@@ -17,7 +17,7 @@ class BeanieWeekMenuDatabase(BaseWeekMenuDatabase[UUID]):
     def __init__(self, menu_model: Type[WeekMenu]):
         self.menu_model = menu_model
 
-    async def get(self, id: ID) -> WeekMenu | None:
+    async def get_by_id(self, id: ID) -> WeekMenu | None:
         """Get a single week menu by id."""
         return await self.menu_model.get(id)
 

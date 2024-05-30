@@ -52,14 +52,14 @@ class TestBaseWeekMenuDatabase:
     @pytest.mark.dependency(depends=['TestBaseWeekMenuDatabase::test_create_success'])
     async def test_get_success(self, menu_db: BeanieWeekMenuDatabase):
         menu = await WeekMenu.find_one()
-        result = await menu_db.get(menu.id)
+        result = await menu_db.get_by_id(menu.id)
         assert result.id == menu.id
         assert result.filename == menu.filename
         assert result.start_timestamp == menu.start_timestamp
         assert result.end_timestamp == menu.end_timestamp
 
     async def test_get_not_exists(self, menu_db: BeanieWeekMenuDatabase):
-        result = await menu_db.get('b0e069e4-2fa1-49cd-a81c-32b34fd3cc66')
+        result = await menu_db.get_by_id('b0e069e4-2fa1-49cd-a81c-32b34fd3cc66')
         assert result is None
 
     @pytest.mark.dependency(depends=['TestBaseWeekMenuDatabase::test_create_success'])
