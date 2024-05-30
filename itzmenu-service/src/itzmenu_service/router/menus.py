@@ -21,7 +21,7 @@ def get_menus_router(get_week_menu_manager: WeekMenuManagerDependency[ID],
     """Generate a router with the week menu route."""
     router = APIRouter()
 
-    @router.post('/', response_model=menu_read_schema, status_code=status.HTTP_201_CREATED,
+    @router.post('', response_model=menu_read_schema, status_code=status.HTTP_201_CREATED,
                  name='menus:create_menu',
                  responses={
                      status.HTTP_400_BAD_REQUEST: {
@@ -54,12 +54,12 @@ def get_menus_router(get_week_menu_manager: WeekMenuManagerDependency[ID],
                              menu_manager: BaseWeekMenuManager[ID] = Depends(get_week_menu_manager)):
         return await __get_by(menu_manager, id_or_filename=id_or_filename)
 
-    @router.get('/', response_model=list[menu_read_schema], name='menus:get_menu_by_timestamp_range')
+    @router.get('', response_model=list[menu_read_schema], name='menus:get_menu_by_timestamp_range')
     async def get_menu_by_timestamp_range(menu_manager: BaseWeekMenuManager[ID] = Depends(get_week_menu_manager),
                                           start: int = 0, end: int = 9999999999):
         return await menu_manager.get_by_timestamp_range(start, end)
 
-    @router.get('/week/', response_model=menu_read_schema, name='menus:get_menu_by_timestamp')
+    @router.get('/week', response_model=menu_read_schema, name='menus:get_menu_by_timestamp')
     async def get_menu_by_timestamp(menu_manager: BaseWeekMenuManager[ID] = Depends(get_week_menu_manager),
                                     timestamp: int = int(time.time())):
         return await __get_by(menu_manager, timestamp=timestamp)
