@@ -140,3 +140,10 @@ class TestBaseWeekMenuDatabase:
         result = await menu_db.delete(result)
         assert result
         assert await WeekMenu.find_one({'id': uid}) is None
+
+    async def test_count(self, menu_db: BeanieWeekMenuDatabase):
+        count = await menu_db.count()
+        menu = WeekMenuCreate(filename='test7.jpg', start_timestamp=2, end_timestamp=10)
+        create = menu.create_update_dict()
+        await menu_db.create(create)
+        assert await menu_db.count() == count + 1
