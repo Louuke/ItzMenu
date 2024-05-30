@@ -37,5 +37,9 @@ class BaseWeekMenuDatabase(Generic[ID]):
         """Delete a week menu."""
         raise NotImplementedError()
 
+    async def count(self) -> int:
+        """Count the number of week menus."""
+        raise NotImplementedError()
+
 
 WeekMenuDatabaseDependency = DependencyCallable[BaseWeekMenuDatabase[ID]]

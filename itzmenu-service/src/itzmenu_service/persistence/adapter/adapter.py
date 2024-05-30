@@ -50,3 +50,7 @@ class BeanieWeekMenuDatabase(BaseWeekMenuDatabase[UUID]):
         """Delete a week menu."""
         result = await menu.delete()
         return result.deleted_count == 1 and result.acknowledged
+
+    async def count(self) -> int:
+        """Count the number of week menus."""
+        return await self.menu_model.count()
