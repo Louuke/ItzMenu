@@ -22,6 +22,9 @@ class TestMenusRouter:
                          ]}
     invalid_create_data = {'start_timestamp': 1, 'filename': 'router_menus_test2.jpg'}
     partial_create_data = {'start_timestamp': 6, 'end_timestamp': 10, 'filename': 'router_menus_test3.jpg'}
+    valid_change_data = {'filename': 'router_menus_test5.jpg', 'start_timestamp': 11, 'end_timestamp': 20}
+    invalid_change_data_id = {'id': '95eae770-42f9-4828-878e-23a28bb06439'}
+    invalid_change_data_filename = {'filename': valid_change_data['filename']}
 
     @pytest.mark.dependency()
     async def test_create_menu(self, http_client: AsyncClient, menu_db: BeanieWeekMenuDatabase):
@@ -131,3 +134,49 @@ class TestMenusRouter:
         resp = response.json()
         assert isinstance(resp, dict)
         assert resp['filename'] == self.partial_create_data['filename']
+
+    @pytest.mark.dependency()
+    async def test_update_menu(self, http_client: AsyncClient):
+        menu = WeekMenu(filename='router_menus_test4.jpg', start_timestamp=11, end_timestamp=20, created_at=11)
+        resp = await menu.create()
+        assert resp.id is not None
+        response = await http_client.patch(f'/menus/{resp.id}', json=self.valid_change_data)
+        assert response.status_code == 200
+        resp = response.json()
+        assert resp['filename'] == self.valid_change_data['filename']
+        assert resp['start_timestamp'] == self.valid_change_data['start_timestamp']
+        assert resp['end_timestamp'] == self.valid_change_data['end_timestamp']
+
+    async def test_update_menu_id_fail(self, http_client: AsyncClient):
+        menu = WeekMenu(filename='router_menus_test6.jpg', start_timestamp=11, end_timestamp=20, created_at=11)
+        dao = await menu.create()
+        assert dao.id is not None
+        response = await http_client.patch(f'/menus/{dao.id}', json=self.invalid_change_data_id)
+        assert response.status_code == 200
+        resp = response.json()
+        assert resp['id'] != self.invalid_change_data_id['id']
+        assert resp['id'] == str(dao.id)
+        assert resp['filename'] == 'router_menus_test6.jpg'
+
+    @pytest.mark.dependency(depends=['TestMenusRouter::test_update_menu'])
+    async def test_update_menu_filename_fail(self, http_client: AsyncClient):
+        menu = WeekMenu(filename='router_menus_test7.jpg', start_timestamp=11, end_timestamp=20, created_at=11)
+        dao = await menu.create()
+        assert dao.id is not None
+        response = await http_client.patch(f'/menus/{dao.id}', json=self.invalid_change_data_filename)
+        assert response.status_code == 400
+        resp = response.json()
+        assert resp['detail'] == ErrorCode.MENU_WITH_FILENAME_ALREADY_EXISTS
+        dao = await WeekMenu.get(dao.id)
+        assert dao.filename == menu.filename
+
+    async def test_delete_menu(self, http_client: AsyncClient):
+        menu = WeekMenu(filename='router_menus_test8.jpg', start_timestamp=11, end_timestamp=20, created_at=11)
+        dao = await menu.create()
+        assert dao.id is not None
+        response = await http_client.delete(f'/menus/{dao.id}')
+        assert response.status_code == 200
+        assert await WeekMenu.get(dao.id) is None
+        response = await http_client.delete(f'/menus/{dao.id}')
+        assert response.status_code == 404
+        assert await WeekMenu.get(dao.id) is None
