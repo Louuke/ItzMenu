@@ -59,6 +59,5 @@ app.include_router(
 
 
 @app.get("/authenticated-route")
-async def authenticated_route(user: User = Depends(current_active_user),
-                              _=Depends(PermissionChecker(['fastapi-users:auth']))):
-    return {"message": f"Hello {user.email}!"}
+async def authenticated_route(_=Depends(PermissionChecker(['fastapi-users:auth']))):
+    return {"message": f"Hello!"}

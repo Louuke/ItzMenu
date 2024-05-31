@@ -1,7 +1,7 @@
-from fastapi import Depends, HTTPException
+from fastapi import Depends, Request, HTTPException
 
-from itzmenu_service.manager.users import current_active_user
-from itzmenu_service.persistence.models import User
+from itzmenu_service.authentication.strategy.jwt import JWTPermissionStrategy
+from itzmenu_service.manager.users import get_jwt_strategy
 
 
 class PermissionChecker:
@@ -9,7 +9,10 @@ class PermissionChecker:
     def __init__(self, required_permissions: list[str]):
         self.required_permissions = required_permissions
 
-    def __call__(self, user: User = Depends(current_active_user)):
-        if set(self.required_permissions).issubset(user.permissions) or user.is_superuser:
+    def __call__(self, request: Request, strategy: JWTPermissionStrategy = Depends(get_jwt_strategy)):
+        if (authorization := request.headers.get('Authorization')) is None:
+            raise HTTPException(status_code=401, detail='Authorization header is missing')
+        permissions = strategy.get_permissions(authorization)
+        if set(self.required_permissions).issubset(permissions) or '*:*' in permissions:
             return True
         raise HTTPException(status_code=403, detail='User has insufficient permissions')

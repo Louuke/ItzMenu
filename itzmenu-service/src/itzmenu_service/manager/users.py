@@ -8,6 +8,7 @@ from fastapi_users import BaseUserManager, FastAPIUsers, schemas, models, Invali
 from fastapi_users.authentication import AuthenticationBackend, BearerTransport, JWTStrategy
 from fastapi_users.db import BeanieUserDatabase
 
+from itzmenu_service.authentication.strategy.jwt import JWTPermissionStrategy
 from itzmenu_service.persistence.database import User, get_user_db
 from itzmenu_service.mail import client
 from itzmenu_service.config.settings import settings
@@ -49,7 +50,7 @@ bearer_transport = BearerTransport(tokenUrl="auth/login")
 
 
 def get_jwt_strategy() -> JWTStrategy:
-    return JWTStrategy(secret=settings.service_secret, lifetime_seconds=3600)
+    return JWTPermissionStrategy(secret=settings.service_secret, lifetime_seconds=3600)
 
 
 auth_backend = AuthenticationBackend(
