@@ -115,7 +115,7 @@ class TestBaseWeekMenuDatabase:
         assert len(updated.menus) == 1
 
     @pytest.mark.dependency(depends=['TestBaseWeekMenuDatabase::test_create_success'])
-    async def test_update_change_id_fail(self, menu_db: BeanieWeekMenuDatabase):
+    async def test_update_id_fail(self, menu_db: BeanieWeekMenuDatabase):
         menu = await WeekMenu.find_one()
         update = WeekMenuUpdate(id='b0e069e4-2fa1-49cd-a81c-32b34fd3cc66')
         update_dict = update.create_update_dict()
@@ -123,7 +123,7 @@ class TestBaseWeekMenuDatabase:
         assert updated_menu.id == menu.id
 
     @pytest.mark.dependency(depends=['TestBaseWeekMenuDatabase::test_create_success'])
-    async def test_update_change_filename_fail(self, menu_db: BeanieWeekMenuDatabase):
+    async def test_update_filename_fail(self, menu_db: BeanieWeekMenuDatabase):
         menu = WeekMenuCreate(filename='test5.jpg', start_timestamp=2, end_timestamp=10)
         create = menu.create_update_dict()
         menu = await menu_db.create(create)
