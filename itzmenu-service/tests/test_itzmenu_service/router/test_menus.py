@@ -175,7 +175,7 @@ class TestMenusRouter:
         dao = await menu.create()
         assert dao.id is not None
         response = await http_client.delete(f'/menus/{dao.id}')
-        assert response.status_code == 200
+        assert response.status_code == 204
         assert await WeekMenu.get(dao.id) is None
         response = await http_client.delete(f'/menus/{dao.id}')
         assert response.status_code == 404
