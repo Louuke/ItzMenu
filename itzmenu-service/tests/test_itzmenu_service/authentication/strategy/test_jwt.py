@@ -11,7 +11,7 @@ def strategy():
     return JWTPermissionStrategy(secret='secret', lifetime_seconds=3600)
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio(scope='session')
 class TestJWTPermissionStrategy:
 
     async def test_jwt_strategy_generates_token_with_correct_audience(self, strategy: JWTPermissionStrategy):
