@@ -1,35 +1,47 @@
 import pytest
+from unittest.mock import Mock
 from fastapi import HTTPException
 from itzmenu_service.util.permissions import PermissionChecker
-from itzmenu_service.persistence.models import User
+from itzmenu_service.authentication.strategy.jwt import JWTPermissionStrategy
 
 
-def test_permission_checker_with_required_permissions_and_user_has_them():
-    checker = PermissionChecker(["read", "write"])
-    user = User(permissions=["read", "write", "delete"], email='email@example.org', hashed_password='pwd')
-    assert checker(user)
+@pytest.fixture
+def strategy():
+    return JWTPermissionStrategy(secret='secret', lifetime_seconds=3600)
 
 
-def test_permission_checker_with_required_permissions_and_user_does_not_have_them():
-    checker = PermissionChecker(["read", "write"])
-    user = User(permissions=["read"], email='email@example.org', hashed_password='pwd')
-    with pytest.raises(HTTPException):
-        checker(user)
+def test_permission_checker_with_sufficient_permissions(strategy: JWTPermissionStrategy):
+    request = Mock()
+    request.headers.get.return_value = 'Bearer token'
+    strategy.get_permissions = Mock(return_value=['read:menu', 'write:menu'])
+    checker = PermissionChecker(required_permissions=['read:menu'])
+    assert checker(request, strategy) is True
 
 
-def test_permission_checker_with_required_permissions_and_user_is_superuser():
-    checker = PermissionChecker(["read", "write"])
-    user = User(permissions=["read"], email='email@example.org', hashed_password='pwd', is_superuser=True)
-    assert checker(user)
+def test_permission_checker_with_insufficient_permissions(strategy: JWTPermissionStrategy):
+    request = Mock()
+    request.headers.get.return_value = 'Bearer token'
+    strategy.get_permissions = Mock(return_value=['read:menu'])
+    checker = PermissionChecker(required_permissions=['write:menu'])
+    with pytest.raises(HTTPException) as excinfo:
+        checker(request, strategy)
+    assert excinfo.value.status_code == 403
+    assert excinfo.value.detail == 'User has insufficient permissions'
 
 
-def test_permission_checker_with_no_required_permissions_and_user_has_no_permissions():
-    checker = PermissionChecker([])
-    user = User(permissions=[], email='email@example.org', hashed_password='pwd', is_superuser=False)
-    assert checker(user)
+def test_permission_checker_with_missing_authorization_header(strategy: JWTPermissionStrategy):
+    request = Mock()
+    request.headers.get.return_value = None
+    checker = PermissionChecker(required_permissions=['read:menu'])
+    with pytest.raises(HTTPException) as excinfo:
+        checker(request, strategy)
+    assert excinfo.value.status_code == 401
+    assert excinfo.value.detail == 'Authorization header is missing'
 
 
-def test_permission_checker_with_no_required_permissions_and_user_is_superuser():
-    checker = PermissionChecker([])
-    user = User(permissions=["read"], email='email@example.org', hashed_password='pwd', is_superuser=True)
-    assert checker(user)
+def test_permission_checker_with_all_permissions(strategy: JWTPermissionStrategy):
+    request = Mock()
+    request.headers.get.return_value = 'Bearer token'
+    strategy.get_permissions = Mock(return_value=['*:*'])
+    checker = PermissionChecker(required_permissions=['read:menu', 'write:menu'])
+    assert checker(request, strategy) is True
