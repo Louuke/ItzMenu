@@ -12,7 +12,7 @@ class JWTPermissionStrategy(JWTStrategy):
         super().__init__(secret, lifetime_seconds, token_audience, algorithm, public_key)
 
     async def write_token(self, user: User) -> str:
-        aud = self.token_audience + list(user.permissions) + ['*:*'] if user.is_superuser else []
+        aud = self.token_audience + list(user.permissions) + (['*:*'] if user.is_superuser else [])
         data = {'sub': str(user.id), 'aud': aud}
         return generate_jwt(data, self.encode_key, self.lifetime_seconds, algorithm=self.algorithm)
 
