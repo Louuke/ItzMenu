@@ -1,7 +1,4 @@
-from uuid import UUID
-
 import pytest
-from fastapi_users import BaseUserManager
 from fastapi_users.password import PasswordHelper
 from httpx import AsyncClient
 from smtp_test_server.context import SmtpMockServer
