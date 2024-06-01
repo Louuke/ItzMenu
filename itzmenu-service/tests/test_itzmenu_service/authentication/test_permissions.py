@@ -1,7 +1,7 @@
 import pytest
 from unittest.mock import Mock
 from fastapi import HTTPException
-from itzmenu_service.util.permissions import PermissionChecker
+from itzmenu_service.authentication.permissions import PermissionChecker
 from itzmenu_service.authentication.strategy.jwt import JWTPermissionStrategy
 
 
