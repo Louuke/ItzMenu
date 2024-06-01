@@ -44,6 +44,10 @@ class TestMenusRouter:
         menu = await WeekMenu.get(resp['id'])
         assert menu is not None
 
+    async def test_create_menu_no_headers(self, http_client: AsyncClient):
+        response = await http_client.post('/menus', json=self.valid_create_data)
+        assert response.status_code == 401
+
     async def test_create_menu_no_permissions(self, http_client: AsyncClient,
                                               user_wo_permissions_headers: dict[str, str]):
         response = await http_client.post('/menus', json=self.valid_create_data,
