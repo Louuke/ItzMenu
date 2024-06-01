@@ -9,6 +9,7 @@ from fastapi_users.router.common import ErrorModel
 from starlette import status
 
 from itzmenu_api.persistence.schemas import WeekMenuRead, WeekMenuUpdate, WeekMenuCreate
+from itzmenu_service.authentication.permissions import PermissionChecker
 from itzmenu_service.manager import exceptions
 from itzmenu_service.manager.base import WeekMenuManagerDependency, BaseWeekMenuManager
 from itzmenu_service.persistence.models import WeekMenu
@@ -41,7 +42,8 @@ def get_menus_router(get_week_menu_manager: WeekMenuManagerDependency[ID],
                      },
                  })
     async def create_menu(request: Request, user_create: menu_create_schema,
-                          menu_manager: BaseWeekMenuManager[ID] = Depends(get_week_menu_manager)):
+                          menu_manager: BaseWeekMenuManager[ID] = Depends(get_week_menu_manager),
+                          _=Depends(PermissionChecker(['menus:create_menu']))):
         try:
             created_user = await menu_manager.create(user_create, request=request)
         except exceptions.WeekMenuAlreadyExists as e:
@@ -66,7 +68,8 @@ def get_menus_router(get_week_menu_manager: WeekMenuManagerDependency[ID],
 
     @router.patch('/{id_or_filename}', response_model=menu_read_schema, name='menus:update_menu')
     async def update_menu(request: Request, id_or_filename: str, user_update: WeekMenuUpdate,
-                          menu_manager: BaseWeekMenuManager[ID] = Depends(get_week_menu_manager)):
+                          menu_manager: BaseWeekMenuManager[ID] = Depends(get_week_menu_manager),
+                          _=Depends(PermissionChecker(['menus:update_menu']))):
         try:
             current_menu = await __get_by(menu_manager, id_or_filename=id_or_filename)
             menu = await menu_manager.update(user_update, current_menu, request=request)
@@ -76,7 +79,8 @@ def get_menus_router(get_week_menu_manager: WeekMenuManagerDependency[ID],
                                 detail=ErrorCode.MENU_WITH_FILENAME_ALREADY_EXISTS) from e
 
     @router.delete('/{id_or_filename}', status_code=status.HTTP_204_NO_CONTENT, name='menus:delete_menu')
-    async def delete_menu(id_or_filename: str, menu_manager: BaseWeekMenuManager[ID] = Depends(get_week_menu_manager)):
+    async def delete_menu(id_or_filename: str, menu_manager: BaseWeekMenuManager[ID] = Depends(get_week_menu_manager),
+                          _=Depends(PermissionChecker(['menus:delete_menu']))):
         menu = await __get_by(menu_manager, id_or_filename=id_or_filename)
         await menu_manager.delete(menu)
 
