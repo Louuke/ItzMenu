@@ -6,7 +6,7 @@ from itzmenu_service.persistence.models import User
 
 class JWTPermissionStrategy(JWTStrategy):
 
-    def __init__(self, secret: SecretType, lifetime_seconds: int | None, token_audience: list[str] | None = None,
+    def __init__(self, secret: SecretType | str, lifetime_seconds: int | None, token_audience: list[str] | None = None,
                  algorithm: str = 'HS256', public_key: SecretType | None = None):
         token_audience = token_audience if token_audience is not None else ['fastapi-users:auth']
         super().__init__(secret, lifetime_seconds, token_audience, algorithm, public_key)
