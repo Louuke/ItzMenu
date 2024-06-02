@@ -1,3 +1,5 @@
+from uuid import UUID
+
 import requests
 
 from itzmenu_api.persistence.schemas import WeekMenuCreate, WeekMenuRead
@@ -34,6 +36,11 @@ class ItzMenuClient:
     def create_menu(self, menu: WeekMenuCreate) -> WeekMenuRead:
         data = menu.create_update_dict()
         req = requests.Request('POST', f'{self.__host}/menus', json=data)
+        res = self.__execute_request(req).json()
+        return WeekMenuRead(**res)
+
+    def get_menu_by_id(self, menu_id: str | UUID) -> WeekMenuRead:
+        req = requests.Request('GET', f'{self.__host}/menus/{menu_id}')
         res = self.__execute_request(req).json()
         return WeekMenuRead(**res)
 
