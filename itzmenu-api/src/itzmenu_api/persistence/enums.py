@@ -12,6 +12,7 @@ class DietType(StrEnum):
     def values(cls) -> list:
         return list(cls.__members__.values())
 
+
 class WeekDay(StrEnum):
     MONDAY = 'monday',
     TUESDAY = 'tuesday',
