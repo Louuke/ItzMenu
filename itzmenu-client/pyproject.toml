@@ -17,6 +17,7 @@ classifiers = [
     'Programming Language :: Python :: Implementation :: CPython',
 ]
 dependencies = [
+    'itzmenu_api',
     'requests>=2.32.4'
 ]
 
