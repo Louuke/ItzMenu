@@ -18,7 +18,7 @@ classifiers = [
 ]
 dependencies = [
     'itzmenu_api',
-    'fastapi-users>=13.0.0',
+    'fastapi-users[beanie]>=13.0.0',
     'pydantic_settings>=2.2.1',
     'typing_extensions>=4.11.0',
     'yagmail>=0.15.293'
