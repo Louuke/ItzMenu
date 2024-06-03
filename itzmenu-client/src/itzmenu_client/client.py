@@ -40,7 +40,12 @@ class ItzMenuClient:
         return WeekMenuRead(**res)
 
     def get_menu_by_id(self, menu_id: str | UUID) -> WeekMenuRead:
-        req = requests.Request('GET', f'{self.__host}/menus/{menu_id}')
+        req = requests.Request('GET', f'{self.__host}/menus/menu/{menu_id}')
+        res = self.__execute_request(req).json()
+        return WeekMenuRead(**res)
+
+    def get_menu_by_timestamp(self, timestamp: int) -> WeekMenuRead:
+        req = requests.Request('GET', f'{self.__host}/menus/menu?timestamp={timestamp}')
         res = self.__execute_request(req).json()
         return WeekMenuRead(**res)
 
