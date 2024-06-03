@@ -95,7 +95,7 @@ class TestMenusRouter:
     @pytest.mark.dependency(depends=['TestMenusRouter::test_create_menu'])
     async def test_get_menu_by_id(self, http_client: AsyncClient):
         menu = await WeekMenu.find_one({'filename': self.valid_create_data['filename']})
-        response = await http_client.get(f'/menus/{menu.id}')
+        response = await http_client.get(f'/menus/menu/{menu.id}')
         assert response.status_code == 200
         resp = response.json()
         assert str(menu.id) == resp['id']
@@ -146,12 +146,12 @@ class TestMenusRouter:
 
     @pytest.mark.dependency(depends=['TestMenusRouter::test_create_menu', 'TestMenusRouter::test_create_menu_partial'])
     async def test_get_menu_by_timestamp(self, http_client: AsyncClient):
-        response = await http_client.get('/menus/week/?timestamp=1')
+        response = await http_client.get('/menus/menu?timestamp=1')
         assert response.status_code == 200
         resp = response.json()
         assert isinstance(resp, dict)
         assert resp['filename'] == self.valid_create_data['filename']
-        response = await http_client.get('/menus/week/?timestamp=7')
+        response = await http_client.get('/menus/menu?timestamp=7')
         assert response.status_code == 200
         resp = response.json()
         assert isinstance(resp, dict)
@@ -162,7 +162,7 @@ class TestMenusRouter:
         menu = WeekMenu(filename='router_menus_test4.jpg', start_timestamp=11, end_timestamp=20, created_at=11)
         resp = await menu.create()
         assert resp.id is not None
-        response = await http_client.patch(f'/menus/{resp.id}', json=self.valid_change_data,
+        response = await http_client.patch(f'/menus/menu/{resp.id}', json=self.valid_change_data,
                                            headers=user_w_permissions_headers)
         assert response.status_code == 200
         resp = response.json()
@@ -175,7 +175,7 @@ class TestMenusRouter:
         menu = WeekMenu(filename='router_menus_test10.jpg', start_timestamp=11, end_timestamp=20, created_at=11)
         resp = await menu.create()
         assert resp.id is not None
-        response = await http_client.patch(f'/menus/{resp.id}', json=self.valid_change_data,
+        response = await http_client.patch(f'/menus/menu/{resp.id}', json=self.valid_change_data,
                                            headers=user_wo_permissions_headers)
         assert response.status_code == 403
         menu = await WeekMenu.get(resp.id)
@@ -185,7 +185,7 @@ class TestMenusRouter:
         menu = WeekMenu(filename='router_menus_test11.jpg', start_timestamp=11, end_timestamp=20, created_at=11)
         resp = await menu.create()
         assert resp.id is not None
-        response = await http_client.patch(f'/menus/{resp.id}', json=self.superuser_change_data,
+        response = await http_client.patch(f'/menus/menu/{resp.id}', json=self.superuser_change_data,
                                            headers=user_superuser_headers)
         assert response.status_code == 200
         resp = response.json()
@@ -197,7 +197,7 @@ class TestMenusRouter:
         menu = WeekMenu(filename='router_menus_test6.jpg', start_timestamp=11, end_timestamp=20, created_at=11)
         dao = await menu.create()
         assert dao.id is not None
-        response = await http_client.patch(f'/menus/{dao.id}', json=self.invalid_change_data_id,
+        response = await http_client.patch(f'/menus/menu/{dao.id}', json=self.invalid_change_data_id,
                                            headers=user_w_permissions_headers)
         assert response.status_code == 200
         resp = response.json()
@@ -211,7 +211,7 @@ class TestMenusRouter:
         menu = WeekMenu(filename='router_menus_test7.jpg', start_timestamp=11, end_timestamp=20, created_at=11)
         dao = await menu.create()
         assert dao.id is not None
-        response = await http_client.patch(f'/menus/{dao.id}', json=self.invalid_change_data_filename,
+        response = await http_client.patch(f'/menus/menu/{dao.id}', json=self.invalid_change_data_filename,
                                            headers=user_w_permissions_headers)
         assert response.status_code == 400
         resp = response.json()
@@ -223,10 +223,10 @@ class TestMenusRouter:
         menu = WeekMenu(filename='router_menus_test8.jpg', start_timestamp=11, end_timestamp=20, created_at=11)
         dao = await menu.create()
         assert dao.id is not None
-        response = await http_client.delete(f'/menus/{dao.id}', headers=user_w_permissions_headers)
+        response = await http_client.delete(f'/menus/menu/{dao.id}', headers=user_w_permissions_headers)
         assert response.status_code == 204
         assert await WeekMenu.get(dao.id) is None
-        response = await http_client.delete(f'/menus/{dao.id}', headers=user_w_permissions_headers)
+        response = await http_client.delete(f'/menus/menu/{dao.id}', headers=user_w_permissions_headers)
         assert response.status_code == 404
         assert await WeekMenu.get(dao.id) is None
 
@@ -235,7 +235,7 @@ class TestMenusRouter:
         menu = WeekMenu(filename='router_menus_test12.jpg', start_timestamp=11, end_timestamp=20, created_at=11)
         dao = await menu.create()
         assert dao.id is not None
-        response = await http_client.delete(f'/menus/{dao.id}', headers=user_wo_permissions_headers)
+        response = await http_client.delete(f'/menus/menu/{dao.id}', headers=user_wo_permissions_headers)
         assert response.status_code == 403
         assert await WeekMenu.get(dao.id) is not None
 
@@ -243,9 +243,9 @@ class TestMenusRouter:
         menu = WeekMenu(filename='router_menus_test13.jpg', start_timestamp=11, end_timestamp=20, created_at=11)
         dao = await menu.create()
         assert dao.id is not None
-        response = await http_client.delete(f'/menus/{dao.id}', headers=user_superuser_headers)
+        response = await http_client.delete(f'/menus/menu/{dao.id}', headers=user_superuser_headers)
         assert response.status_code == 204
         assert await WeekMenu.get(dao.id) is None
-        response = await http_client.delete(f'/menus/{dao.id}', headers=user_superuser_headers)
+        response = await http_client.delete(f'/menus/menu/{dao.id}', headers=user_superuser_headers)
         assert response.status_code == 404
         assert await WeekMenu.get(dao.id) is None

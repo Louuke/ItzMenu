@@ -51,8 +51,8 @@ def get_menus_router(get_week_menu_manager: WeekMenuManagerDependency[ID],
                                 detail=ErrorCode.MENU_WITH_FILENAME_ALREADY_EXISTS) from e
         return schemas.model_validate(menu_read_schema, created_user)
 
-    @router.get('/{id_or_filename}', response_model=menu_read_schema, name='menus:get_menu_by_id')
-    async def get_menu_by_id(id_or_filename: str = Path(...),
+    @router.get('/menu/{id_or_filename}', response_model=menu_read_schema, name='menus:get_menu_by_id')
+    async def get_menu_by_id(id_or_filename: str,
                              menu_manager: BaseWeekMenuManager[ID] = Depends(get_week_menu_manager)):
         return await __get_by(menu_manager, id_or_filename=id_or_filename)
 
@@ -61,12 +61,12 @@ def get_menus_router(get_week_menu_manager: WeekMenuManagerDependency[ID],
                                           start: int = 0, end: int = 9999999999):
         return await menu_manager.get_by_timestamp_range(start, end)
 
-    @router.get('/week/', response_model=menu_read_schema, name='menus:get_menu_by_timestamp')
+    @router.get('/menu', response_model=menu_read_schema, name='menus:get_menu_by_timestamp')
     async def get_menu_by_timestamp(menu_manager: BaseWeekMenuManager[ID] = Depends(get_week_menu_manager),
                                     timestamp: int = int(time.time())):
         return await __get_by(menu_manager, timestamp=timestamp)
 
-    @router.patch('/{id_or_filename}', response_model=menu_read_schema, name='menus:update_menu')
+    @router.patch('/menu/{id_or_filename}', response_model=menu_read_schema, name='menus:update_menu')
     async def update_menu(request: Request, id_or_filename: str, user_update: WeekMenuUpdate,
                           menu_manager: BaseWeekMenuManager[ID] = Depends(get_week_menu_manager),
                           _=Depends(PermissionChecker(['menus:update_menu']))):
@@ -78,7 +78,7 @@ def get_menus_router(get_week_menu_manager: WeekMenuManagerDependency[ID],
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                                 detail=ErrorCode.MENU_WITH_FILENAME_ALREADY_EXISTS) from e
 
-    @router.delete('/{id_or_filename}', status_code=status.HTTP_204_NO_CONTENT, name='menus:delete_menu')
+    @router.delete('/menu/{id_or_filename}', status_code=status.HTTP_204_NO_CONTENT, name='menus:delete_menu')
     async def delete_menu(id_or_filename: str, menu_manager: BaseWeekMenuManager[ID] = Depends(get_week_menu_manager),
                           _=Depends(PermissionChecker(['menus:delete_menu']))):
         menu = await __get_by(menu_manager, id_or_filename=id_or_filename)
