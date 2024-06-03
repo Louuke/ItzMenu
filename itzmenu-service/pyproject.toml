@@ -20,13 +20,13 @@ dependencies = [
     'itzmenu_api',
     'fastapi-users[beanie]>=13.0.0',
     'pydantic_settings>=2.2.1',
-    'typing_extensions>=4.11.0',
+    'typing_extensions>=4.12.1',
     'yagmail>=0.15.293'
 ]
 
 [project.optional-dependencies]
 test = [
-    'pytest>=8.2.0',
+    'pytest>=8.2.1',
     'pytest-asyncio>=0.23.6',
     'pytest-dependency>=0.6.0',
     'smtp-test-server>=0.1.0'
