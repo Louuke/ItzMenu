@@ -34,3 +34,18 @@ def test_get_menu_by_id(httpserver: HTTPServer):
     assert response.filename == 'test_menu.jpg'
     assert response.id == UUID('835849f9-52e9-4479-8cc3-63ac96e75325')
     assert response.menus == []
+
+
+def test_get_menu_by_timestamp(httpserver: HTTPServer):
+    resp = {'id': '835849f9-52e9-4479-8cc3-63ac96e75325', 'start_timestamp': 30, 'end_timestamp': 40, 'created_at': 30,
+            'filename': 'test_menu.jpg'}
+    (httpserver.expect_request('/menus/menu', method='GET', query_string='timestamp=30')
+     .respond_with_json(resp))
+    client = ItzMenuClient('user', 'password', f'http://{httpserver.host}:{httpserver.port}')
+    response = client.get_menu_by_timestamp(30)
+    assert response.start_timestamp == 30
+    assert response.end_timestamp == 40
+    assert response.created_at == 30
+    assert response.filename == 'test_menu.jpg'
+    assert response.id == UUID('835849f9-52e9-4479-8cc3-63ac96e75325')
+    assert response.menus == []
