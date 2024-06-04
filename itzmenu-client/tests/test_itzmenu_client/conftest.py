@@ -25,6 +25,16 @@ def headers(user_access_token: str):
 
 
 @pytest.fixture
+def week_menus() -> list[dict[str, str]]:
+    return [
+        {'id': '835849f9-52e9-4479-8cc3-63ac96e75325', 'start_timestamp': 30, 'end_timestamp': 40,
+         'created_at': 30, 'filename': 'test_menu1.jpg'},
+        {'id': '835849f9-52e9-4479-8cc3-63ac96e75326', 'start_timestamp': 41, 'end_timestamp': 50,
+         'created_at': 41, 'filename': 'test_menu2.jpg'},
+    ]
+
+
+@pytest.fixture
 def httpserver(make_httpserver, user: str, password: str, user_access_token: str):
     server: HTTPServer = make_httpserver
     data = f'username={urllib.parse.quote(user)}&password={password}'
