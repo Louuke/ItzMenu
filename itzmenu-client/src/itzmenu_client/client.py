@@ -49,6 +49,11 @@ class ItzMenuClient:
         res = self.__execute_request(req).json()
         return WeekMenuRead(**res)
 
+    def get_menu_by_timestamp_range(self, start: int = 0, end: int = 9999999999) -> list[WeekMenuRead]:
+        req = requests.Request('GET', f'{self.__host}/menus?start={start}&end={end}')
+        res = self.__execute_request(req).json()
+        return [WeekMenuRead(**menu) for menu in res]
+
     def _refresh_access_token(self):
         if (response := self._login()).ok and response.headers['content-type'] == 'application/json':
             token = response.json()['access_token']
