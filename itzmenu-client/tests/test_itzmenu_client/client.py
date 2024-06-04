@@ -1,6 +1,8 @@
 from typing import Any
 from uuid import UUID
 
+import pytest
+import requests
 from pytest_httpserver import HTTPServer
 
 from itzmenu_api.persistence.schemas import WeekMenuCreate
@@ -34,6 +36,13 @@ class TestItzMenuClient:
         assert response.filename == resp['filename']
         assert response.id == UUID(resp['id'])
         assert response.menus == []
+
+    def test_get_menu_by_id_not_found(self, httpserver: HTTPServer):
+        (httpserver.expect_request('/menus/menu/835849f9-52e9-4479-8cc3-63ac96e75325', method='GET')
+         .respond_with_data(status=404))
+        client = ItzMenuClient('user', 'password', f'http://{httpserver.host}:{httpserver.port}')
+        with pytest.raises(requests.HTTPError):
+            client.get_menu_by_id_or_filename('835849f9-52e9-4479-8cc3-63ac96e75325')
 
     def test_get_menu_by_filename(self, httpserver: HTTPServer, week_menus: list[dict[str, Any]]):
         resp = week_menus[0]
