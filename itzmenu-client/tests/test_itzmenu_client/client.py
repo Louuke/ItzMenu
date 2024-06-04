@@ -25,10 +25,21 @@ class TestItzMenuClient:
 
     def test_get_menu_by_id(self, httpserver: HTTPServer, week_menus: list[dict[str, Any]]):
         resp = week_menus[0]
-        (httpserver.expect_request(f'/menus/menu/{resp["id"]}', method='GET')
-         .respond_with_json(resp))
+        (httpserver.expect_request(f'/menus/menu/{resp["id"]}', method='GET').respond_with_json(resp))
         client = ItzMenuClient('user', 'password', f'http://{httpserver.host}:{httpserver.port}')
-        response = client.get_menu_by_id('835849f9-52e9-4479-8cc3-63ac96e75325')
+        response = client.get_menu_by_id_or_filename('835849f9-52e9-4479-8cc3-63ac96e75325')
+        assert response.start_timestamp == resp['start_timestamp']
+        assert response.end_timestamp == resp['end_timestamp']
+        assert response.created_at == resp['created_at']
+        assert response.filename == resp['filename']
+        assert response.id == UUID(resp['id'])
+        assert response.menus == []
+
+    def test_get_menu_by_filename(self, httpserver: HTTPServer, week_menus: list[dict[str, Any]]):
+        resp = week_menus[0]
+        (httpserver.expect_request(f'/menus/menu/{resp["filename"]}', method='GET').respond_with_json(resp))
+        client = ItzMenuClient('user', 'password', f'http://{httpserver.host}:{httpserver.port}')
+        response = client.get_menu_by_id_or_filename('test_menu1.jpg')
         assert response.start_timestamp == resp['start_timestamp']
         assert response.end_timestamp == resp['end_timestamp']
         assert response.created_at == resp['created_at']
