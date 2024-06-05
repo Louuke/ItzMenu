@@ -2,7 +2,7 @@ from uuid import UUID
 
 import requests
 
-from itzmenu_api.persistence.schemas import WeekMenuCreate, WeekMenuRead
+from itzmenu_api.persistence.schemas import WeekMenuCreate, WeekMenuRead, WeekMenuUpdate
 
 
 def retry_request(attempts: int = 1):
@@ -53,6 +53,12 @@ class ItzMenuClient:
         req = requests.Request('GET', f'{self.__host}/menus?start={start}&end={end}')
         res = self.__execute_request(req).json()
         return [WeekMenuRead(**menu) for menu in res]
+
+    def update_menu(self, menu_id_or_filename: str | UUID, menu: WeekMenuUpdate) -> WeekMenuRead:
+        data = menu.create_update_dict()
+        req = requests.Request('PATCH', f'{self.__host}/menus/menu/{menu_id_or_filename}', json=data)
+        res = self.__execute_request(req).json()
+        return WeekMenuRead(**res)
 
     def _refresh_access_token(self):
         if (response := self._login()).ok and response.headers['content-type'] == 'application/json':

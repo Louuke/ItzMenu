@@ -5,7 +5,7 @@ import pytest
 import requests
 from pytest_httpserver import HTTPServer
 
-from itzmenu_api.persistence.schemas import WeekMenuCreate
+from itzmenu_api.persistence.schemas import WeekMenuCreate, WeekMenuUpdate
 from itzmenu_client.client import ItzMenuClient
 
 
@@ -144,3 +144,36 @@ class TestItzMenuClient:
         client = ItzMenuClient('user', 'password', f'http://{httpserver.host}:{httpserver.port}')
         response = client.get_menu_by_timestamp_range(start=100)
         assert response == []
+
+    def test_update_menu(self, httpserver: HTTPServer, user: str, password: str, headers: dict[str, str],
+                         week_menus: list[dict[str, Any]]):
+        update = {'start_timestamp': 99, 'end_timestamp': 100, 'created_at': 99, 'filename': 'test_menu_updated.jpg'}
+        resp = {'id': '835849f9-52e9-4479-8cc3-63ac96e75325', **update}
+        httpserver.expect_request(f'/menus/menu/835849f9-52e9-4479-8cc3-63ac96e75325', method='PATCH', json=update,
+                                  headers=headers).respond_with_json(resp)
+        (httpserver.expect_request(f'/menus/menu/835849f9-52e9-4479-8cc3-63ac96e75325', method='PATCH', json=update)
+         .respond_with_data(status=401))
+        client = ItzMenuClient(user, password, f'http://{httpserver.host}:{httpserver.port}')
+        response = client.update_menu('835849f9-52e9-4479-8cc3-63ac96e75325',
+                                      WeekMenuUpdate(**update))
+        assert response.start_timestamp == 99
+        assert response.end_timestamp == 100
+        assert response.created_at == 99
+        assert response.filename == 'test_menu_updated.jpg'
+        assert response.id == UUID('835849f9-52e9-4479-8cc3-63ac96e75325')
+
+    def test_update_menu_no_permissions(self, httpserver: HTTPServer, week_menus: list[dict[str, Any]]):
+        update = {'start_timestamp': 99, 'end_timestamp': 100, 'created_at': 99, 'filename': 'test_menu_updated.jpg'}
+        (httpserver.expect_request(f'/menus/menu/835849f9-52e9-4479-8cc3-63ac96e75325', method='PATCH', json=update)
+         .respond_with_data(status=403))
+        client = ItzMenuClient('user', 'password', f'http://{httpserver.host}:{httpserver.port}')
+        with pytest.raises(requests.HTTPError):
+            client.update_menu('835849f9-52e9-4479-8cc3-63ac96e75325', WeekMenuUpdate(**update))
+
+    def test_update_menu_filename_fail(self, httpserver: HTTPServer, week_menus: list[dict[str, Any]]):
+        update = {'start_timestamp': 99, 'end_timestamp': 100, 'created_at': 99, 'filename': 'test_menu_updated.jpg'}
+        (httpserver.expect_request(f'/menus/menu/835849f9-52e9-4479-8cc3-63ac96e75325', method='PATCH', json=update)
+         .respond_with_data(status=400))
+        client = ItzMenuClient('user', 'password', f'http://{httpserver.host}:{httpserver.port}')
+        with pytest.raises(requests.HTTPError):
+            client.update_menu('835849f9-52e9-4479-8cc3-63ac96e75325', WeekMenuUpdate(**update))
