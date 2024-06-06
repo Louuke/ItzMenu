@@ -1,8 +1,6 @@
 from typing import Any
 from uuid import UUID
 
-import pytest
-import requests
 from pytest_httpserver import HTTPServer
 
 from itzmenu_api.persistence.schemas import WeekMenuCreate, WeekMenuUpdate
@@ -41,8 +39,7 @@ class TestItzMenuClient:
         (httpserver.expect_request('/menus/menu/835849f9-52e9-4479-8cc3-63ac96e75325', method='GET')
          .respond_with_data(status=404))
         client = ItzMenuClient('user', 'password', f'http://{httpserver.host}:{httpserver.port}')
-        with pytest.raises(requests.HTTPError):
-            client.get_menu_by_id_or_filename('835849f9-52e9-4479-8cc3-63ac96e75325')
+        assert client.get_menu_by_id_or_filename('835849f9-52e9-4479-8cc3-63ac96e75325') is None
 
     def test_get_menu_by_filename(self, httpserver: HTTPServer, week_menus: list[dict[str, Any]]):
         resp = week_menus[0]
@@ -167,16 +164,16 @@ class TestItzMenuClient:
         (httpserver.expect_request(f'/menus/menu/835849f9-52e9-4479-8cc3-63ac96e75325', method='PATCH', json=update)
          .respond_with_data(status=403))
         client = ItzMenuClient('user', 'password', f'http://{httpserver.host}:{httpserver.port}')
-        with pytest.raises(requests.HTTPError):
-            client.update_menu('835849f9-52e9-4479-8cc3-63ac96e75325', WeekMenuUpdate(**update))
+        resp = client.update_menu('835849f9-52e9-4479-8cc3-63ac96e75325', WeekMenuUpdate(**update))
+        assert resp is None
 
     def test_update_menu_filename_fail(self, httpserver: HTTPServer, week_menus: list[dict[str, Any]]):
         update = {'start_timestamp': 99, 'end_timestamp': 100, 'created_at': 99, 'filename': 'test_menu_updated.jpg'}
         (httpserver.expect_request(f'/menus/menu/835849f9-52e9-4479-8cc3-63ac96e75325', method='PATCH', json=update)
          .respond_with_data(status=400))
         client = ItzMenuClient('user', 'password', f'http://{httpserver.host}:{httpserver.port}')
-        with pytest.raises(requests.HTTPError):
-            client.update_menu('835849f9-52e9-4479-8cc3-63ac96e75325', WeekMenuUpdate(**update))
+        resp = client.update_menu('835849f9-52e9-4479-8cc3-63ac96e75325', WeekMenuUpdate(**update))
+        assert resp is None
 
     def test_delete_menu(self, httpserver: HTTPServer, user: str, password: str, headers: dict[str, str],
                          week_menus: list[dict[str, Any]]):

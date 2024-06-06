@@ -42,7 +42,7 @@ class ItzMenuClient:
     def __del__(self):
         self.__session.close()
 
-    def create_menu(self, menu: WeekMenuCreate) -> WeekMenuRead:
+    def create_menu(self, menu: WeekMenuCreate) -> WeekMenuRead | None:
         """
         Create a week menu.
         :param menu: An instance of WeekMenuCreate containing the data for the week menu.
@@ -50,28 +50,28 @@ class ItzMenuClient:
         """
         data = menu.create_update_dict()
         req = requests.Request('POST', f'{self.__host}/menus', json=data)
-        res = self.__execute_request(req).json()
-        return WeekMenuRead(**res)
+        resp = self.__execute_request(req)
+        return WeekMenuRead(**resp.json()) if resp is not None and resp.ok else None
 
-    def get_menu_by_id_or_filename(self, menu_id_or_filename: str | UUID) -> WeekMenuRead:
+    def get_menu_by_id_or_filename(self, menu_id_or_filename: str | UUID) -> WeekMenuRead | None:
         """
         Get a week menu by its id or filename.
         :param menu_id_or_filename: The id or filename of the week menu.
         :return: The week menu.
         """
         req = requests.Request('GET', f'{self.__host}/menus/menu/{menu_id_or_filename}')
-        res = self.__execute_request(req).json()
-        return WeekMenuRead(**res)
+        resp = self.__execute_request(req)
+        return WeekMenuRead(**resp.json()) if resp is not None and resp.ok else None
 
-    def get_menu_by_timestamp(self, timestamp: int) -> WeekMenuRead:
+    def get_menu_by_timestamp(self, timestamp: int) -> WeekMenuRead | None:
         """
         Get a week menu by timestamp.
         :param timestamp: The timestamp of the week menu.
         :return: The week menu.
         """
         req = requests.Request('GET', f'{self.__host}/menus/menu?timestamp={timestamp}')
-        res = self.__execute_request(req).json()
-        return WeekMenuRead(**res)
+        resp = self.__execute_request(req)
+        return WeekMenuRead(**resp.json()) if resp is not None and resp.ok else None
 
     def get_menu_by_timestamp_range(self, start: int = 0, end: int = 9999999999) -> list[WeekMenuRead]:
         """
@@ -81,10 +81,10 @@ class ItzMenuClient:
         :return: A list of week menus.
         """
         req = requests.Request('GET', f'{self.__host}/menus?start={start}&end={end}')
-        res = self.__execute_request(req).json()
-        return [WeekMenuRead(**menu) for menu in res]
+        resp = self.__execute_request(req)
+        return [WeekMenuRead(**menu) for menu in resp.json()] if resp is not None and resp.ok else []
 
-    def update_menu(self, menu_id_or_filename: str | UUID, menu: WeekMenuUpdate) -> WeekMenuRead:
+    def update_menu(self, menu_id_or_filename: str | UUID, menu: WeekMenuUpdate) -> WeekMenuRead | None:
         """
         Update a menu by its id or filename.
         :param menu_id_or_filename: The id or filename of the menu to update.
@@ -93,8 +93,8 @@ class ItzMenuClient:
         """
         data = menu.create_update_dict()
         req = requests.Request('PATCH', f'{self.__host}/menus/menu/{menu_id_or_filename}', json=data)
-        res = self.__execute_request(req).json()
-        return WeekMenuRead(**res)
+        resp = self.__execute_request(req)
+        return WeekMenuRead(**resp.json()) if resp is not None and resp.ok else None
 
     def delete_menu(self, menu_id_or_filename: str | UUID) -> bool:
         """
