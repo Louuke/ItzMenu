@@ -1,3 +1,4 @@
+from typing import Callable
 from uuid import UUID
 
 import requests
@@ -6,7 +7,12 @@ import logging as log
 from itzmenu_api.persistence.schemas import WeekMenuCreate, WeekMenuRead, WeekMenuUpdate
 
 
-def retry_request(attempts: int = 1):
+def retry_request(attempts: int = 1) -> Callable:
+    """
+    Decorator to retry a request a given number of times.
+    :param attempts: Number of attempts to retry the request.
+    :return: The response of the request.
+    """
     def decorator(func):
         def wrapper(self, *args, **kwargs):
             for _ in range(max(attempts, 1)):
@@ -37,27 +43,54 @@ class ItzMenuClient:
         self.__session.close()
 
     def create_menu(self, menu: WeekMenuCreate) -> WeekMenuRead:
+        """
+        Create a week menu.
+        :param menu: An instance of WeekMenuCreate containing the data for the week menu.
+        :return: The created week menu.
+        """
         data = menu.create_update_dict()
         req = requests.Request('POST', f'{self.__host}/menus', json=data)
         res = self.__execute_request(req).json()
         return WeekMenuRead(**res)
 
     def get_menu_by_id_or_filename(self, menu_id_or_filename: str | UUID) -> WeekMenuRead:
+        """
+        Get a week menu by its id or filename.
+        :param menu_id_or_filename: The id or filename of the week menu.
+        :return: The week menu.
+        """
         req = requests.Request('GET', f'{self.__host}/menus/menu/{menu_id_or_filename}')
         res = self.__execute_request(req).json()
         return WeekMenuRead(**res)
 
     def get_menu_by_timestamp(self, timestamp: int) -> WeekMenuRead:
+        """
+        Get a week menu by timestamp.
+        :param timestamp: The timestamp of the week menu.
+        :return: The week menu.
+        """
         req = requests.Request('GET', f'{self.__host}/menus/menu?timestamp={timestamp}')
         res = self.__execute_request(req).json()
         return WeekMenuRead(**res)
 
     def get_menu_by_timestamp_range(self, start: int = 0, end: int = 9999999999) -> list[WeekMenuRead]:
+        """
+        Get a list of week menus by timestamp range.
+        :param start: Start of the timestamp range.
+        :param end: End of the timestamp range.
+        :return: A list of week menus.
+        """
         req = requests.Request('GET', f'{self.__host}/menus?start={start}&end={end}')
         res = self.__execute_request(req).json()
         return [WeekMenuRead(**menu) for menu in res]
 
     def update_menu(self, menu_id_or_filename: str | UUID, menu: WeekMenuUpdate) -> WeekMenuRead:
+        """
+        Update a menu by its id or filename.
+        :param menu_id_or_filename: The id or filename of the menu to update.
+        :param menu: An instance of WeekMenuUpdate containing the updated data.
+        :return: The updated menu.
+        """
         data = menu.create_update_dict()
         req = requests.Request('PATCH', f'{self.__host}/menus/menu/{menu_id_or_filename}', json=data)
         res = self.__execute_request(req).json()
