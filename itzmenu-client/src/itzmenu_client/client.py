@@ -1,6 +1,7 @@
 from uuid import UUID
 
 import requests
+import logging as log
 
 from itzmenu_api.persistence.schemas import WeekMenuCreate, WeekMenuRead, WeekMenuUpdate
 
@@ -14,8 +15,10 @@ def retry_request(attempts: int = 1):
                 elif response.status_code == requests.codes.unauthorized:
                     self._refresh_access_token()
             else:
-                response.raise_for_status()
-            return response
+                log.error(f'Failed to execute http request: {response.url}')
+                log.error(f'Response status code: {response.status_code}')
+                log.error(f'Response content: {response.content}')
+                return None
 
         return wrapper
 
@@ -59,6 +62,15 @@ class ItzMenuClient:
         req = requests.Request('PATCH', f'{self.__host}/menus/menu/{menu_id_or_filename}', json=data)
         res = self.__execute_request(req).json()
         return WeekMenuRead(**res)
+
+    def delete_menu(self, menu_id_or_filename: str | UUID) -> bool:
+        """
+        Delete a menu by its id or filename.
+        :param menu_id_or_filename: The id or filename of the menu to delete.
+        :return: True if the menu was deleted successfully, False otherwise.
+        """
+        req = requests.Request('DELETE', f'{self.__host}/menus/menu/{menu_id_or_filename}')
+        return (resp := self.__execute_request(req)) is not None and resp.ok
 
     def _refresh_access_token(self):
         if (response := self._login()).ok and response.headers['content-type'] == 'application/json':

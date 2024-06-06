@@ -177,3 +177,24 @@ class TestItzMenuClient:
         client = ItzMenuClient('user', 'password', f'http://{httpserver.host}:{httpserver.port}')
         with pytest.raises(requests.HTTPError):
             client.update_menu('835849f9-52e9-4479-8cc3-63ac96e75325', WeekMenuUpdate(**update))
+
+    def test_delete_menu(self, httpserver: HTTPServer, user: str, password: str, headers: dict[str, str],
+                         week_menus: list[dict[str, Any]]):
+        (httpserver.expect_request(f'/menus/menu/835849f9-52e9-4479-8cc3-63ac96e75325', method='DELETE',
+                                   headers=headers).respond_with_data(status=204))
+        (httpserver.expect_request(f'/menus/menu/835849f9-52e9-4479-8cc3-63ac96e75325', method='DELETE')
+         .respond_with_data(status=401))
+        client = ItzMenuClient(user, password, f'http://{httpserver.host}:{httpserver.port}')
+        assert client.delete_menu('835849f9-52e9-4479-8cc3-63ac96e75325')
+
+    def test_delete_menu_no_permissions(self, httpserver: HTTPServer, week_menus: list[dict[str, Any]]):
+        (httpserver.expect_request(f'/menus/menu/835849f9-52e9-4479-8cc3-63ac96e75325', method='DELETE')
+         .respond_with_data(status=403))
+        client = ItzMenuClient('user', 'password', f'http://{httpserver.host}:{httpserver.port}')
+        assert not client.delete_menu('835849f9-52e9-4479-8cc3-63ac96e75325')
+
+    def test_delete_menu_not_found(self, httpserver: HTTPServer, week_menus: list[dict[str, Any]]):
+        (httpserver.expect_request(f'/menus/menu/835849f9-52e9-4479-8cc3-63ac96e75325', method='DELETE')
+         .respond_with_data(status=404))
+        client = ItzMenuClient('user', 'password', f'http://{httpserver.host}:{httpserver.port}')
+        assert not client.delete_menu('835849f9-52e9-4479-8cc3-63ac96e75325')
