@@ -14,6 +14,7 @@ class Settings(BaseSettings):
     mail_smtp_starttls: bool = Field(default=False)
     mail_smtp_skip_login: bool = Field(default=False)
     service_secret: str = Field(default='SECRET', min_length=6)
+    service_host: str = Field(default='http://localhost:8000')
 
     model_config = SettingsConfigDict(env_file='settings.env', env_file_encoding='utf-8')
 

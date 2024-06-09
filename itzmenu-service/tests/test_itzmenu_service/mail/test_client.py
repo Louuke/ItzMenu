@@ -11,7 +11,7 @@ TEST_SEND_EMAIL = 'test_send@example.org'
 def test_send_email():
     with SmtpMockServer('127.0.0.1', 42000) as srv:
         assert len(srv.messages) == 0
-        send_email(TEST_SEND_EMAIL, 'Test', 'Test')
+        send_email(TEST_SEND_EMAIL, 'Test', lambda _: 'Test')
         assert len(srv.messages) == 1
         assert srv.messages[0]['To'] == TEST_SEND_EMAIL
 

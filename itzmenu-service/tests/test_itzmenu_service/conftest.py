@@ -25,6 +25,7 @@ def override_settings():
     os.environ['mail_smtp_port'] = '42000'
     os.environ['mail_smtp_tls'] = 'false'
     os.environ['mail_smtp_skip_login'] = 'true'
+    os.environ['service_host'] = 'http://localhost:8000'
 
 
 @pytest_asyncio.fixture(scope='session', autouse=True)
