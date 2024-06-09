@@ -15,7 +15,7 @@ from img2table.tables.objects.extraction import ExtractedTable
 import itzmenu_extractor.ocr.preprocess as preprocess
 import itzmenu_extractor.util.env as env
 from itzmenu_extractor.config.settings import Settings
-from itzmenu_extractor.persistence.enums import WeekDay
+from itzmenu_api.persistence.enums import WeekDay
 
 
 @preprocess.convert_to_grayscale

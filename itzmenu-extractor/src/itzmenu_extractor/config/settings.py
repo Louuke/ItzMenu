@@ -5,9 +5,9 @@ import re
 
 class Settings(BaseSettings):
     log_level: str = Field(default='INFO', pattern=r'^(NOTSET|DEBUG|INFO|WARNING|ERROR|CRITICAL)$')
-    mongo_db_url: str = Field(default='mongodb://localhost:27017', pattern=r'^mongodb(.+srv)?://.*')
-    mongo_db_name: str = Field(default='development', min_length=3)
-    mongo_db_test_name: str = Field(default='test', min_length=3)
+    itz_menu_user_email: str = Field(default='')
+    itz_menu_user_password: str = Field(default='')
+    itz_menu_host: str = Field(default='http://localhost:8000')
     ocr_check_interval: int = Field(default=3600, ge=1)
     ocr_save_images: bool = Field(default=False)
     google_cloud_vision_api_key: str = Field(default='')

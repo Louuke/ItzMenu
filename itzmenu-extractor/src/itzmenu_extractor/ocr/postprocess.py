@@ -1,15 +1,15 @@
 import re
 import logging as log
 
-from itzmenu_extractor.persistence.models import WeekMenu, DayMenu, MealCategory, Meal
-from itzmenu_extractor.persistence.enums import DietType
+from itzmenu_api.persistence.schemas import WeekMenuCreate, DayMenu, MealCategory, Meal
+from itzmenu_api.persistence.enums import DietType
 import pandas as pd
 
 
-def dataframe_to_week_menu(df: pd.DataFrame, validity_period: tuple[int, int], filename: str) -> WeekMenu:
+def dataframe_to_week_menu(df: pd.DataFrame, validity_period: tuple[int, int], filename: str) -> WeekMenuCreate:
     start_timestamp, end_timestamp = validity_period
     menus = __dataframe_to_menus(df)
-    return WeekMenu(start_timestamp=start_timestamp, end_timestamp=end_timestamp, filename=filename, menus=menus)
+    return WeekMenuCreate(start_timestamp=start_timestamp, end_timestamp=end_timestamp, filename=filename, menus=menus)
 
 
 def __dataframe_to_menus(df: pd.DataFrame) -> list[DayMenu]:
