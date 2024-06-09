@@ -18,6 +18,7 @@ classifiers = [
 ]
 dependencies = [
     'itzmenu_client',
+    'email-validator>=2.1.1',
     'typing_extensions>=4.9.0',
     'pydantic_settings>=2.2.1',
     'requests>=2.31.0',
