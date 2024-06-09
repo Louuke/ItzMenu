@@ -106,7 +106,7 @@ class ItzMenuClient:
         return (resp := self.__execute_request(req)) is not None and resp.ok
 
     def _refresh_access_token(self):
-        if (response := self._login()).ok and response.headers['content-type'] == 'application/json':
+        if (response := self._login()) is not None and response.ok:
             token = response.json()['access_token']
             self.__session.headers.update({'Authorization': f'Bearer {token}'})
 
