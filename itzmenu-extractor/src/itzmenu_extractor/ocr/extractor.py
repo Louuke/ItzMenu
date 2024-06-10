@@ -1,8 +1,8 @@
-import io
 import re
 import time
 from datetime import datetime
 from functools import lru_cache
+from io import BytesIO
 
 import PIL.Image as PImage
 import pandas as pd
@@ -13,6 +13,7 @@ from img2table.ocr import TesseractOCR, VisionOCR
 from img2table.tables.objects.extraction import ExtractedTable
 
 import itzmenu_extractor.ocr.preprocess as preprocess
+import itzmenu_extractor.ocr.google_vision as google
 import itzmenu_extractor.util.env as env
 from itzmenu_extractor.config.settings import Settings
 from itzmenu_api.persistence.enums import WeekDay
@@ -21,13 +22,19 @@ from itzmenu_api.persistence.enums import WeekDay
 @preprocess.convert_to_grayscale
 @lru_cache
 def period_of_validity(image: bytes, lang: str = 'deu') -> tuple[int, int] | None:
-    buffer = io.BytesIO(image)
-    if type(result := pytesseract.image_to_string(PImage.open(buffer), lang=lang)) is str:
-        if (match := re.search(r'- \d\d.\d\d.\d\d\d\d', result)) is not None:
-            end_date = datetime.strptime(match.group().replace('- ', ''), '%d.%m.%Y')
-            end_timestamp = int(time.mktime(end_date.timetuple())) + 86399
-            start_timestamp = end_timestamp - 431999
-            return start_timestamp, end_timestamp
+    if Settings().google_cloud_vision_enabled and not env.is_running_tests():
+        result = google.image_to_string(image)
+        return __extract_timestamps(result)
+    elif type(result := pytesseract.image_to_string(PImage.open(BytesIO(image)), lang=lang)) is str:
+        return __extract_timestamps(result)
+
+
+def __extract_timestamps(text: str) -> tuple[int, int] | None:
+    if (match := re.search(r'- \d\d.\d\d.\d\d\d\d', text)) is not None:
+        end_date = datetime.strptime(match.group().replace('- ', ''), '%d.%m.%Y')
+        end_timestamp = int(time.mktime(end_date.timetuple())) + 86399
+        start_timestamp = end_timestamp - 431999
+        return start_timestamp, end_timestamp
 
 
 @preprocess.parse_validity_parameter
