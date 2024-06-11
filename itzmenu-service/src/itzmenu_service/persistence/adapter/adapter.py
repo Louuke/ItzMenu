@@ -21,9 +21,9 @@ class BeanieWeekMenuDatabase(BaseWeekMenuDatabase[UUID]):
         """Get a single week menu by id."""
         return await self.menu_model.get(id)
 
-    async def get_by_filename(self, filename: str) -> WeekMenu | None:
-        """Get a single week menu by filename."""
-        return await self.menu_model.find_one({'filename': filename})
+    async def get_by_image(self, img_checksum: str) -> WeekMenu | None:
+        """Get a single week menu by image checksum."""
+        return await self.menu_model.find_one({'img_checksum': img_checksum})
 
     async def get_by_timestamp(self, timestamp: int) -> WeekMenu | None:
         return await self.menu_model.find_one(self.menu_model.start_timestamp <= timestamp,
@@ -35,9 +35,9 @@ class BeanieWeekMenuDatabase(BaseWeekMenuDatabase[UUID]):
 
     async def create(self, create_dict: dict[str, Any]) -> WeekMenu:
         """Create a week menu."""
-        user = self.menu_model(**create_dict)
-        await user.create()
-        return user
+        menu = self.menu_model(**create_dict)
+        await menu.create()
+        return menu
 
     async def update(self, menu: WeekMenu, update_dict: dict[str, Any]) -> WeekMenu:
         """Update a week menu."""

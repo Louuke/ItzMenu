@@ -32,15 +32,14 @@ class BaseWeekMenuManager(Generic[ID]):
             raise exceptions.WeekMenuNotExists()
         return menu
 
-    async def get_by_filename(self, filename: str) -> WeekMenu:
+    async def get_by_image(self, img_checksum: str) -> WeekMenu:
         """
-        Get a week menu by filename.
+        Get a week menu by image checksum.
 
-        :param filename: Filename of the week menu to retrieve.
-        :raises WeekMenuNotExists: The week menu does not exist.
+        :param img_checksum: Image checksum of the week menu to retrieve.
         :return: A week menu.
         """
-        if (menu := await self.menu_db.get_by_filename(filename)) is None:
+        if (menu := await self.menu_db.get_by_image(img_checksum)) is None:
             raise exceptions.WeekMenuNotExists()
         return menu
 
@@ -77,7 +76,7 @@ class BaseWeekMenuManager(Generic[ID]):
         :raises WeekMenuAlreadyExists: A user already exists with the same e-mail.
         :return: A new week menu.
         """
-        existing_menu = await self.menu_db.get_by_filename(menu_create.filename)
+        existing_menu = await self.menu_db.get_by_image(menu_create.img_checksum)
         if existing_menu is not None:
             raise exceptions.WeekMenuAlreadyExists()
 
@@ -156,12 +155,12 @@ class BaseWeekMenuManager(Generic[ID]):
     async def _update(self, menu: WeekMenu, update_dict: dict[str, Any]) -> WeekMenu:
         validated_update_dict = {}
         for field, value in update_dict.items():
-            if field == 'filename' and value != menu.filename:
+            if field == 'img_checksum' and value != menu.img_checksum:
                 try:
-                    await self.get_by_filename(value)
+                    await self.get_by_image(value)
                     raise exceptions.WeekMenuAlreadyExists()
                 except exceptions.WeekMenuNotExists:
-                    validated_update_dict['filename'] = value
+                    validated_update_dict['img_checksum'] = value
             else:
                 validated_update_dict[field] = value
         return await self.menu_db.update(menu, validated_update_dict)

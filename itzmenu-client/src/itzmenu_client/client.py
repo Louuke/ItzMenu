@@ -53,13 +53,13 @@ class ItzMenuClient:
         resp = self.__execute_request(req)
         return WeekMenuRead(**resp.json()) if resp is not None and resp.ok else None
 
-    def get_menu_by_id_or_filename(self, menu_id_or_filename: str | UUID) -> WeekMenuRead | None:
+    def get_menu_by_id_or_filename(self, menu_id_or_checksum: str | UUID) -> WeekMenuRead | None:
         """
-        Get a week menu by its id or filename.
-        :param menu_id_or_filename: The id or filename of the week menu.
+        Get a week menu by its id or checksum.
+        :param menu_id_or_checksum: The id or checksum of the week menu.
         :return: The week menu.
         """
-        req = requests.Request('GET', f'{self.__host}/menus/menu/{menu_id_or_filename}')
+        req = requests.Request('GET', f'{self.__host}/menus/menu/{menu_id_or_checksum}')
         resp = self.__execute_request(req)
         return WeekMenuRead(**resp.json()) if resp is not None and resp.ok else None
 
@@ -84,25 +84,25 @@ class ItzMenuClient:
         resp = self.__execute_request(req)
         return [WeekMenuRead(**menu) for menu in resp.json()] if resp is not None and resp.ok else []
 
-    def update_menu(self, menu_id_or_filename: str | UUID, menu: WeekMenuUpdate) -> WeekMenuRead | None:
+    def update_menu(self, menu_id_or_checksum: str | UUID, menu: WeekMenuUpdate) -> WeekMenuRead | None:
         """
-        Update a menu by its id or filename.
-        :param menu_id_or_filename: The id or filename of the menu to update.
+        Update a menu by its id or checksum.
+        :param menu_id_or_checksum: The id or checksum of the menu to update.
         :param menu: An instance of WeekMenuUpdate containing the updated data.
         :return: The updated menu.
         """
         data = menu.create_update_dict()
-        req = requests.Request('PATCH', f'{self.__host}/menus/menu/{menu_id_or_filename}', json=data)
+        req = requests.Request('PATCH', f'{self.__host}/menus/menu/{menu_id_or_checksum}', json=data)
         resp = self.__execute_request(req)
         return WeekMenuRead(**resp.json()) if resp is not None and resp.ok else None
 
-    def delete_menu(self, menu_id_or_filename: str | UUID) -> bool:
+    def delete_menu(self, menu_id_or_checksum: str | UUID) -> bool:
         """
-        Delete a menu by its id or filename.
-        :param menu_id_or_filename: The id or filename of the menu to delete.
-        :return: True if the menu was deleted successfully, False otherwise.
+        Delete a menu by its id or checksum.
+        :param menu_id_or_checksum: The id or checksum of the menu to delete.
+        :return: True if the menu was deleted, False otherwise.
         """
-        req = requests.Request('DELETE', f'{self.__host}/menus/menu/{menu_id_or_filename}')
+        req = requests.Request('DELETE', f'{self.__host}/menus/menu/{menu_id_or_checksum}')
         return (resp := self.__execute_request(req)) is not None and resp.ok
 
     def _refresh_access_token(self):

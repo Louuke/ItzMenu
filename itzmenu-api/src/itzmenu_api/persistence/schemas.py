@@ -98,8 +98,8 @@ class WeekMenuCreate(UpdateDictModel):
     start_timestamp: int = Field(ge=0)
     end_timestamp: int = Field(ge=1)
     created_at: int = Field(default_factory=lambda: int(time.time()), ge=0)
-    img_checksum: str = Field(pattern=r'^[a-f0-9]{32}$')
-    img: str = Field(pattern=r'^[a-zA-Z0-9+/]+={0,2}$')
+    img_checksum: str = Field(pattern=r'^[a-f0-9]{64}$')
+    img: str = Field(pattern=r'^[a-zA-Z0-9+/]+={0,2}$', default=None)
     menus: Optional[list[DayMenu]] = Field(default=[])
 
 

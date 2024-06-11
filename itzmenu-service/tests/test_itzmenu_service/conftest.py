@@ -1,3 +1,4 @@
+import hashlib
 import os
 from uuid import UUID
 
@@ -93,6 +94,13 @@ def __create_headers(user: User) -> dict[str, str]:
     data = {'sub': str(user.id), 'aud': aud}
     token = generate_jwt(data, Settings().service_secret, 3600, algorithm='HS256')
     return {'Authorization': f'Bearer {token}'}
+
+
+@pytest.fixture
+def rdm_checksums() -> list[str]:
+    def to_str(b: bytes) -> str:
+        return hashlib.sha256(b).hexdigest()
+    return [to_str(os.urandom(32)) for _ in range(3)]
 
 
 @pytest.fixture

@@ -13,8 +13,8 @@ class BaseWeekMenuDatabase(Generic[ID]):
         """Get a single week menu by id."""
         raise NotImplementedError()
 
-    async def get_by_filename(self, filename: str) -> WeekMenu | None:
-        """Get a single week menu by filename."""
+    async def get_by_image(self, img_checksum: str) -> WeekMenu | None:
+        """Get a single week menu by image checksum."""
         raise NotImplementedError()
 
     async def get_by_timestamp(self, timestamp: int) -> WeekMenu | None:
