@@ -87,7 +87,8 @@ class WeekMenuRead(UpdateDictModel):
     start_timestamp: int
     end_timestamp: int
     created_at: int
-    filename: str
+    img_checksum: str
+    img: str
     menus: list[DayMenu] = Field(default=[])
 
     model_config = ConfigDict(from_attributes=True)
@@ -97,7 +98,8 @@ class WeekMenuCreate(UpdateDictModel):
     start_timestamp: int = Field(ge=0)
     end_timestamp: int = Field(ge=1)
     created_at: int = Field(default_factory=lambda: int(time.time()), ge=0)
-    filename: str = Field(pattern=r'^[a-zA-Z0-9_]+\.jpg$')
+    img_checksum: str = Field(pattern=r'^[a-f0-9]{32}$')
+    img: str = Field(pattern=r'^[a-zA-Z0-9+/]+={0,2}$')
     menus: Optional[list[DayMenu]] = Field(default=[])
 
 
@@ -105,5 +107,6 @@ class WeekMenuUpdate(UpdateDictModel):
     start_timestamp: Optional[int] = None
     end_timestamp: Optional[int] = None
     created_at: Optional[int] = None
-    filename: Optional[str] = None
+    img_checksum: Optional[str] = None
+    img: Optional[str] = None
     menus: Optional[list[DayMenu]] = None

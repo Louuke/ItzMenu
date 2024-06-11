@@ -21,7 +21,8 @@ class WeekMenu(Document):
     start_timestamp: Indexed(int) = Field(ge=0)
     end_timestamp: Indexed(int) = Field(ge=1)
     created_at: int = Field(default_factory=lambda: int(time.time()), ge=0)
-    filename: Indexed(str, unique=True) = Field(pattern=r'^[a-zA-Z0-9_]+\.jpg$')
+    img_checksum: Indexed(str, unique=True) = Field(pattern=r'^[a-f0-9]{32}$')
+    img: str = Field(pattern=r'^[a-zA-Z0-9+/]+={0,2}$')
     menus: list[DayMenu] = Field(default=[])
 
     class Settings:
