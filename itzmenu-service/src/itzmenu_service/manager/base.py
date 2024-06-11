@@ -165,5 +165,22 @@ class BaseWeekMenuManager(Generic[ID]):
                 validated_update_dict[field] = value
         return await self.menu_db.update(menu, validated_update_dict)
 
+    @staticmethod
+    def _get(get_func: callable, include_images: bool):
+        """
+        Get a week menu by id, image checksum or timestamp.
+        :param get_func: The function to call to retrieve the week menu.
+        :param include_images: Whether to include images in the response.
+        :return: The week menu.
+        """
+        def exclude_img(menu: WeekMenu) -> WeekMenu:
+            return WeekMenu(**menu.dict(exclude={'img'})) if not include_images else menu
+
+        if (result := get_func()) is None:
+            raise exceptions.WeekMenuNotExists()
+        elif type(result) is list:
+            return [exclude_img(menu_item) for menu_item in result]
+        return exclude_img(result)
+
 
 WeekMenuManagerDependency = DependencyCallable[BaseWeekMenuManager[ID]]
