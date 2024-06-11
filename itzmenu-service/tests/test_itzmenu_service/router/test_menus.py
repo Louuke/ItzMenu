@@ -12,20 +12,25 @@ class TestMenusRouter:
     valid_create_data = {'start_timestamp': 1,
                          'end_timestamp': 5,
                          'created_at': 1,
-                         'filename': 'router_menus_test1.jpg',
+                         'img_checksum': '22df994023f15b3b8ea0def54ddca48518c1b425f08d8356f867011817d53542',
+                         'img': 'iutf768og87h7ho',
                          'menus': [
                              {'name': 'monday',
                               'categories': [{'name': 'test', 'meals': [{'name': 'test', 'price': 1.0}]}]},
                              {'name': 'tuesday',
                               'categories': [{'name': 'test', 'meals': [{'name': 'test', 'price': 2.5}]}]}
                          ]}
-    superuser_create_data = {'start_timestamp': 20, 'end_timestamp': 25, 'filename': 'router_menus_test9.jpg'}
-    invalid_create_data = {'start_timestamp': 1, 'filename': 'router_menus_test2.jpg'}
-    partial_create_data = {'start_timestamp': 6, 'end_timestamp': 10, 'filename': 'router_menus_test3.jpg'}
-    valid_change_data = {'filename': 'router_menus_test5.jpg', 'start_timestamp': 11, 'end_timestamp': 20}
+    superuser_create_data = {'start_timestamp': 20, 'end_timestamp': 25,
+                             'img_checksum': '1db4b223e5bfcb904715e3091ef216f4838767e3a84e38979a73c19f67150d6d'}
+    invalid_create_data = {'start_timestamp': 1,
+                           'img_checksum': '43ed77500258a02c127fa7383373e7eff7936761f00fe4b6506af39768e5509e'}
+    partial_create_data = {'start_timestamp': 6, 'end_timestamp': 10,
+                           'img_checksum': '33c97b52e62d07dda131f789decaba164cc37eb647d4faf44f106d7086dd5ad5'}
+    valid_change_data = {'start_timestamp': 11, 'end_timestamp': 20,
+                         'img_checksum': '6eef5b2dbd2139589774d8c0cf86181724c80a0422d00e8acf5e5815d24c3d96'}
     superuser_change_data = {'start_timestamp': 21}
     invalid_change_data_id = {'id': '95eae770-42f9-4828-878e-23a28bb06439'}
-    invalid_change_data_filename = {'filename': valid_change_data['filename']}
+    invalid_change_data_filename = {'img_checksum': valid_change_data['img_checksum']}
 
     @pytest.mark.dependency()
     async def test_create_menu(self, http_client: AsyncClient, user_w_permissions_headers: dict[str, str]):
@@ -33,7 +38,7 @@ class TestMenusRouter:
         response = await http_client.post('/menus', json=self.valid_create_data, headers=user_w_permissions_headers)
         assert response.status_code == 201
         resp = response.json()
-        assert resp['filename'] == self.valid_create_data['filename']
+        assert resp['img_checksum'] == self.valid_create_data['img_checksum']
         assert resp['start_timestamp'] == self.valid_create_data['start_timestamp']
         assert resp['end_timestamp'] == self.valid_create_data['end_timestamp']
         assert len(resp['menus']) == 2
@@ -58,7 +63,7 @@ class TestMenusRouter:
         response = await http_client.post('/menus', json=self.superuser_create_data, headers=user_superuser_headers)
         assert response.status_code == 201
         resp = response.json()
-        assert resp['filename'] == self.superuser_create_data['filename']
+        assert resp['img_checksum'] == self.superuser_create_data['img_checksum']
         assert resp['start_timestamp'] == self.superuser_create_data['start_timestamp']
         assert resp['end_timestamp'] == self.superuser_create_data['end_timestamp']
         assert len(resp['menus']) == 0
@@ -69,7 +74,7 @@ class TestMenusRouter:
         response = await http_client.post('/menus', json=self.valid_create_data, headers=user_w_permissions_headers)
         assert response.status_code == 400
         resp = response.json()
-        assert resp['detail'] == ErrorCode.MENU_WITH_FILENAME_ALREADY_EXISTS
+        assert resp['detail'] == ErrorCode.MENU_WITH_CHECKSUM_ALREADY_EXISTS
         assert count == await WeekMenu.count()
 
     @pytest.mark.dependency()
@@ -78,7 +83,7 @@ class TestMenusRouter:
                                           headers=user_w_permissions_headers)
         assert response.status_code == 201
         resp = response.json()
-        assert resp['filename'] == self.partial_create_data['filename']
+        assert resp['img_checksum'] == self.partial_create_data['img_checksum']
         assert resp['start_timestamp'] == self.partial_create_data['start_timestamp']
         assert resp['end_timestamp'] == self.partial_create_data['end_timestamp']
         assert resp['created_at'] > time.time() - 5
@@ -94,12 +99,12 @@ class TestMenusRouter:
 
     @pytest.mark.dependency(depends=['TestMenusRouter::test_create_menu'])
     async def test_get_menu_by_id(self, http_client: AsyncClient):
-        menu = await WeekMenu.find_one({'filename': self.valid_create_data['filename']})
+        menu = await WeekMenu.find_one({'img_checksum': self.valid_create_data['img_checksum']})
         response = await http_client.get(f'/menus/menu/{menu.id}')
         assert response.status_code == 200
         resp = response.json()
         assert str(menu.id) == resp['id']
-        assert resp['filename'] == self.valid_create_data['filename']
+        assert resp['img_checksum'] == self.valid_create_data['img_checksum']
         assert resp['start_timestamp'] == self.valid_create_data['start_timestamp']
         assert resp['end_timestamp'] == self.valid_create_data['end_timestamp']
         assert len(resp['menus']) == 2
@@ -110,8 +115,8 @@ class TestMenusRouter:
         assert response.status_code == 200
         resp = response.json()
         assert len(resp) >= 2
-        assert resp[0]['filename'] == self.valid_create_data['filename']
-        assert resp[1]['filename'] == self.partial_create_data['filename']
+        assert resp[0]['img_checksum'] == self.valid_create_data['img_checksum']
+        assert resp[1]['img_checksum'] == self.partial_create_data['img_checksum']
 
     @pytest.mark.dependency(depends=['TestMenusRouter::test_create_menu', 'TestMenusRouter::test_create_menu_partial'])
     async def test_get_menu_by_timestamp_range_end(self, http_client: AsyncClient):
@@ -119,7 +124,7 @@ class TestMenusRouter:
         assert response.status_code == 200
         resp = response.json()
         assert len(resp) == 1
-        assert resp[0]['filename'] == self.valid_create_data['filename']
+        assert resp[0]['img_checksum'] == self.valid_create_data['img_checksum']
 
     @pytest.mark.dependency(depends=['TestMenusRouter::test_create_menu', 'TestMenusRouter::test_create_menu_partial'])
     async def test_get_menu_by_timestamp_range_start(self, http_client: AsyncClient):
@@ -127,7 +132,7 @@ class TestMenusRouter:
         assert response.status_code == 200
         resp = response.json()
         assert len(resp) == await WeekMenu.count() - 1
-        assert resp[0]['filename'] == self.partial_create_data['filename']
+        assert resp[0]['img_checksum'] == self.partial_create_data['img_checksum']
 
     @pytest.mark.dependency(depends=['TestMenusRouter::test_create_menu', 'TestMenusRouter::test_create_menu_partial'])
     async def test_get_menu_by_timestamp_range_start_and_stop(self, http_client: AsyncClient):
@@ -135,7 +140,7 @@ class TestMenusRouter:
         assert response.status_code == 200
         resp = response.json()
         assert len(resp) == 1
-        assert resp[0]['filename'] == self.partial_create_data['filename']
+        assert resp[0]['img_checksum'] == self.partial_create_data['img_checksum']
 
     @pytest.mark.dependency(depends=['TestMenusRouter::test_create_menu', 'TestMenusRouter::test_create_menu_partial'])
     async def test_get_menu_by_timestamp_range_no_results(self, http_client: AsyncClient):
@@ -150,51 +155,54 @@ class TestMenusRouter:
         assert response.status_code == 200
         resp = response.json()
         assert isinstance(resp, dict)
-        assert resp['filename'] == self.valid_create_data['filename']
+        assert resp['img_checksum'] == self.valid_create_data['img_checksum']
         response = await http_client.get('/menus/menu?timestamp=7')
         assert response.status_code == 200
         resp = response.json()
         assert isinstance(resp, dict)
-        assert resp['filename'] == self.partial_create_data['filename']
+        assert resp['img_checksum'] == self.partial_create_data['img_checksum']
 
     @pytest.mark.dependency()
-    async def test_update_menu(self, http_client: AsyncClient, user_w_permissions_headers: dict[str, str]):
-        menu = WeekMenu(filename='router_menus_test4.jpg', start_timestamp=11, end_timestamp=20, created_at=11)
+    async def test_update_menu(self, http_client: AsyncClient, user_w_permissions_headers: dict[str, str],
+                               rdm_checksums: list[str]):
+        menu = WeekMenu(img_checksum=rdm_checksums[0], start_timestamp=11, end_timestamp=20, created_at=11)
         resp = await menu.create()
         assert resp.id is not None
         response = await http_client.patch(f'/menus/menu/{resp.id}', json=self.valid_change_data,
                                            headers=user_w_permissions_headers)
         assert response.status_code == 200
         resp = response.json()
-        assert resp['filename'] == self.valid_change_data['filename']
+        assert resp['img_checksum'] == self.valid_change_data['img_checksum']
         assert resp['start_timestamp'] == self.valid_change_data['start_timestamp']
         assert resp['end_timestamp'] == self.valid_change_data['end_timestamp']
 
     async def test_update_menu_no_permissions(self, http_client: AsyncClient,
-                                              user_wo_permissions_headers: dict[str, str]):
-        menu = WeekMenu(filename='router_menus_test10.jpg', start_timestamp=11, end_timestamp=20, created_at=11)
+                                              user_wo_permissions_headers: dict[str, str], rdm_checksums: list[str]):
+        menu = WeekMenu(img_checksum=rdm_checksums[0], start_timestamp=11, end_timestamp=20, created_at=11)
         resp = await menu.create()
         assert resp.id is not None
         response = await http_client.patch(f'/menus/menu/{resp.id}', json=self.valid_change_data,
                                            headers=user_wo_permissions_headers)
         assert response.status_code == 403
         menu = await WeekMenu.get(resp.id)
-        assert menu.filename == 'router_menus_test10.jpg'
+        assert menu.img_checksum == rdm_checksums[0]
 
-    async def test_update_menu_superuser(self, http_client: AsyncClient, user_superuser_headers: dict[str, str]):
-        menu = WeekMenu(filename='router_menus_test11.jpg', start_timestamp=11, end_timestamp=20, created_at=11)
+    async def test_update_menu_superuser(self, http_client: AsyncClient, user_superuser_headers: dict[str, str],
+                                         rdm_checksums: list[str]):
+        menu = WeekMenu(img_checksum=rdm_checksums[0], start_timestamp=11, end_timestamp=20, created_at=11)
         resp = await menu.create()
         assert resp.id is not None
         response = await http_client.patch(f'/menus/menu/{resp.id}', json=self.superuser_change_data,
                                            headers=user_superuser_headers)
         assert response.status_code == 200
         resp = response.json()
-        assert resp['filename'] == menu.filename
+        assert resp['img_checksum'] == menu.img_checksum
         assert resp['start_timestamp'] == self.superuser_change_data['start_timestamp']
         assert resp['end_timestamp'] == menu.end_timestamp
 
-    async def test_update_menu_id_fail(self, http_client: AsyncClient, user_w_permissions_headers: dict[str, str]):
-        menu = WeekMenu(filename='router_menus_test6.jpg', start_timestamp=11, end_timestamp=20, created_at=11)
+    async def test_update_menu_id_fail(self, http_client: AsyncClient, user_w_permissions_headers: dict[str, str],
+                                       rdm_checksums: list[str]):
+        menu = WeekMenu(img_checksum=rdm_checksums[0], start_timestamp=11, end_timestamp=20, created_at=11)
         dao = await menu.create()
         assert dao.id is not None
         response = await http_client.patch(f'/menus/menu/{dao.id}', json=self.invalid_change_data_id,
@@ -203,24 +211,25 @@ class TestMenusRouter:
         resp = response.json()
         assert resp['id'] != self.invalid_change_data_id['id']
         assert resp['id'] == str(dao.id)
-        assert resp['filename'] == 'router_menus_test6.jpg'
+        assert resp['img_checksum'] == rdm_checksums[0]
 
     @pytest.mark.dependency(depends=['TestMenusRouter::test_update_menu'])
     async def test_update_menu_filename_fail(self, http_client: AsyncClient,
-                                             user_w_permissions_headers: dict[str, str]):
-        menu = WeekMenu(filename='router_menus_test7.jpg', start_timestamp=11, end_timestamp=20, created_at=11)
+                                             user_w_permissions_headers: dict[str, str], rdm_checksums: list[str]):
+        menu = WeekMenu(img_checksum=rdm_checksums[0], start_timestamp=11, end_timestamp=20, created_at=11)
         dao = await menu.create()
         assert dao.id is not None
         response = await http_client.patch(f'/menus/menu/{dao.id}', json=self.invalid_change_data_filename,
                                            headers=user_w_permissions_headers)
         assert response.status_code == 400
         resp = response.json()
-        assert resp['detail'] == ErrorCode.MENU_WITH_FILENAME_ALREADY_EXISTS
+        assert resp['detail'] == ErrorCode.MENU_WITH_CHECKSUM_ALREADY_EXISTS
         dao = await WeekMenu.get(dao.id)
-        assert dao.filename == menu.filename
+        assert dao.img_checksum == menu.img_checksum
 
-    async def test_delete_menu(self, http_client: AsyncClient, user_w_permissions_headers: dict[str, str]):
-        menu = WeekMenu(filename='router_menus_test8.jpg', start_timestamp=11, end_timestamp=20, created_at=11)
+    async def test_delete_menu(self, http_client: AsyncClient, user_w_permissions_headers: dict[str, str],
+                               rdm_checksums: list[str]):
+        menu = WeekMenu(img_checksum=rdm_checksums[0], start_timestamp=11, end_timestamp=20, created_at=11)
         dao = await menu.create()
         assert dao.id is not None
         response = await http_client.delete(f'/menus/menu/{dao.id}', headers=user_w_permissions_headers)
@@ -231,16 +240,17 @@ class TestMenusRouter:
         assert await WeekMenu.get(dao.id) is None
 
     async def test_delete_menu_no_permissions(self, http_client: AsyncClient,
-                                              user_wo_permissions_headers: dict[str, str]):
-        menu = WeekMenu(filename='router_menus_test12.jpg', start_timestamp=11, end_timestamp=20, created_at=11)
+                                              user_wo_permissions_headers: dict[str, str], rdm_checksums: list[str]):
+        menu = WeekMenu(img_checksum=rdm_checksums[0], start_timestamp=11, end_timestamp=20, created_at=11)
         dao = await menu.create()
         assert dao.id is not None
         response = await http_client.delete(f'/menus/menu/{dao.id}', headers=user_wo_permissions_headers)
         assert response.status_code == 403
         assert await WeekMenu.get(dao.id) is not None
 
-    async def test_delete_menu_superuser(self, http_client: AsyncClient, user_superuser_headers: dict[str, str]):
-        menu = WeekMenu(filename='router_menus_test13.jpg', start_timestamp=11, end_timestamp=20, created_at=11)
+    async def test_delete_menu_superuser(self, http_client: AsyncClient, user_superuser_headers: dict[str, str],
+                                         rdm_checksums: list[str]):
+        menu = WeekMenu(img_checksum=rdm_checksums[0], start_timestamp=11, end_timestamp=20, created_at=11)
         dao = await menu.create()
         assert dao.id is not None
         response = await http_client.delete(f'/menus/menu/{dao.id}', headers=user_superuser_headers)

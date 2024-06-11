@@ -88,7 +88,7 @@ class WeekMenuRead(UpdateDictModel):
     end_timestamp: int
     created_at: int
     img_checksum: str
-    img: str
+    img: str | None
     menus: list[DayMenu] = Field(default=[])
 
     model_config = ConfigDict(from_attributes=True)

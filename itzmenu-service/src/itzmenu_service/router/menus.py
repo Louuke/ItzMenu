@@ -30,10 +30,10 @@ def get_menus_router(get_week_menu_manager: WeekMenuManagerDependency[ID],
                          'content': {
                              'application/json': {
                                  'examples': {
-                                     ErrorCode.MENU_WITH_FILENAME_ALREADY_EXISTS: {
-                                         'summary': 'A week menu with this filename already exists.',
+                                     ErrorCode.MENU_WITH_CHECKSUM_ALREADY_EXISTS: {
+                                         'summary': 'A menu with the given checksum already exists.',
                                          'value': {
-                                             'detail': ErrorCode.MENU_WITH_FILENAME_ALREADY_EXISTS
+                                             'detail': ErrorCode.MENU_WITH_CHECKSUM_ALREADY_EXISTS
                                          },
                                      }
                                  }
@@ -48,7 +48,7 @@ def get_menus_router(get_week_menu_manager: WeekMenuManagerDependency[ID],
             created_user = await menu_manager.create(user_create, request=request)
         except exceptions.WeekMenuAlreadyExists as e:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                                detail=ErrorCode.MENU_WITH_FILENAME_ALREADY_EXISTS) from e
+                                detail=ErrorCode.MENU_WITH_CHECKSUM_ALREADY_EXISTS) from e
         return schemas.model_validate(menu_read_schema, created_user)
 
     @router.get('/menu/{id_or_checksum}', response_model=menu_read_schema, name='menus:get_menu_by_id')
@@ -76,7 +76,7 @@ def get_menus_router(get_week_menu_manager: WeekMenuManagerDependency[ID],
             return schemas.model_validate(menu_read_schema, menu)
         except exceptions.WeekMenuAlreadyExists as e:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                                detail=ErrorCode.MENU_WITH_FILENAME_ALREADY_EXISTS) from e
+                                detail=ErrorCode.MENU_WITH_CHECKSUM_ALREADY_EXISTS) from e
 
     @router.delete('/menu/{id_or_checksum}', status_code=status.HTTP_204_NO_CONTENT, name='menus:delete_menu')
     async def delete_menu(id_or_checksum: str, menu_manager: BaseWeekMenuManager[ID] = Depends(get_week_menu_manager),
