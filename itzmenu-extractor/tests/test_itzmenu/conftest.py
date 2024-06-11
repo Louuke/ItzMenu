@@ -2,7 +2,7 @@ import asyncio
 import importlib.resources as pkg_resources
 import pytest
 
-import itzmenu_extractor.persistence.database as database
+import itzmenu_api.persistence.database as database
 
 
 @pytest.fixture(scope='session')
