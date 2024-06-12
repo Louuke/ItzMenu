@@ -1,3 +1,4 @@
+import base64
 from typing import Generic, Any
 
 from fastapi import Request
@@ -30,7 +31,18 @@ class BaseWeekMenuManager(Generic[ID]):
         :return: A week menu.
         """
         menu = await self.menu_db.get_by_id(id)
-        return self._get(menu, include_image)
+        return self._get_menu(menu, include_image)
+
+    async def get_image_by_id(self, id: ID) -> bytes:
+        """
+        Get a week menu image by id.
+
+        :param id: Id of the week menu to retrieve.
+        :raises WeekMenuImageNotExists: The week menu image does not exist.
+        :return: A week menu image.
+        """
+        menu = await self.menu_db.get_by_id(id)
+        return self._get_image(menu)
 
     async def get_by_image(self, img_checksum: str, include_image: bool = False) -> WeekMenu:
         """
@@ -41,7 +53,17 @@ class BaseWeekMenuManager(Generic[ID]):
         :return: A week menu.
         """
         menu = await self.menu_db.get_by_image(img_checksum)
-        return self._get(menu, include_image)
+        return self._get_menu(menu, include_image)
+
+    async def get_image_by_checksum(self, img_checksum: str) -> bytes:
+        """
+        Get a week menu image by image checksum.
+
+        :param img_checksum: Image checksum of the week menu to retrieve.
+        :return: A week menu image.
+        """
+        menu = await self.menu_db.get_by_image(img_checksum)
+        return self._get_image(menu)
 
     async def get_by_timestamp(self, timestamp: int, include_image: bool = False) -> WeekMenu:
         """
@@ -53,7 +75,7 @@ class BaseWeekMenuManager(Generic[ID]):
         :return: A week menu.
         """
         menu = await self.menu_db.get_by_timestamp(timestamp)
-        return self._get(menu, include_image)
+        return self._get_menu(menu, include_image)
 
     async def get_by_timestamp_range(self, start: int, end: int, include_images: bool = False) -> list[WeekMenu]:
         """
@@ -65,7 +87,7 @@ class BaseWeekMenuManager(Generic[ID]):
         :return: A list of week menus.
         """
         menus = await self.menu_db.get_by_timestamp_range(start, end)
-        return self._get(menus, include_images)
+        return self._get_menu(menus, include_images)
 
     async def create(self, menu_create: WeekMenuCreate, request: Request | None = None) -> WeekMenu:
         """
@@ -168,7 +190,7 @@ class BaseWeekMenuManager(Generic[ID]):
         return await self.menu_db.update(menu, validated_update_dict)
 
     @staticmethod
-    def _get(menus: WeekMenu | list[WeekMenu], include_images: bool):
+    def _get_menu(menus: WeekMenu | list[WeekMenu], include_images: bool) -> WeekMenu | list[WeekMenu]:
         """
         Get a week menu by id, image checksum or timestamp.
         :param menus: The week menu(s) to retrieve.
@@ -184,6 +206,14 @@ class BaseWeekMenuManager(Generic[ID]):
             return [exclude_img(menu_item) for menu_item in menus]
         else:
             return exclude_img(menus)
+
+    @staticmethod
+    def _get_image(menu: WeekMenu) -> bytes:
+        if menu.img is None:
+            raise exceptions.WeekMenuImageNotExists()
+        else:
+            base64_img = menu.img
+            return base64.b64decode(base64_img)
 
 
 WeekMenuManagerDependency = DependencyCallable[BaseWeekMenuManager[ID]]

@@ -8,3 +8,7 @@ class WeekMenuNotExists(ItzMenuServiceException):
 
 class WeekMenuAlreadyExists(ItzMenuServiceException):
     pass
+
+
+class WeekMenuImageNotExists(ItzMenuServiceException):
+    pass
