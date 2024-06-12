@@ -24,7 +24,7 @@ class TestMenusRouter:
                              'img_checksum': '1db4b223e5bfcb904715e3091ef216f4838767e3a84e38979a73c19f67150d6d'}
     invalid_create_data = {'start_timestamp': 1,
                            'img_checksum': '43ed77500258a02c127fa7383373e7eff7936761f00fe4b6506af39768e5509e'}
-    partial_create_data = {'start_timestamp': 6, 'end_timestamp': 10,
+    partial_create_data = {'start_timestamp': 6, 'end_timestamp': 10, 'img': 'zjtgdj',
                            'img_checksum': '33c97b52e62d07dda131f789decaba164cc37eb647d4faf44f106d7086dd5ad5'}
     valid_change_data = {'start_timestamp': 11, 'end_timestamp': 20,
                          'img_checksum': '6eef5b2dbd2139589774d8c0cf86181724c80a0422d00e8acf5e5815d24c3d96'}
@@ -100,23 +100,29 @@ class TestMenusRouter:
     @pytest.mark.dependency(depends=['TestMenusRouter::test_create_menu'])
     async def test_get_menu_by_id(self, http_client: AsyncClient):
         menu = await WeekMenu.find_one({'img_checksum': self.valid_create_data['img_checksum']})
-        response = await http_client.get(f'/menus/menu/{menu.id}')
+        response = await http_client.get(f'/menus/menu/{menu.id}', params={'include_image': True})
         assert response.status_code == 200
         resp = response.json()
         assert str(menu.id) == resp['id']
+        assert resp['img'] == self.valid_create_data['img']
         assert resp['img_checksum'] == self.valid_create_data['img_checksum']
         assert resp['start_timestamp'] == self.valid_create_data['start_timestamp']
         assert resp['end_timestamp'] == self.valid_create_data['end_timestamp']
         assert len(resp['menus']) == 2
+        response = await http_client.get(f'/menus/menu/{menu.id}', params={'include_image': False})
+        assert response.json()['img'] is None
 
     @pytest.mark.dependency(depends=['TestMenusRouter::test_create_menu', 'TestMenusRouter::test_create_menu_partial'])
     async def test_get_menu_by_timestamp_range_all(self, http_client: AsyncClient):
-        response = await http_client.get('/menus')
+        response = await http_client.get('/menus', params={'include_image': True})
         assert response.status_code == 200
         resp = response.json()
         assert len(resp) >= 2
+        assert any([r['img'] is not None for r in resp])
         assert resp[0]['img_checksum'] == self.valid_create_data['img_checksum']
         assert resp[1]['img_checksum'] == self.partial_create_data['img_checksum']
+        response = await http_client.get('/menus', params={'include_image': False})
+        assert all([r['img'] is None for r in response.json()])
 
     @pytest.mark.dependency(depends=['TestMenusRouter::test_create_menu', 'TestMenusRouter::test_create_menu_partial'])
     async def test_get_menu_by_timestamp_range_end(self, http_client: AsyncClient):
