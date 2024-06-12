@@ -1,4 +1,4 @@
-from typing import Generic, Optional, Any
+from typing import Generic, Any
 
 from fastapi import Request
 from fastapi_users.models import ID
@@ -20,52 +20,54 @@ class BaseWeekMenuManager(Generic[ID]):
     def __init__(self, menu_db: BaseWeekMenuDatabase[ID]):
         self.menu_db = menu_db
 
-    async def get_by_id(self, id: ID) -> WeekMenu:
+    async def get_by_id(self, id: ID, include_image: bool = False) -> WeekMenu:
         """
         Get a week menu by id.
 
         :param id: Id. of the week menu to retrieve.
+        :param include_image: Whether to include the image in the response.
         :raises WeekMenuNotExists: The week menu does not exist.
         :return: A week menu.
         """
-        if (menu := await self.menu_db.get_by_id(id)) is None:
-            raise exceptions.WeekMenuNotExists()
-        return menu
+        menu = await self.menu_db.get_by_id(id)
+        return self._get(menu, include_image)
 
-    async def get_by_image(self, img_checksum: str) -> WeekMenu:
+    async def get_by_image(self, img_checksum: str, include_image: bool = False) -> WeekMenu:
         """
         Get a week menu by image checksum.
 
         :param img_checksum: Image checksum of the week menu to retrieve.
+        :param include_image: Whether to include the image in the response.
         :return: A week menu.
         """
-        if (menu := await self.menu_db.get_by_image(img_checksum)) is None:
-            raise exceptions.WeekMenuNotExists()
-        return menu
+        menu = await self.menu_db.get_by_image(img_checksum)
+        return self._get(menu, include_image)
 
-    async def get_by_timestamp(self, timestamp: int) -> WeekMenu:
+    async def get_by_timestamp(self, timestamp: int, include_image: bool = False) -> WeekMenu:
         """
         Get a week menu by timestamp.
 
         :param timestamp: Timestamp of the week menu to retrieve.
+        :param include_image: Whether to include the image in the response.
         :raises WeekMenuNotExists: No week menu exists for the given timestamp.
         :return: A week menu.
         """
-        if (menu := await self.menu_db.get_by_timestamp(timestamp)) is None:
-            raise exceptions.WeekMenuNotExists()
-        return menu
+        menu = await self.menu_db.get_by_timestamp(timestamp)
+        return self._get(menu, include_image)
 
-    async def get_by_timestamp_range(self, start: int, end: int) -> list[WeekMenu]:
+    async def get_by_timestamp_range(self, start: int, end: int, include_images: bool = False) -> list[WeekMenu]:
         """
         Get a list of week menus by timestamp range.
 
         :param start: Start of the timestamp range.
         :param end: End of the timestamp range.
+        :param include_images: Whether to include images in the response.
         :return: A list of week menus.
         """
-        return await self.menu_db.get_by_timestamp_range(start, end)
+        menus = await self.menu_db.get_by_timestamp_range(start, end)
+        return self._get(menus, include_images)
 
-    async def create(self, menu_create: WeekMenuCreate, request: Optional[Request] = None) -> WeekMenu:
+    async def create(self, menu_create: WeekMenuCreate, request: Request | None = None) -> WeekMenu:
         """
         Create a week menu in database.
 
@@ -85,7 +87,7 @@ class BaseWeekMenuManager(Generic[ID]):
         await self.on_after_create(created_menu, request)
         return created_menu
 
-    async def update(self, menu_update: WeekMenuUpdate, menu: WeekMenu, request: Optional[Request] = None) -> WeekMenu:
+    async def update(self, menu_update: WeekMenuUpdate, menu: WeekMenu, request: Request | None = None) -> WeekMenu:
         """
         Update a week menu.
 
@@ -102,7 +104,7 @@ class BaseWeekMenuManager(Generic[ID]):
         await self.on_after_update(updated_menu, updated_menu_data, request)
         return updated_menu
 
-    async def delete(self, menu: WeekMenu, request: Optional[Request] = None) -> bool:
+    async def delete(self, menu: WeekMenu, request: Request | None = None) -> bool:
         """
         Delete a user.
 
@@ -114,7 +116,7 @@ class BaseWeekMenuManager(Generic[ID]):
         await self.on_after_delete(menu, request)
         return result
 
-    async def on_after_create(self, menu: WeekMenu, request: Optional[Request] = None):
+    async def on_after_create(self, menu: WeekMenu, request: Request | None = None):
         """
         Perform logic after successful week menu creation.
 
@@ -124,7 +126,7 @@ class BaseWeekMenuManager(Generic[ID]):
         pass
 
     async def on_after_update(self, updated_menu: WeekMenu, updated_menu_data: dict[str, Any],
-                              request: Optional[Request] = None):
+                              request: Request | None = None):
         """
         Perform logic after successful week menu update.
 
@@ -134,7 +136,7 @@ class BaseWeekMenuManager(Generic[ID]):
         """
         pass
 
-    async def on_before_delete(self, menu: WeekMenu, request: Optional[Request] = None):
+    async def on_before_delete(self, menu: WeekMenu, request: Request | None = None):
         """
         Perform logic before deleting a week menu.
 
@@ -143,7 +145,7 @@ class BaseWeekMenuManager(Generic[ID]):
         """
         pass
 
-    async def on_after_delete(self, menu: WeekMenu, request: Optional[Request] = None):
+    async def on_after_delete(self, menu: WeekMenu, request: Request | None = None):
         """
         Perform logic after deleting a week menu.
 
@@ -166,21 +168,22 @@ class BaseWeekMenuManager(Generic[ID]):
         return await self.menu_db.update(menu, validated_update_dict)
 
     @staticmethod
-    def _get(get_func: callable, include_images: bool):
+    def _get(menus: WeekMenu | list[WeekMenu], include_images: bool):
         """
         Get a week menu by id, image checksum or timestamp.
-        :param get_func: The function to call to retrieve the week menu.
+        :param menus: The week menu(s) to retrieve.
         :param include_images: Whether to include images in the response.
         :return: The week menu.
         """
         def exclude_img(menu: WeekMenu) -> WeekMenu:
             return WeekMenu(**menu.dict(exclude={'img'})) if not include_images else menu
 
-        if (result := get_func()) is None:
+        if menus is None:
             raise exceptions.WeekMenuNotExists()
-        elif type(result) is list:
-            return [exclude_img(menu_item) for menu_item in result]
-        return exclude_img(result)
+        elif type(menus) is list:
+            return [exclude_img(menu_item) for menu_item in menus]
+        else:
+            return exclude_img(menus)
 
 
 WeekMenuManagerDependency = DependencyCallable[BaseWeekMenuManager[ID]]
