@@ -13,7 +13,7 @@ from itzmenu_service.persistence.models import WeekMenu
 
 class WeekMenuManager(BaseWeekMenuManager[UUID]):
 
-    async def on_after_create(self, menu: WeekMenu, request: Optional[Request] = None):
+    async def on_after_create_menu(self, menu: WeekMenu, request: Optional[Request] = None):
         log.debug(f'Week menu {menu.id} has been created.')
 
 
