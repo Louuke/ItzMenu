@@ -2,7 +2,7 @@ import time
 import re
 from typing import Type
 
-from fastapi import Depends, Request, APIRouter, HTTPException, Path
+from fastapi import Depends, Request, APIRouter, HTTPException, Response
 from fastapi_users import schemas
 from fastapi_users.models import ID
 from fastapi_users.router.common import ErrorModel
@@ -65,6 +65,17 @@ def get_menus_router(get_week_menu_manager: WeekMenuManagerDependency[ID],
     async def get_menu_by_timestamp(menu_manager: BaseWeekMenuManager[ID] = Depends(get_week_menu_manager),
                                     timestamp: int = int(time.time()), include_image: bool = False):
         return await __get_menu_by(menu_manager, timestamp=timestamp, include_image=include_image)
+
+    @router.get('/img/{id_or_checksum}', status_code=200, response_class=Response,
+                responses={
+                    status.HTTP_200_OK: {
+                        'content': {'image/jpeg': {}}
+                    }
+                }, name='menus:get_image_by_id')
+    async def get_image_by_id(id_or_checksum: str,
+                              menu_manager: BaseWeekMenuManager[ID] = Depends(get_week_menu_manager)):
+        image: bytes = await __get_image_by(menu_manager, id_or_checksum=id_or_checksum)
+        return Response(content=image, media_type='image/jpeg')
 
     @router.patch('/menu/{id_or_checksum}', response_model=menu_read_schema, name='menus:update_menu')
     async def update_menu(request: Request, id_or_checksum: str, user_update: WeekMenuUpdate,
