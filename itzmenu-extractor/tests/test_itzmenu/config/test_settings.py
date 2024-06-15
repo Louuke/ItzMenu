@@ -7,28 +7,6 @@ from itzmenu_extractor.config.settings import Settings
 class TestSettings:
 
     @staticmethod
-    def test_settings_with_valid_mongodb_data():
-        settings = Settings(mongo_db_url='mongodb://localhost:27017', mongo_db_name='development')
-        assert settings.mongo_db_url == 'mongodb://localhost:27017'
-        assert settings.mongo_db_name == 'development'
-
-    @staticmethod
-    def test_settings_with_valid_mongodb_srv_data():
-        settings = Settings(mongo_db_url='mongodb+srv://localhost:27017', mongo_db_name='development')
-        assert settings.mongo_db_url == 'mongodb+srv://localhost:27017'
-        assert settings.mongo_db_name == 'development'
-
-    @staticmethod
-    def test_settings_with_invalid_mongo_db_url():
-        with pytest.raises(ValidationError):
-            Settings(mongo_db_url='not a url', mongo_db_name='development')
-
-    @staticmethod
-    def test_settings_with_invalid_mongo_db_name():
-        with pytest.raises(ValidationError):
-            Settings(mongo_db_url='mongodb://localhost:27017', mongo_db_name='a')
-
-    @staticmethod
     def test_settings_with_valid_ocr_check_interval():
         settings = Settings(ocr_check_interval=3600)
         assert settings.ocr_check_interval == 3600
@@ -82,3 +60,14 @@ class TestSettings:
             settings = Settings(log_level=lev)
             assert settings.log_level == lev
 
+    @staticmethod
+    def test_settings_with_valid_itz_menu_host():
+        settings = Settings(itz_menu_host='http://localhost:8000')
+        assert settings.itz_menu_host == 'http://localhost:8000'
+        settings = Settings(itz_menu_host='https://itzmenu.com')
+        assert settings.itz_menu_host == 'https://itzmenu.com'
+
+    @staticmethod
+    def test_settings_with_invalid_itz_menu_host():
+        with pytest.raises(ValidationError):
+            Settings(itz_menu_host='invalid_host')
