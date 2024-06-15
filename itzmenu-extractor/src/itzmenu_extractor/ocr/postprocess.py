@@ -2,14 +2,15 @@ import re
 import logging as log
 
 from itzmenu_api.persistence.schemas import WeekMenuCreate, DayMenu, MealCategory, Meal
-from itzmenu_api.persistence.enums import DietType
 import pandas as pd
 
 
-def dataframe_to_week_menu(df: pd.DataFrame, validity_period: tuple[int, int], filename: str) -> WeekMenuCreate:
+def dataframe_to_week_menu(df: pd.DataFrame, validity_period: tuple[int, int], checksum: str, img: str | None) \
+        -> WeekMenuCreate:
     start_timestamp, end_timestamp = validity_period
     menus = __dataframe_to_menus(df)
-    return WeekMenuCreate(start_timestamp=start_timestamp, end_timestamp=end_timestamp, filename=filename, menus=menus)
+    return WeekMenuCreate(start_timestamp=start_timestamp, end_timestamp=end_timestamp, img_checksum=checksum,
+                          img=img, menus=menus)
 
 
 def __dataframe_to_menus(df: pd.DataFrame) -> list[DayMenu]:
@@ -29,7 +30,7 @@ def __dataframe_to_meals(s: pd.Series) -> list[Meal]:
         if not pd.isna(name) and (price := re.search(r'\d+.\d+$', name)) is not None:
             name = name[:price.start()].strip()
             price = float(price.group())
-            result.append(Meal(name=name, diet_type=[DietType.UNKNOWN], price=price))
+            result.append(Meal(name=name, price=price))
         else:
             log.warning(f'Failed to parse meal: {name}')
     return result

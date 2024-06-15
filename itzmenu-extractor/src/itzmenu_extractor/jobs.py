@@ -23,7 +23,8 @@ class Executor:
         self.__menu_client = MenuClient()
         self.__itz_client = ItzMenuClient(s.itz_menu_user_email, s.itz_menu_user_password, s.itz_menu_host)
         self.__args = args
-        self.__scheduler.add_job(self.fetch_menu, 'interval', seconds=s.ocr_check_interval, next_run_time=datetime.now())
+        self.__scheduler.add_job(self.fetch_menu, 'interval', seconds=s.ocr_check_interval,
+                                 next_run_time=datetime.now())
         self.__scheduler.add_job(self.preload_menu)
 
     def start(self):
@@ -46,18 +47,18 @@ class Executor:
         self.process_image(menu)
 
     def process_image(self, img: bytes):
-        filename = f'{image.bytes_to_sha256(img)}.jpg'
-        if self.__itz_client.get_menu_by_id_or_filename(filename) is not None:
-            log.info(f'Menu with checksum {filename} already exists')
+        checksum = f'{image.bytes_to_sha256(img)}'
+        if self.__itz_client.get_menu_by_id_or_filename(checksum) is not None:
+            log.info(f'Menu with checksum {checksum} already exists')
             return
         if (p := extractor.period_of_validity(img)) is None or (df := extractor.img_to_dataframe(img)) is None:
             log.warning(f'Failed to extract menu from image')
             return
         log.info(f'Extracted dataframe with {df.shape[0]} rows and {df.shape[1]} columns')
         log.info(f'Extracted time period: {time.timestamp_to_date(p[0])} - {time.timestamp_to_date(p[1])}')
-        menu = postprocess.dataframe_to_week_menu(df, p, filename)
-        resp = self.__itz_client.create_menu(menu)
-        if resp is not None and self.__settings.ocr_save_images:
-            pass
-            # database.fs().upload_from_stream(filename, BytesIO(img))
-        log.info(f'Inserted menu with filename {filename}')
+        img_base64 = image.bytes_to_base64(img) if self.__settings.ocr_save_images else None
+        menu = postprocess.dataframe_to_week_menu(df, p, checksum, img_base64)
+        if (resp := self.__itz_client.create_menu(menu)) is not None:
+            log.info(f'Inserted menu with id {resp.id}')
+        else:
+            log.warning(f'Failed to insert menu')
