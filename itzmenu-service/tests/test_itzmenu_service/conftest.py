@@ -1,5 +1,6 @@
 import hashlib
 import os
+from pathlib import Path
 from uuid import UUID
 
 import pytest
@@ -101,6 +102,13 @@ def rdm_checksums() -> list[str]:
     def to_str(b: bytes) -> str:
         return hashlib.sha256(b).hexdigest()
     return [to_str(os.urandom(32)) for _ in range(3)]
+
+
+@pytest.fixture
+def menu_image() -> bytes:
+    path = Path(__file__).parents[1] / 'resources' / 'menu.jpg'
+    with open(path, 'rb') as f:
+        return f.read()
 
 
 @pytest.fixture

@@ -1,27 +1,48 @@
 import time
+import base64
+import hashlib
 from uuid import UUID
 
 import pytest
 
 from itzmenu_api.persistence.enums import WeekDay
 from itzmenu_api.persistence.schemas import Meal, MealCategory, DayMenu, WeekMenuCreate, WeekMenuUpdate
-from itzmenu_service.manager.exceptions import WeekMenuAlreadyExists, WeekMenuNotExists
+from itzmenu_service.manager.exceptions import WeekMenuAlreadyExists, WeekMenuNotExists, WeekMenuImageNotExists
 from itzmenu_service.manager.menus import WeekMenuManager
 from itzmenu_service.persistence.models import WeekMenu
+
+
+@pytest.fixture
+def menu_image_base64(menu_image: bytes) -> str:
+    return image_to_base64(menu_image)
+
+
+@pytest.fixture
+def menu_image_checksum(menu_image: bytes) -> str:
+    return image_to_checksum(menu_image)
+
+
+def image_to_base64(image: bytes) -> str:
+    return base64.b64encode(image).decode('utf-8')
+
+
+def image_to_checksum(image: bytes) -> str:
+    return hashlib.sha256(image).hexdigest()
 
 
 @pytest.mark.asyncio(scope='session')
 class TestBaseWeekMenuManager:
 
     @pytest.mark.dependency()
-    async def test_create_success(self, week_menu_manager: WeekMenuManager, rdm_checksums: list[str]):
+    async def test_create_success(self, week_menu_manager: WeekMenuManager, menu_image_base64: str,
+                                  menu_image_checksum: str):
         meal = Meal(name='test', price=1.0)
         category = MealCategory(name='test', meals=[meal])
         day = DayMenu(name=WeekDay.MONDAY, categories=[category])
-        menu = WeekMenuCreate(img_checksum=rdm_checksums[0], start_timestamp=49, end_timestamp=50, menus=[day],
-                              img='img')
+        menu = WeekMenuCreate(img_checksum=menu_image_checksum, start_timestamp=49, end_timestamp=50, menus=[day],
+                              img=menu_image_base64)
         result = await week_menu_manager.create_menu(menu)
-        assert result.img_checksum == rdm_checksums[0]
+        assert result.img_checksum == menu_image_checksum
         assert result.start_timestamp == 49
         assert result.end_timestamp == 50
         assert len(result.menus) == 1
@@ -77,10 +98,23 @@ class TestBaseWeekMenuManager:
         assert result.end_timestamp == menu.end_timestamp
         assert result.img is not None
 
+    @pytest.mark.dependency(depends=['TestBaseWeekMenuManager::test_create_success'])
+    async def test_get_image_by_id(self, week_menu_manager: WeekMenuManager, menu_image_base64: str,
+                                   menu_image_checksum: str):
+        menu = await WeekMenu.find_one(WeekMenu.start_timestamp == 40 and WeekMenu.end_timestamp == 50)
+        image = await week_menu_manager.get_image_by_id(menu.id)
+        assert image_to_checksum(image) == menu_image_checksum
+        assert image_to_base64(image) == menu_image_base64
+
     async def test_get_by_id_not_exists(self, week_menu_manager: WeekMenuManager):
         uuid = UUID('3e96a70a-1928-4f19-811b-3f11be611d2a')
         with pytest.raises(WeekMenuNotExists):
             await week_menu_manager.get_menu_by_id(uuid)
+
+    async def test_get_image_by_id_not_exists(self, week_menu_manager: WeekMenuManager):
+        uuid = UUID('3e96a70a-1928-4f19-811b-3f11be611d2a')
+        with pytest.raises(WeekMenuImageNotExists):
+            await week_menu_manager.get_image_by_id(uuid)
 
     @pytest.mark.dependency(depends=['TestBaseWeekMenuManager::test_create_success'])
     async def test_get_by_checksum_success(self, week_menu_manager: WeekMenuManager):
@@ -91,10 +125,23 @@ class TestBaseWeekMenuManager:
         assert result.start_timestamp == menu.start_timestamp
         assert result.end_timestamp == menu.end_timestamp
 
+    @pytest.mark.dependency(depends=['TestBaseWeekMenuManager::test_create_success'])
+    async def test_image_by_checksum(self, week_menu_manager: WeekMenuManager, menu_image_base64: str,
+                                     menu_image_checksum: str):
+        menu = await WeekMenu.find_one(WeekMenu.start_timestamp == 40 and WeekMenu.end_timestamp == 50)
+        image = await week_menu_manager.get_image_by_checksum(menu.img_checksum)
+        assert image_to_checksum(image) == menu_image_checksum
+        assert image_to_base64(image) == menu_image_base64
+
     async def test_get_by_checksum_not_exists(self, week_menu_manager: WeekMenuManager):
         checksum = 'b24b0dda9cf6ee529c98d1b7492cbee8ed9a924733dab29239a4908f2ac97062'
         with pytest.raises(WeekMenuNotExists):
             await week_menu_manager.get_menu_by_checksum(checksum)
+
+    async def test_image_by_checksum_not_exists(self, week_menu_manager: WeekMenuManager):
+        checksum = 'b24b0dda9cf6ee529c98d1b7492cbee8ed9a924733dab29239a4908f2ac97062'
+        with pytest.raises(WeekMenuImageNotExists):
+            await week_menu_manager.get_image_by_checksum(checksum)
 
     @pytest.mark.dependency(depends=['TestBaseWeekMenuManager::test_create_success'])
     async def test_get_by_timestamp_success(self, week_menu_manager: WeekMenuManager):
