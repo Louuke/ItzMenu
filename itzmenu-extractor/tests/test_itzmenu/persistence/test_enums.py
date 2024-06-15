@@ -4,7 +4,7 @@ from itzmenu_api.persistence.enums import WeekDay
 class TestWeekDay:
 
     def test_week_day_values(self):
-        values = (WeekDay.MONDAY, WeekDay.TUESDAY, WeekDay.WEDNESDAY, WeekDay.THURSDAY, WeekDay.FRIDAY)
+        values = [WeekDay.MONDAY, WeekDay.TUESDAY, WeekDay.WEDNESDAY, WeekDay.THURSDAY, WeekDay.FRIDAY]
         assert WeekDay.values() == values
 
     def test_week_day_find_by_value(self):
