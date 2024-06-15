@@ -9,7 +9,7 @@ class MenuClient:
 
     def __init__(self, host: str | None = None):
         self.__session = requests.Session()
-        self.__host = host if host else 'http://127.0.0.1:8080' if env.is_running_tests() else 'https://ivi.de'
+        self.__host = host if host is not None else 'https://ivi.de'
 
     def __del__(self):
         self.__session.close()
