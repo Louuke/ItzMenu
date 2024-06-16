@@ -53,7 +53,7 @@ class ItzMenuClient:
         resp = self.__execute_request(req)
         return WeekMenuRead(**resp.json()) if resp is not None and resp.ok else None
 
-    def get_menu_by_id_or_filename(self, menu_id_or_checksum: str | UUID) -> WeekMenuRead | None:
+    def get_menu_by_id_or_checksum(self, menu_id_or_checksum: str | UUID) -> WeekMenuRead | None:
         """
         Get a week menu by its id or checksum.
         :param menu_id_or_checksum: The id or checksum of the week menu.

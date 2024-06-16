@@ -10,28 +10,30 @@ from itzmenu_client.client import ItzMenuClient
 class TestItzMenuClient:
 
     def test_create_menu(self, user: str, password: str, headers: dict[str, str], httpserver: HTTPServer):
-        expect = {'start_timestamp': 30, 'end_timestamp': 40, 'created_at': 30, 'filename': 'test_menu.jpg'}
+        expect = {'start_timestamp': 30, 'end_timestamp': 40, 'created_at': 30,
+                  'img_checksum': 'e0e2eeb7e31c4c4b662a120e59f1df526daf09fca82cb617368e02ea53d162a6'}
         resp = {'id': '835849f9-52e9-4479-8cc3-63ac96e75325', **expect}
         httpserver.expect_request('/menus', method='POST', json=expect, headers=headers).respond_with_json(resp)
         httpserver.expect_request('/menus', method='POST', json=expect).respond_with_data(status=401)
         client = ItzMenuClient(user, password, f'http://{httpserver.host}:{httpserver.port}')
-        menu = WeekMenuCreate(start_timestamp=30, end_timestamp=40, created_at=30, filename='test_menu.jpg')
+        menu = WeekMenuCreate(start_timestamp=30, end_timestamp=40, created_at=30,
+                              img_checksum='e0e2eeb7e31c4c4b662a120e59f1df526daf09fca82cb617368e02ea53d162a6')
         response = client.create_menu(menu)
         assert response.id is not None
         assert response.start_timestamp == 30
         assert response.end_timestamp == 40
         assert response.created_at == 30
-        assert response.filename == 'test_menu.jpg'
+        assert response.img_checksum == 'e0e2eeb7e31c4c4b662a120e59f1df526daf09fca82cb617368e02ea53d162a6'
 
     def test_get_menu_by_id(self, httpserver: HTTPServer, week_menus: list[dict[str, Any]]):
         resp = week_menus[0]
         (httpserver.expect_request(f'/menus/menu/{resp["id"]}', method='GET').respond_with_json(resp))
         client = ItzMenuClient('user', 'password', f'http://{httpserver.host}:{httpserver.port}')
-        response = client.get_menu_by_id_or_filename('835849f9-52e9-4479-8cc3-63ac96e75325')
+        response = client.get_menu_by_id_or_checksum('835849f9-52e9-4479-8cc3-63ac96e75325')
         assert response.start_timestamp == resp['start_timestamp']
         assert response.end_timestamp == resp['end_timestamp']
         assert response.created_at == resp['created_at']
-        assert response.filename == resp['filename']
+        assert response.img_checksum == resp['img_checksum']
         assert response.id == UUID(resp['id'])
         assert response.menus == []
 
@@ -39,17 +41,17 @@ class TestItzMenuClient:
         (httpserver.expect_request('/menus/menu/835849f9-52e9-4479-8cc3-63ac96e75325', method='GET')
          .respond_with_data(status=404))
         client = ItzMenuClient('user', 'password', f'http://{httpserver.host}:{httpserver.port}')
-        assert client.get_menu_by_id_or_filename('835849f9-52e9-4479-8cc3-63ac96e75325') is None
+        assert client.get_menu_by_id_or_checksum('835849f9-52e9-4479-8cc3-63ac96e75325') is None
 
-    def test_get_menu_by_filename(self, httpserver: HTTPServer, week_menus: list[dict[str, Any]]):
+    def test_get_menu_by_checksum(self, httpserver: HTTPServer, week_menus: list[dict[str, Any]]):
         resp = week_menus[0]
-        (httpserver.expect_request(f'/menus/menu/{resp["filename"]}', method='GET').respond_with_json(resp))
+        (httpserver.expect_request(f'/menus/menu/{resp["img_checksum"]}', method='GET').respond_with_json(resp))
         client = ItzMenuClient('user', 'password', f'http://{httpserver.host}:{httpserver.port}')
-        response = client.get_menu_by_id_or_filename('test_menu1.jpg')
+        response = client.get_menu_by_id_or_checksum(week_menus[0]['img_checksum'])
         assert response.start_timestamp == resp['start_timestamp']
         assert response.end_timestamp == resp['end_timestamp']
         assert response.created_at == resp['created_at']
-        assert response.filename == resp['filename']
+        assert response.img_checksum == resp['img_checksum']
         assert response.id == UUID(resp['id'])
         assert response.menus == []
 
@@ -63,7 +65,7 @@ class TestItzMenuClient:
         assert response.start_timestamp == resp1['start_timestamp']
         assert response.end_timestamp == resp1['end_timestamp']
         assert response.created_at == resp1['created_at']
-        assert response.filename == resp1['filename']
+        assert response.img_checksum == resp1['img_checksum']
         assert response.id == UUID(resp1['id'])
         assert response.menus == []
         resp2 = week_menus[1]
@@ -73,7 +75,7 @@ class TestItzMenuClient:
         assert response.start_timestamp == resp2['start_timestamp']
         assert response.end_timestamp == resp2['end_timestamp']
         assert response.created_at == resp2['created_at']
-        assert response.filename == resp2['filename']
+        assert response.img_checksum == resp2['img_checksum']
         assert response.id == UUID(resp2['id'])
         assert response.menus == []
 
@@ -86,7 +88,7 @@ class TestItzMenuClient:
             assert response[i].start_timestamp == resp['start_timestamp']
             assert response[i].end_timestamp == resp['end_timestamp']
             assert response[i].created_at == resp['created_at']
-            assert response[i].filename == resp['filename']
+            assert response[i].img_checksum == resp['img_checksum']
             assert response[i].id == UUID(resp['id'])
             assert response[i].menus == []
 
@@ -100,7 +102,7 @@ class TestItzMenuClient:
         assert response[0].start_timestamp == resp['start_timestamp']
         assert response[0].end_timestamp == resp['end_timestamp']
         assert response[0].created_at == resp['created_at']
-        assert response[0].filename == resp['filename']
+        assert response[0].img_checksum == resp['img_checksum']
         assert response[0].id == UUID(resp['id'])
         assert response[0].menus == []
 
@@ -115,7 +117,7 @@ class TestItzMenuClient:
         assert response[0].start_timestamp == resp['start_timestamp']
         assert response[0].end_timestamp == resp['end_timestamp']
         assert response[0].created_at == resp['created_at']
-        assert response[0].filename == resp['filename']
+        assert response[0].img_checksum == resp['img_checksum']
         assert response[0].id == UUID(resp['id'])
         assert response[0].menus == []
 
@@ -131,7 +133,7 @@ class TestItzMenuClient:
             assert response[i].start_timestamp == resp['start_timestamp']
             assert response[i].end_timestamp == resp['end_timestamp']
             assert response[i].created_at == resp['created_at']
-            assert response[i].filename == resp['filename']
+            assert response[i].img_checksum == resp['img_checksum']
             assert response[i].id == UUID(resp['id'])
             assert response[i].menus == []
 
@@ -144,7 +146,8 @@ class TestItzMenuClient:
 
     def test_update_menu(self, httpserver: HTTPServer, user: str, password: str, headers: dict[str, str],
                          week_menus: list[dict[str, Any]]):
-        update = {'start_timestamp': 99, 'end_timestamp': 100, 'created_at': 99, 'filename': 'test_menu_updated.jpg'}
+        update = {'start_timestamp': 99, 'end_timestamp': 100, 'created_at': 99,
+                  'img_checksum': '03043c5abd66e979d1ab97f3be8a1bc2d8ba993b3374c774f93b698e1c8376b7'}
         resp = {'id': '835849f9-52e9-4479-8cc3-63ac96e75325', **update}
         httpserver.expect_request(f'/menus/menu/835849f9-52e9-4479-8cc3-63ac96e75325', method='PATCH', json=update,
                                   headers=headers).respond_with_json(resp)
@@ -156,11 +159,12 @@ class TestItzMenuClient:
         assert response.start_timestamp == 99
         assert response.end_timestamp == 100
         assert response.created_at == 99
-        assert response.filename == 'test_menu_updated.jpg'
+        assert response.img_checksum == '03043c5abd66e979d1ab97f3be8a1bc2d8ba993b3374c774f93b698e1c8376b7'
         assert response.id == UUID('835849f9-52e9-4479-8cc3-63ac96e75325')
 
     def test_update_menu_no_permissions(self, httpserver: HTTPServer, week_menus: list[dict[str, Any]]):
-        update = {'start_timestamp': 99, 'end_timestamp': 100, 'created_at': 99, 'filename': 'test_menu_updated.jpg'}
+        update = {'start_timestamp': 99, 'end_timestamp': 100, 'created_at': 99,
+                  'img_checksum': week_menus[0]['img_checksum']}
         (httpserver.expect_request(f'/menus/menu/835849f9-52e9-4479-8cc3-63ac96e75325', method='PATCH', json=update)
          .respond_with_data(status=403))
         client = ItzMenuClient('user', 'password', f'http://{httpserver.host}:{httpserver.port}')
@@ -168,7 +172,8 @@ class TestItzMenuClient:
         assert resp is None
 
     def test_update_menu_filename_fail(self, httpserver: HTTPServer, week_menus: list[dict[str, Any]]):
-        update = {'start_timestamp': 99, 'end_timestamp': 100, 'created_at': 99, 'filename': 'test_menu_updated.jpg'}
+        update = {'start_timestamp': 99, 'end_timestamp': 100, 'created_at': 99,
+                  'img_checksum': week_menus[0]['img_checksum']}
         (httpserver.expect_request(f'/menus/menu/835849f9-52e9-4479-8cc3-63ac96e75325', method='PATCH', json=update)
          .respond_with_data(status=400))
         client = ItzMenuClient('user', 'password', f'http://{httpserver.host}:{httpserver.port}')

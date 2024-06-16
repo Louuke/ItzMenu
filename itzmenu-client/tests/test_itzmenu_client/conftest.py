@@ -28,9 +28,9 @@ def headers(user_access_token: str):
 def week_menus() -> list[dict[str, str]]:
     return [
         {'id': '835849f9-52e9-4479-8cc3-63ac96e75325', 'start_timestamp': 30, 'end_timestamp': 40,
-         'created_at': 30, 'filename': 'test_menu1.jpg'},
+         'created_at': 30, 'img_checksum': '03043c5abd66e979d1ab97f3be8a1bc2d8ba993b3374c774f93b698e1c8376b6'},
         {'id': '835849f9-52e9-4479-8cc3-63ac96e75326', 'start_timestamp': 41, 'end_timestamp': 50,
-         'created_at': 41, 'filename': 'test_menu2.jpg'},
+         'created_at': 41, 'img_checksum': 'f396316a7250d1c1d38e7c606a37ae6366db2e991750f4bfab5deee4166d1dc8'},
     ]
 
 
