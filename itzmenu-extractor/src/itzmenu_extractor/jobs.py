@@ -2,7 +2,6 @@ import logging as log
 import re
 from argparse import Namespace
 from datetime import datetime
-from io import BytesIO
 
 from apscheduler.schedulers.blocking import BlockingScheduler
 
@@ -38,7 +37,7 @@ class Executor:
             if re.match(r'^([A-Z]:)?[a-zA-Z0-9\\/_-]+\.jpg$', value) is not None:
                 self.process_image(image.load_image(value))
             else:
-                log.warning(f'Invalid filename: {value.value}')
+                log.warning(f'Invalid filename: {value}')
 
     def fetch_menu(self):
         if (menu := self.__menu_client.get_week_menu()) is None:
@@ -48,7 +47,7 @@ class Executor:
 
     def process_image(self, img: bytes):
         checksum = f'{image.bytes_to_sha256(img)}'
-        if self.__itz_client.get_menu_by_id_or_filename(checksum) is not None:
+        if self.__itz_client.get_menu_by_id_or_checksum(checksum) is not None:
             log.info(f'Menu with checksum {checksum} already exists')
             return
         if (p := extractor.period_of_validity(img)) is None or (df := extractor.img_to_dataframe(img)) is None:
