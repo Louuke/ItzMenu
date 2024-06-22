@@ -1,5 +1,5 @@
 [build-system]
-requires = [ 'setuptools>=69.1.1' ]
+requires = [ 'setuptools>=69.1.1', 'setuptools-git-versioning>=2.0,<3' ]
 build-backend = 'setuptools.build_meta'
 
 [project]
@@ -28,6 +28,7 @@ dependencies = [
 test = [
     'pytest>=8.2.1',
     'pytest-asyncio>=0.23.6',
+    'pytest_httpserver>=1.0.10',
     'pytest-dependency>=0.6.0',
     'smtp-test-server>=0.1.0'
 ]
@@ -38,5 +39,5 @@ itzmenu_service = 'itzmenu_service.__main__:main'
 [tool.setuptools.package-data]
 '*' = [ '*.json', '*.jpg' ]
 
-[tool.setuptools.dynamic]
-version = { attr = 'itzmenu_service.__version__' }
+[tool.setuptools-git-versioning]
+enabled = true

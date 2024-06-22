@@ -1,5 +1,5 @@
 [build-system]
-requires = [ 'setuptools>=69.1.1' ]
+requires = [ 'setuptools>=69.1.1', 'setuptools-git-versioning>=2.0,<3' ]
 build-backend = 'setuptools.build_meta'
 
 [project]
@@ -17,7 +17,7 @@ classifiers = [
     'Programming Language :: Python :: Implementation :: CPython',
 ]
 dependencies = [
-    'pydantic>=2.7.1'
+    'pydantic[email]>=2.7.1'
 ]
 
 [project.optional-dependencies]
@@ -29,5 +29,5 @@ test = [
 [tool.setuptools.package-data]
 '*' = [ '*.json', '*.jpg' ]
 
-[tool.setuptools.dynamic]
-version = { attr = 'itzmenu_api.__version__' }
+[tool.setuptools-git-versioning]
+enabled = true

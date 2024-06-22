@@ -1,5 +1,5 @@
 [build-system]
-requires = [ 'setuptools>=69.1.1' ]
+requires = [ 'setuptools>=69.1.1', 'setuptools-git-versioning>=2.0,<3' ]
 build-backend = 'setuptools.build_meta'
 
 [project]
@@ -18,11 +18,11 @@ classifiers = [
 ]
 dependencies = [
     'itzmenu_client',
-    'email-validator>=2.1.1',
     'typing_extensions>=4.9.0',
     'pydantic_settings>=2.2.1',
     'requests>=2.31.0',
     'pillow>=10.2.0',
+    'numpy>=1.26.4,<2',
     'img2table[gcp]>=1.2.11',
     'pytesseract>=0.3.10',
     'apscheduler>=3.10.4',
@@ -39,5 +39,5 @@ test = [
 [tool.setuptools.package-data]
 '*' = [ '*.json', '*.jpg' ]
 
-[tool.setuptools.dynamic]
-version = { attr = 'itzmenu_extractor.__version__' }
+[tool.setuptools-git-versioning]
+enabled = true
