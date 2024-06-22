@@ -12,7 +12,8 @@ class PermissionChecker:
     def __call__(self, request: Request, strategy: JWTPermissionStrategy = Depends(get_jwt_strategy)):
         if (authorization := request.headers.get('Authorization')) is None:
             raise HTTPException(status_code=401, detail='Authorization header is missing')
-        permissions = strategy.get_permissions(authorization)
+        if (permissions := strategy.get_permissions(authorization)) is None:
+            raise HTTPException(status_code=401, detail='Invalid token')
         if set(self.required_permissions).issubset(permissions) or '*:*' in permissions:
             return True
         raise HTTPException(status_code=403, detail='User has insufficient permissions')

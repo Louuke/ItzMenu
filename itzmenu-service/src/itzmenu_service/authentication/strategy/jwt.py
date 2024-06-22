@@ -1,3 +1,5 @@
+import jwt
+
 from fastapi_users.authentication import JWTStrategy
 from fastapi_users.jwt import SecretType, generate_jwt, decode_jwt
 
@@ -16,7 +18,19 @@ class JWTPermissionStrategy(JWTStrategy):
         data = {'sub': str(user.id), 'aud': aud}
         return generate_jwt(data, self.encode_key, self.lifetime_seconds, algorithm=self.algorithm)
 
-    def get_permissions(self, token: str) -> list[str]:
+    def get_permissions(self, token: str) -> list[str] | None:
+        """
+        Get the permissions from the token
+
+        :param token: JWT token
+        :return: List of permissions or None if the token is invalid
+        """
         token = token.split(' ')[1] if ' ' in token else []
-        data = decode_jwt(token, self.decode_key, self.token_audience, algorithms=[self.algorithm])
-        return data.get('aud', [])
+        return self.__read_permissions(token)
+
+    def __read_permissions(self, token: str) -> list[str] | None:
+        try:
+            data = decode_jwt(token, self.decode_key, self.token_audience, algorithms=[self.algorithm])
+            return data.get('aud', [])
+        except jwt.PyJWTError:
+            return None

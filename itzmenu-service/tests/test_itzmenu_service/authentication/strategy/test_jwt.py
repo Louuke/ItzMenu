@@ -41,6 +41,5 @@ class TestJWTPermissionStrategy:
         permissions = strategy.get_permissions(token)
         assert permissions == ['fastapi-users:auth', 'read:menu']
 
-    def test_jwt_strategy_returns_empty_permissions_for_invalid_token(self, strategy: JWTPermissionStrategy):
-        with pytest.raises(DecodeError):
-            strategy.get_permissions('invalid_token')
+    async def test_jwt_strategy_returns_none_for_invalid_token(self, strategy: JWTPermissionStrategy):
+        assert strategy.get_permissions('invalid_token') is None
