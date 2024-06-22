@@ -10,6 +10,7 @@ class CompanyHolidays(Germany):
         super()._populate(year)
         if self.subdiv is None:
             self.subdiv = 'SH'
+        self[date(year, 5, 1)] = 'Labour Day'
         self[date(year, 12, 24)] = 'Christmas Eve'
         self[date(year, 12, 31)] = "New Year's Eve"
 

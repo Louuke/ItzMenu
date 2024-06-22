@@ -26,7 +26,7 @@ def new_year_timestamp(year: int) -> int:
 
 
 @pytest.fixture
-def day_of_work_timestamp(year: int) -> int:
+def labour_day_timestamp(year: int) -> int:
     d = date(year, 5, 1)
     return int(time.mktime(d.timetuple()))
 
@@ -50,12 +50,12 @@ class TestCompanyHolidays:
         assert is_holiday(new_year_timestamp)
 
     @staticmethod
-    def test_day_of_work_is_holiday(year: int):
+    def test_labour_day_is_holiday(year: int):
         assert is_holiday(date(year, 5, 1))
 
     @staticmethod
-    def test_day_of_work_is_holiday_timestamp(day_of_work_timestamp: int):
-        assert is_holiday(day_of_work_timestamp)
+    def test_labour_day_is_holiday_timestamp(labour_day_timestamp: int):
+        assert is_holiday(labour_day_timestamp)
 
 
 class TestTimestampToDate:
