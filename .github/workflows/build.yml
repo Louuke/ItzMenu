@@ -1,0 +1,252 @@
+name: ItzMenu Build
+
+on:
+  push:
+  schedule:
+    - cron: '30 2 * * *'
+
+jobs:
+  build_itzmenu_api:
+    runs-on: ubuntu-22.04
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v5
+      with:
+        python-version: 3.11
+
+    - name: Install itzmenu_api dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install setuptools build pytest
+        pip install itzmenu-api/.[test]
+
+    - name: Build itzmenu_api-wheel
+      run: |
+        cd itzmenu-api
+        python -m build -w
+
+    - name: Upload itzmenu_api-wheel
+      uses: actions/upload-artifact@v4
+      with:
+        name: itzmenu_api
+        path: itzmenu-api/dist/*.whl
+
+  build_itzmenu_client:
+    needs:
+      - build_itzmenu_api
+    runs-on: ubuntu-22.04
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v5
+      with:
+        python-version: 3.11
+
+    - name: Download itzmenu_api-wheel
+      uses: actions/download-artifact@v4
+      with:
+        name: itzmenu_api
+        path: wheels
+
+    - name: Install itzmenu_client dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install setuptools build pytest
+        pip install wheels/*.whl
+        pip install itzmenu-client/.[test]
+
+    - name: Test itzmenu_client
+      run: |
+        pytest itzmenu-client
+
+    - name: Build itzmenu_client-wheel
+      run: |
+        cd itzmenu-client
+        python -m build -w
+
+    - name: Upload itzmenu_client-wheel
+      uses: actions/upload-artifact@v4
+      with:
+        name: itzmenu_client
+        path: itzmenu-client/dist/*.whl
+
+  build_itzmenu_extractor:
+    needs:
+      - build_itzmenu_client
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.11
+
+      - name: Download itzmenu_api-wheel
+        uses: actions/download-artifact@v4
+        with:
+          name: itzmenu_api
+          path: wheels
+
+      - name: Download itzmenu_client-wheel
+        uses: actions/download-artifact@v4
+        with:
+          name: itzmenu_client
+          path: wheels
+
+      - name: Install itzmenu_extractor dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install setuptools build pytest
+          pip install wheels/*.whl
+          pip install itzmenu-extractor/.[test]
+
+      - name: Install tesseract
+        run: |
+          sudo apt-get update
+          sudo apt-get install tesseract-ocr
+          wget https://github.com/tesseract-ocr/tessdata/raw/main/deu.traineddata
+          sudo chown root:root deu.traineddata
+          sudo mkdir -p /usr/share/tesseract-ocr/4.00/tessdata/; sudo mv deu.traineddata $_
+          ls -la /usr/share/tesseract-ocr/4.00/tessdata/
+
+      - name: Setup timezone
+        uses: MathRobin/timezone-action@v1.1
+        with:
+          timezoneLinux: Europe/Berlin
+
+      - name: Test itzmenu_extractor
+        run: |
+          pytest itzmenu-extractor
+
+      - name: Build itzmenu_extractor-wheel
+        run: |
+          cd itzmenu-extractor
+          python -m build -w
+
+      - name: Upload itzmenu_extractor-wheel
+        uses: actions/upload-artifact@v4
+        with:
+          name: itzmenu_extractor
+          path: itzmenu-extractor/dist/*.whl
+
+  build_itzmenu_service:
+    needs:
+      - build_itzmenu_api
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.11
+
+      - name: Download itzmenu_api-wheel
+        uses: actions/download-artifact@v4
+        with:
+          name: itzmenu_api
+          path: wheels
+
+      - name: Install itzmenu_service dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install setuptools build pytest
+          pip install wheels/*.whl
+          pip install itzmenu-service/.[test]
+
+      - name: Tailscale
+        uses: tailscale/github-action@v2
+        with:
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
+          tags: tag:ci
+
+      - name: Test itzmenu_service
+        run: |
+          pytest itzmenu-service
+        env:
+          mongo_db_url: ${{ secrets.MONGODB_URL }}
+
+      - name: Build itzmenu_service-wheel
+        run: |
+          cd itzmenu-service
+          python -m build -w
+
+      - name: Upload itzmenu_service-wheel
+        uses: actions/upload-artifact@v4
+        with:
+          name: itzmenu_service
+          path: itzmenu-service/dist/*.whl
+
+  pypi_upload:
+    needs:
+      - build_itzmenu_api
+      - build_itzmenu_client
+      - build_itzmenu_extractor
+      - build_itzmenu_service
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download itzmenu_api-wheel
+        uses: actions/download-artifact@v4
+        with:
+          path: wheels
+          merge-multiple: true
+
+      - name: Tailscale
+        uses: tailscale/github-action@v2
+        with:
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
+          tags: tag:ci
+
+      - name: Publish package to PyPi
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          user: ${{ secrets.PYPI_USER }}
+          password: ${{ secrets.PYPI_PWD }}
+          repository-url: ${{ secrets.PYPI_URL }}
+          packages-dir: wheels
+          verbose: true
+
+      - name: Set version variables
+        run: |
+          echo API_VER=$(python -c "from pathlib import Path; print(next(Path('wheels').glob('itzmenu_api*')).name.split('-')[1])") >> $GITHUB_ENV
+          echo CLIENT_VER=$(python -c "from pathlib import Path; print(next(Path('wheels').glob('itzmenu_client*')).name.split('-')[1])") >> $GITHUB_ENV
+          echo EXTRACTOR_VER=$(python -c "from pathlib import Path; print(next(Path('wheels').glob('itzmenu_extractor*')).name.split('-')[1])") >> $GITHUB_ENV
+          echo SERVICE_VER=$(python -c "from pathlib import Path; print(next(Path('wheels').glob('itzmenu_service*')).name.split('-')[1])") >> $GITHUB_ENV
+
+      - name: Install itzmenu packages
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          envs: API_VER, CLIENT_VER, EXTRACTOR_VER, SERVICE_VER, PIP_EXTRA_INDEX_URL
+          script: |
+            source /opt/itzmenu-extractor-dev/venv/bin/activate
+            pip install itzmenu-api==$API_VER itzmenu-client==$CLIENT_VER itzmenu-extractor==$EXTRACTOR_VER
+            source /opt/itzmenu-service-dev/venv/bin/activate
+            pip install itzmenu-api==$API_VER itzmenu-service==$SERVICE_VER
+        env:
+          PIP_EXTRA_INDEX_URL: ${{ vars.PIP_EXTRA_INDEX_URL }}
