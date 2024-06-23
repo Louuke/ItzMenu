@@ -56,7 +56,7 @@ class TestExtractor:
         period = extractor.period_of_validity(week_menu)
         assert period is not None
         assert period[0] == 1708297200
-        assert period[1] == 1708729199
+        assert period[1] == 1708901999
 
     @staticmethod
     def test_period_of_validity_cache_one(week_menu: bytes):

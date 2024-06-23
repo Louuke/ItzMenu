@@ -60,7 +60,7 @@ class TestPreprocess:
             assert img == week_menu
             assert len(args) == 0
             assert validity_period is not None
-            assert validity_period == (1708297200, 1708729199)
+            assert validity_period == (1708297200, 1708901999)
         dummy_func(week_menu)
 
     def test_remove_no_holidays(self, week_menu: bytes):

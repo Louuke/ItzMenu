@@ -62,7 +62,7 @@ def remove_holidays(func):
             area = (sum(columns[:i]), 0, sum(columns[:i + 1]), image.height)
             parts.append(image.crop(area))
         # Determine which days of the work week are holidays
-        holidays = [time.is_holiday(t) for t in range(validity_period[0], validity_period[1], 86400)]
+        holidays = [time.is_holiday(t) for t in range(validity_period[0], validity_period[0] + 86400 * 5, 86400)]
         # Concatenate the images of the days when the cafeteria is open
         no_holiday_columns = [parts[i + 1] for i, holiday in enumerate(holidays) if not holiday]
         no_holiday_columns.insert(0, parts[0])
