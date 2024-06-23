@@ -7,16 +7,17 @@ from io import BytesIO
 import PIL.Image as PImage
 import pandas as pd
 import pytesseract
+import pytz
 from img2table.document import Image
-from img2table.ocr.base import OCRInstance
 from img2table.ocr import TesseractOCR, VisionOCR
+from img2table.ocr.base import OCRInstance
 from img2table.tables.objects.extraction import ExtractedTable
 
-import itzmenu_extractor.ocr.preprocess as preprocess
 import itzmenu_extractor.ocr.google_vision as google
+import itzmenu_extractor.ocr.preprocess as preprocess
 import itzmenu_extractor.util.env as env
-from itzmenu_extractor.config.settings import Settings
 from itzmenu_api.persistence.enums import WeekDay
+from itzmenu_extractor.config.settings import Settings
 
 
 @preprocess.convert_to_grayscale
@@ -32,8 +33,9 @@ def period_of_validity(image: bytes, lang: str = 'deu') -> tuple[int, int] | Non
 def __extract_timestamps(text: str) -> tuple[int, int] | None:
     if (match := re.search(r'- \d\d.\d\d.\d\d\d\d', text)) is not None:
         end_date = datetime.strptime(match.group().replace('- ', ''), '%d.%m.%Y')
-        end_timestamp = int(time.mktime(end_date.timetuple())) + 86399
-        start_timestamp = end_timestamp - 431999
+        end_date = end_date.astimezone(tz=pytz.timezone('Europe/Berlin'))
+        end_timestamp = int(time.mktime(end_date.timetuple())) + 259199
+        start_timestamp = end_timestamp - 604799
         return start_timestamp, end_timestamp
 
 
