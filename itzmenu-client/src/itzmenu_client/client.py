@@ -33,7 +33,7 @@ def retry_request(attempts: int = 1) -> Callable:
 
 class ItzMenuClient:
 
-    def __init__(self, email: str, password: str, host: str | None = 'http://localhost:8000'):
+    def __init__(self, email: str = "", password: str = "", host: str | None = 'http://localhost:8000'):
         self.__session = requests.Session()
         self.__email = email
         self.__password = password
