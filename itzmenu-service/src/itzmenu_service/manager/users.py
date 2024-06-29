@@ -18,17 +18,21 @@ class UserManager(UUIDIDMixin, BaseUserManager[User, UUID]):
     reset_password_token_secret = settings.service_secret
     verification_token_secret = settings.service_secret
 
+    def __init__(self, user_db: BeanieUserDatabase):
+        super().__init__(user_db)
+        self.__smtp_client = client.SMTPClient()
+
     async def on_after_register(self, user: User, request: Optional[Request] = None):
         log.debug(f'User {user.id} has registered.')
         await self.request_verify(user)
 
     async def on_after_forgot_password(self, user: User, token: str, request: Optional[Request] = None):
         log.debug(f'User {user.id} has forgot their password. Reset token: {token}')
-        client.send_reset_password_email(user.email, token)
+        self.__smtp_client.send_reset_password_email(user.email, token)
 
     async def on_after_request_verify(self, user: User, token: str, request: Optional[Request] = None):
         log.debug(f'Verification requested for user {user.id}. Verification token: {token}')
-        client.send_verification_email(user.email, token)
+        self.__smtp_client.send_verification_email(user.email, token)
 
     async def validate_password(self, password: str, user: Union[schemas.UC, models.UP]) -> None:
         # Custom password validation
