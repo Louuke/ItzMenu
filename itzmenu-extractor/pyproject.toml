@@ -19,7 +19,7 @@ classifiers = [
 dependencies = [
     'itzmenu_client',
     'typing_extensions>=4.9.0',
-    'pydantic_settings>=2.2.1',
+    'pydantic_settings>=2.3.4',
     'requests>=2.31.0',
     'pillow>=10.2.0',
     'numpy>=1.26.4,<2',
