@@ -185,7 +185,7 @@ jobs:
         run: |
           pytest itzmenu-service
         env:
-          mongo_db_url: ${{ secrets.MONGODB_URL }}
+          mongodb_url: ${{ secrets.MONGODB_URL }}
 
       - name: Build itzmenu_service-wheel
         run: |
@@ -244,9 +244,9 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           envs: API_VER, CLIENT_VER, EXTRACTOR_VER, SERVICE_VER, PIP_EXTRA_INDEX_URL
           script: |
-            source /opt/itzmenu-extractor-dev/venv/bin/activate
-            pip install itzmenu-api==$API_VER itzmenu-client==$CLIENT_VER itzmenu-extractor==$EXTRACTOR_VER
             source /opt/itzmenu-service-dev/venv/bin/activate
             pip install itzmenu-api==$API_VER itzmenu-service==$SERVICE_VER
+            source /opt/itzmenu-extractor-dev/venv/bin/activate
+            pip install itzmenu-api==$API_VER itzmenu-client==$CLIENT_VER itzmenu-extractor==$EXTRACTOR_VER
         env:
           PIP_EXTRA_INDEX_URL: ${{ vars.PIP_EXTRA_INDEX_URL }}

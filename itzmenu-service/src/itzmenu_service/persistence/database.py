@@ -10,7 +10,7 @@ from motor.motor_asyncio import AsyncIOMotorDatabase, AsyncIOMotorClient, AsyncI
 @lru_cache
 def db() -> AsyncIOMotorDatabase:
     settings = Settings()
-    return AsyncIOMotorClient(settings.mongo_db_url)[settings.mongo_db_name]
+    return AsyncIOMotorClient(settings.mongodb_url)[settings.mongodb_name]
 
 
 @lru_cache

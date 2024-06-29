@@ -22,12 +22,12 @@ from itzmenu_service.persistence.models import User, WeekMenu
 
 @pytest.fixture(scope='session', autouse=True)
 def override_settings():
-    os.environ['mongo_db_name'] = 'test'
+    os.environ['mongodb_name'] = 'test'
     os.environ['mail_smtp_host'] = '127.0.0.1'
     os.environ['mail_smtp_port'] = '42000'
     os.environ['mail_smtp_tls'] = 'false'
     os.environ['mail_smtp_skip_login'] = 'true'
-    os.environ['service_host'] = 'http://localhost:8000'
+    os.environ['service_public_address'] = 'http://localhost:8000'
 
 
 @pytest_asyncio.fixture(scope='session', autouse=True)
