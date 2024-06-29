@@ -20,7 +20,7 @@ class Executor:
         self.__settings = s = Settings()
         self.__scheduler = BlockingScheduler()
         self.__menu_client = MenuClient()
-        self.__itz_client = ItzMenuClient(s.itz_menu_user_email, s.itz_menu_user_password, s.itz_menu_host)
+        self.__itz_client = ItzMenuClient(s.itzmenu_user_email, s.itzmenu_user_password, s.itzmenu_host)
         self.__args = args
         self.__scheduler.add_job(self.fetch_menu, 'interval', seconds=s.ocr_check_interval,
                                  next_run_time=datetime.now())

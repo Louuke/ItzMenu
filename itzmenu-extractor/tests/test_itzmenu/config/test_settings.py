@@ -61,13 +61,13 @@ class TestSettings:
             assert settings.log_level == lev
 
     @staticmethod
-    def test_settings_with_valid_itz_menu_host():
-        settings = Settings(itz_menu_host='http://localhost:8000')
-        assert settings.itz_menu_host == 'http://localhost:8000'
-        settings = Settings(itz_menu_host='https://itzmenu.com')
-        assert settings.itz_menu_host == 'https://itzmenu.com'
+    def test_settings_with_valid_itzmenu_host():
+        settings = Settings(itzmenu_host='http://localhost:8000')
+        assert settings.itzmenu_host == 'http://localhost:8000'
+        settings = Settings(itzmenu_host='https://itzmenu.com')
+        assert settings.itzmenu_host == 'https://itzmenu.com'
 
     @staticmethod
-    def test_settings_with_invalid_itz_menu_host():
+    def test_settings_with_invalid_itzmenu_host():
         with pytest.raises(ValidationError):
-            Settings(itz_menu_host='invalid_host')
+            Settings(itzmenu_host='invalid_host')
