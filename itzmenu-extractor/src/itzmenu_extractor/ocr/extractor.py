@@ -13,7 +13,6 @@ from img2table.ocr import TesseractOCR, VisionOCR
 from img2table.ocr.base import OCRInstance
 from img2table.tables.objects.extraction import ExtractedTable
 
-import itzmenu_extractor.ocr.google_vision as google
 import itzmenu_extractor.ocr.preprocess as preprocess
 import itzmenu_extractor.util.env as env
 from itzmenu_api.persistence.enums import WeekDay
@@ -23,10 +22,7 @@ from itzmenu_extractor.config.settings import Settings
 @preprocess.convert_to_grayscale
 @lru_cache
 def period_of_validity(image: bytes, lang: str = 'deu') -> tuple[int, int] | None:
-    if Settings().google_cloud_vision_enabled and not env.is_running_tests():
-        result = google.image_to_string(image)
-        return __extract_timestamps(result)
-    elif type(result := pytesseract.image_to_string(PImage.open(BytesIO(image)), lang=lang)) is str:
+    if type(result := pytesseract.image_to_string(PImage.open(BytesIO(image)), lang=lang)) is str:
         return __extract_timestamps(result)
 
 
