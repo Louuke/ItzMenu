@@ -243,7 +243,7 @@ jobs:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
-          envs: API_VER, CLIENT_VER, EXTRACTOR_VER, SERVICE_VER, PIP_EXTRA_INDEX_URL
+          envs: API_VER, CLIENT_VER, EXTRACTOR_VER, SERVICE_VER, PIP_EXTRA_INDEX_URL, PIP_TRUSTED_HOST
           script: |
             source /opt/itzmenu-service-dev/venv/bin/activate
             pip install itzmenu-api==$API_VER itzmenu-service==$SERVICE_VER
@@ -251,3 +251,4 @@ jobs:
             pip install itzmenu-api==$API_VER itzmenu-client==$CLIENT_VER itzmenu-extractor==$EXTRACTOR_VER
         env:
           PIP_EXTRA_INDEX_URL: ${{ vars.PIP_EXTRA_INDEX_URL }}
+          PIP_TRUSTED_HOST: ${{ vars.PIP_TRUSTED_HOST }}
